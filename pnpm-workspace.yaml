@@ -1,0 +1,14 @@
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - deslop-js@0.7.6
+  - oxlint-plugin-react-doctor@0.7.6
+  - react-doctor@0.7.6
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - eslint-import-resolver-typescript
+  - semver
+overrides:
+  tmp: 0.2.7

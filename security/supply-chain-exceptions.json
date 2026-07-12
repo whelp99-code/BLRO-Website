@@ -1,0 +1,49 @@
+{
+  "exceptions": [
+    {
+      "package": "deslop-js@0.7.6",
+      "setting": "minimumReleaseAgeExclude",
+      "reason": "React Doctor pins this newly published development-only analyzer dependency.",
+      "owner": "BLRO Website Maintainer",
+      "introducedDate": "2026-07-12",
+      "reviewDate": "2026-08-12",
+      "removalCondition": "Remove after the pinned release is older than the minimum release age or React Doctor no longer requires it."
+    },
+    {
+      "package": "oxlint-plugin-react-doctor@0.7.6",
+      "setting": "minimumReleaseAgeExclude",
+      "reason": "React Doctor pins this newly published development-only lint plugin.",
+      "owner": "BLRO Website Maintainer",
+      "introducedDate": "2026-07-12",
+      "reviewDate": "2026-08-12",
+      "removalCondition": "Remove after the pinned release is older than the minimum release age or React Doctor no longer requires it."
+    },
+    {
+      "package": "react-doctor@0.7.6",
+      "setting": "minimumReleaseAgeExclude",
+      "reason": "The approved PR-00 React quality gate requires this exact development-only release.",
+      "owner": "BLRO Website Maintainer",
+      "introducedDate": "2026-07-12",
+      "reviewDate": "2026-08-12",
+      "removalCondition": "Remove when the pinned release is older than the minimum release age or a reviewed replacement is adopted."
+    },
+    {
+      "package": "eslint-import-resolver-typescript",
+      "setting": "trustPolicyExclude",
+      "reason": "The pinned official eslint-config-next dependency graph selects a release without provenance attestation.",
+      "owner": "BLRO Website Maintainer",
+      "introducedDate": "2026-07-12",
+      "reviewDate": "2026-08-12",
+      "removalCondition": "Remove when eslint-config-next resolves a trusted release with provenance that passes no-downgrade verification."
+    },
+    {
+      "package": "semver",
+      "setting": "trustPolicyExclude",
+      "reason": "The pinned official eslint-config-next dependency graph includes older semver releases without provenance attestation.",
+      "owner": "BLRO Website Maintainer",
+      "introducedDate": "2026-07-12",
+      "reviewDate": "2026-08-12",
+      "removalCondition": "Remove when upstream dependencies stop selecting non-provenance semver releases and no-downgrade passes without it."
+    }
+  ]
+}

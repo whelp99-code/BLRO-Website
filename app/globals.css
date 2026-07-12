@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --bootstrap-ink: #102033;
+  --bootstrap-muted: #4b6075;
+  --bootstrap-line: #c9d8e5;
+  --bootstrap-accent: #006f8b;
+  --bootstrap-surface: #f5f8fa;
+  --bootstrap-white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bootstrap-surface);
+}
+
+body {
+  margin: 0;
+  color: var(--bootstrap-ink);
+  background: var(--bootstrap-surface);
+  font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+.bootstrap-shell {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 24px;
+}
+
+.bootstrap-panel {
+  width: min(100%, 760px);
+  padding: clamp(32px, 8vw, 80px);
+  border: 1px solid var(--bootstrap-line);
+  background: var(--bootstrap-white);
+}
+
+.bootstrap-kicker {
+  margin: 0 0 20px;
+  color: var(--bootstrap-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 8vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.bootstrap-copy {
+  max-width: 58ch;
+  margin: 28px 0 0;
+  color: var(--bootstrap-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
