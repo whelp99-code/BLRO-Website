@@ -12,7 +12,7 @@
     "dev:grab": "react-grab --help",
     "dev:scan": "react-scan --help",
     "inspect:react": "react-doctor . --no-score --no-supply-chain --no-dead-code --blocking error -y",
-    "build": "next build",
+    "build": "pnpm content:validate && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
@@ -21,6 +21,7 @@
     "test:unit": "vitest run --allowOnly=false --passWithNoTests=false tests/unit",
     "test:component": "vitest run --allowOnly=false --passWithNoTests=false tests/component",
     "test:integration": "vitest run --allowOnly=false --passWithNoTests=false tests/integration",
+    "content:validate": "vitest run --allowOnly=false --passWithNoTests=false tests/unit/content-schema.test.ts tests/unit/content-publication.test.ts tests/integration/content-index.test.ts",
     "test:e2e": "playwright test",
     "test:policy": "node scripts/check-policy.mjs",
     "test:lighthouse": "lhci autorun",
@@ -30,6 +31,8 @@
     "check:release": "pnpm check && pnpm audit:high && pnpm test:e2e"
   },
   "dependencies": {
+    "@mdx-js/mdx": "3.1.1",
+    "gray-matter": "4.0.3",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7",

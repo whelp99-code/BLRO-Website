@@ -1,0 +1,31 @@
+---
+contentId: service-backup-disaster-recovery
+title: "백업과 재해복구"
+summary: "업무 영향과 복구 목표를 기준으로 백업, 복제와 DR 역할을 구분하는 설계 영역"
+slug: backup-disaster-recovery
+locale: ko
+status: approved
+publishedAt: 2026-07-01
+updatedAt: 2026-07-12
+audience: [customer, partner]
+tags: [backup, disaster-recovery, resilience]
+evidenceRefs: ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:72-84"]
+claimIds: [claim-service-dr-methodology]
+approvalRefs: [approval-service-dr-methodology]
+relatedContent: ["insight:recovery-objectives-guide"]
+---
+
+## 검토가 필요한 상황
+
+백업 보유만으로 복구 가능성을 설명하기 어렵거나, 시스템별 복구 우선순위와 RPO·RTO가 합의되지 않은 환경을 다룹니다.
+
+## BLRO의 역할
+
+- 업무와 시스템의 복구 우선순위 정리
+- 스냅샷, 백업, 복제와 DR의 책임 구분
+- 복구 절차, 원복과 훈련 시나리오 설계
+- 이기종 가상화 환경의 전환 조건 검토
+
+## 주요 산출물
+
+복구 목표표, 데이터 보호 정책, DR 아키텍처, 훈련 절차와 판정 기준을 제공합니다. 복구 시간은 업무 합의와 실제 훈련 결과로 검증합니다.
