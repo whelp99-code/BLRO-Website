@@ -186,6 +186,16 @@ Base unit: 4px.
 - It is absent in production, navigation, sitemap, and search indexing.
 - It exists only through PR-02 visual QA and is removed after screenshots and interaction evidence are captured.
 
+### Marketing Homepage Sections
+
+- `Hero` combines the approved company definition, one H1, three same-page actions, and one `Signal Route` that explains the path from market question to operational execution.
+- `Capability Index` presents the four business axes as a numbered editorial index; rows, rules, and responsive columns replace interchangeable feature cards.
+- `Audience Paths` gives customer, partner, and vendor destinations stable section IDs so homepage actions remain real before inquiry routes ship.
+- `Process Timeline` expresses the six approved execution stages as an ordered sequence with the cyan route acting as progression, not decoration.
+- `Evidence List` may render only records returned by the public content index. With zero public projects it explicitly shows capability and insight evidence instead of inferred metrics or examples.
+- `Conversion Panel` repeats the three audience decisions in the final navy information mode and links only to the matching homepage audience sections in PR-04A.
+- All homepage sections preserve source order and full content at mobile, tablet, and desktop breakpoints. Section targets use the global header spacing tokens for reliable focused navigation.
+
 ## 6. Motion & Interaction
 
 | Token | Value | Usage |

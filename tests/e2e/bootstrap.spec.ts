@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
 
-const BOOTSTRAP_HEADING = "BLRO Website Foundation"
+const HOME_HEADING = "글로벌 기술을 한국 시장의 실제 사업으로 연결합니다."
 
-test("serves the accessible bootstrap page without browser errors", async ({ context, page }) => {
+test("serves the accessible homepage without browser errors", async ({ context, page }) => {
   // Given
   const consoleErrors: string[] = []
   page.on("console", (message) => {
@@ -16,7 +16,7 @@ test("serves the accessible bootstrap page without browser errors", async ({ con
 
   // Then
   expect(response?.status()).toBe(200)
-  await expect(page.getByRole("heading", { level: 1, name: BOOTSTRAP_HEADING })).toBeVisible()
+  await expect(page.getByRole("heading", { level: 1, name: HOME_HEADING })).toBeVisible()
   const favicon = page.locator('link[rel="icon"]')
   await expect(favicon).toHaveAttribute("href", "/favicon.ico")
 
