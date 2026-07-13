@@ -15,7 +15,7 @@ export default async function Home() {
     now: new Date(),
   })
   const services = content.publicRecords.filter((record) => record.type === "service")
-  const insights = content.publicRecords.filter((record) => record.type === "insight").slice(0, 3)
+  const insights = content.publicRecords.filter((record) => record.type === "insight")
 
   return (
     <div className="home-page">

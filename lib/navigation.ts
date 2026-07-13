@@ -57,7 +57,11 @@ export const footerPolicyLinks = [
   { href: "/terms", label: "이용안내" },
 ] as const
 
-export const publishedRoutes: ReadonlySet<string> = new Set(["/"])
+export const publishedRoutes: ReadonlySet<string> = new Set([
+  "/",
+  "/solutions",
+  ...solutionChildren.map((item) => item.href),
+])
 
 const routeLabels = new Map<string, string>([
   ["/", "Home"],

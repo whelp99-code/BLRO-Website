@@ -2,14 +2,11 @@ import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
 import type { ContentRecord } from "@/lib/content"
+import { formatSolutionCopy, PROTECTED_INSIGHT_TITLE_PHRASES } from "@/lib/solutions"
 
 type EvidenceListProps = {
   readonly insights: readonly ContentRecord[]
   readonly services: readonly ContentRecord[]
-}
-
-function preserveTechnicalIdentifiers(value: string): string {
-  return value.replaceAll("-", "‑")
 }
 
 export function EvidenceList({ insights, services }: EvidenceListProps) {
@@ -36,10 +33,10 @@ export function EvidenceList({ insights, services }: EvidenceListProps) {
             <Heading id="insight-evidence-heading" level={3}>공개된 실무 인사이트</Heading>
             <div className="evidence-insights__list">
               {insights.map((insight) => (
-                <article className="evidence-insight" key={insight.meta.contentId}>
+                <article className="evidence-insight" id={`insight-${insight.meta.slug}`} key={insight.meta.contentId}>
                   <Text className="evidence-insight__date" variant="small">{insight.meta.publishedAt}</Text>
-                  <Heading level={3}>{preserveTechnicalIdentifiers(insight.meta.title)}</Heading>
-                  <Text>{insight.meta.summary}</Text>
+                  <Heading level={3}>{formatSolutionCopy(insight.meta.title, PROTECTED_INSIGHT_TITLE_PHRASES)}</Heading>
+                  <Text>{formatSolutionCopy(insight.meta.summary)}</Text>
                 </article>
               ))}
             </div>

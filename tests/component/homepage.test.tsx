@@ -54,8 +54,10 @@ describe("BLRO basic homepage", () => {
     render(await Home())
 
     const evidence = screen.getByRole("region", { name: "공개된 실무 인사이트" })
-    expect(within(evidence).getAllByRole("article")).toHaveLength(3)
+    expect(within(evidence).getAllByRole("article")).toHaveLength(5)
     expect(within(evidence).getByText("HCI 도입 전 확인할 운영 기준")).toBeVisible()
+    expect(document.querySelector("#insight-secure-access-selection")).toBeInTheDocument()
+    expect(document.querySelector("#insight-sase-sdwan-roles")).toBeInTheDocument()
     expect(screen.queryByText(/template/iu)).not.toBeInTheDocument()
     expect(screen.queryByText(/제조업 HCI와 DR 전환/iu)).not.toBeInTheDocument()
   })
