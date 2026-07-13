@@ -37,17 +37,26 @@ MVP 범위:
 - 세 문의 흐름, SEO, 구조화 데이터, 보안 헤더, 개인정보, WCAG 2.2 AA 핵심 기준, 성능 예산.
 - 회원, 결제, 고객 포털, 실시간 채팅, AI 챗봇, 복잡한 CMS, CRM 완전 통합은 제외한다.
 
+전달 우선순위:
+- 첫 사용자 결과는 PR-04A의 완성된 기본 홈페이지다.
+- PR-04A는 홈 Hero, BLRO 정의, 4개 사업축, 3개 방문자 경로, 수행 방식 요약과 안전한 CTA만 구현한다.
+- 회사·솔루션·파트너·영문·프로젝트·인사이트 상세 route는 Wave 2로 미룬다.
+- 문의 API와 SEO/locale 자동화는 Wave 3, 보안·접근성·성능 hardening과 운영 출시는 Wave 4에서 수행한다.
+- 기본 홈페이지 완료와 전체 MVP/production release 완료를 혼동하지 않는다.
+
 실행 방식:
 1. git status와 현재 코드·문서·환경을 읽고 기존 사용자 변경을 보존한다.
-2. 08_PR_PLAN.md의 PR-00부터 의존성 순서로 진행한다.
-3. 각 동작 변경은 먼저 실패하는 faithful test 또는 실제 surface scenario로 증명한다.
-4. 최소 구현으로 GREEN을 만들고 targeted test, build, 실제 브라우저/API QA를 수행한다.
-5. lint/type 오류, test skip, as any, @ts-ignore, 보안·접근성 규칙 비활성화를 금지한다.
-6. 한 PR에는 하나의 검토 가능한 사용자 가치만 포함한다.
-7. 각 PR 완료 즉시 관련 요구사항 ID, RED/GREEN 출력, manual QA artifact, cleanup receipt를 기록한다.
-8. 모든 Must 수락 기준이 통과할 때까지 수정·재검증한다.
+2. git history와 실제 artifact로 완료된 PR을 확인하고, 08_PR_PLAN.md에서 첫 번째 미완료 PR만 의존성 순서로 진행한다.
+3. PR-03까지 완료되어 있으면 PR-04A만 시작하고, HOME-001~HOME-006이 통과하기 전에 PR-04B 이후 작업을 시작하지 않는다.
+4. 각 동작 변경은 먼저 실패하는 faithful test 또는 실제 surface scenario로 증명한다.
+5. 최소 구현으로 GREEN을 만들고 targeted test, build, 실제 브라우저/API QA를 수행한다.
+6. lint/type 오류, test skip, as any, @ts-ignore, 보안·접근성 규칙 비활성화를 금지한다.
+7. 한 PR에는 하나의 검토 가능한 사용자 가치만 포함한다.
+8. 각 PR 완료 즉시 관련 요구사항 ID, RED/GREEN 출력, manual QA artifact, cleanup receipt를 기록한다.
+9. 해당 단계의 Must 수락 기준이 통과할 때까지 수정·재검증한다.
 
-필수 실제 검증:
+전체 MVP·출시 전 필수 실제 검증:
+- PR-04A에서는 HOME-001~HOME-006만 적용하고, 아래 검증은 각 기능을 소유한 후속 PR과 PR-12에서 누적 완료한다.
 - Chrome/WebKit에서 고객·파트너·글로벌 벤더 여정을 직접 수행한다.
 - curl로 inquiry 정상·validation·rate-limit·provider-failure를 확인한다.
 - 320/768/1440에서 responsive screenshot과 console log를 확인한다.
@@ -82,14 +91,14 @@ MVP 범위:
 
 1. 이 문서와 나머지 12개 계획서를 저장소 루트에 둔다.
 2. 개발 에이전트에게 위 프롬프트와 저장소 경로를 제공한다.
-3. 한 번에 전체 구현을 지시하지 말고 PR-00부터 검토 게이트를 둔다.
+3. 한 번에 전체 구현을 지시하지 말고 첫 미완료 PR에만 검토 게이트를 둔다. 현재 PR-03까지 완료됐다면 PR-04A가 다음 작업이다.
 4. 파일 충돌이 없는 PR-01과 PR-02만 PR-00 이후 병렬 실행할 수 있다.
 5. 구현 에이전트가 새로운 요구사항을 제안하면 원본 문서에 먼저 반영·승인한 뒤 실행한다.
 
 ## 첫 실행 요청 예시
 
 ```text
-12_AGENT_EXECUTION_PROMPT.md의 계약을 따르고 PR-00만 구현하라. 현재 저장소를 먼저 검사하고, RED → GREEN → 실제 브라우저 smoke → cleanup까지 수행한 뒤 PR-00의 완료 게이트와 증거를 보고하라. PR-01은 시작하지 마라.
+12_AGENT_EXECUTION_PROMPT.md의 계약을 따르고 현재 이력에서 첫 미완료 단계인 PR-04A Basic homepage만 구현하라. HOME-001~HOME-006을 RED → GREEN → 320/768/1440 실제 브라우저 QA → cleanup 순서로 검증하고 보고하라. PR-04B와 상세 기능은 시작하지 마라.
 ```
 
 ## 금지된 인수인계

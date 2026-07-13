@@ -15,6 +15,8 @@ pnpm exec playwright test
 
 각 PR은 관련 targeted test를 먼저 실행하고, 완료 전 `pnpm check && pnpm build`를 실행한다. 명령 이름은 PR-00에서 package scripts와 함께 확정한다.
 
+실행 순서는 [08_PR_PLAN.md](08_PR_PLAN.md)의 전달 파동을 따른다. 현재 이력이 PR-03까지 완료된 경우 다음 작업은 반드시 `PR-04A Basic homepage`이며, 해당 완료 게이트가 통과하기 전에는 PR-04B 이후 상세 route를 시작하지 않는다.
+
 ## 2. PR-00 Foundation
 
 **Create/modify**
@@ -93,21 +95,48 @@ pnpm exec playwright test
 
 **Commit:** `feat(navigation): add accessible global shell`
 
-## 6. PR-04 Home and BLRO
+## 6. PR-04A Basic homepage
 
 **Create**
 
 - `components/marketing/hero.tsx`, `capability-index.tsx`, `audience-paths.tsx`, `process-timeline.tsx`, `evidence-list.tsx`, `conversion-panel.tsx`
-- `app/page.tsx`, `app/blro/page.tsx`, `app/blro/how-we-work/page.tsx`, `app/blro/expertise/page.tsx`
+- `app/page.tsx`
 - `tests/e2e/home-journeys.spec.ts`
 
 **Acceptance**
 
 - Hero에 확정 headline, company definition, 3 CTA가 있다.
-- 4축의 의미와 링크가 일치한다.
+- 4축과 3개 방문자 경로를 상세 route 없이도 한 페이지에서 이해할 수 있다.
+- CTA는 같은 페이지의 실제 section 또는 이미 구현된 공개 route로만 이동하고 404를 만들지 않는다.
 - 공개 콘텐츠가 없으면 가짜 숫자 대신 수행 방식을 표시한다.
+- 320px, 768px, 1440px에서 console error와 horizontal overflow가 0이다.
+- inquiry API, 상세 route, 검색·필터, 영문 route, JSON-LD를 이 단계에 추가하지 않는다.
 
-**Commit:** `feat(marketing): publish home and BLRO story`
+**Manual proof**
+
+1. 새 브라우저 context에서 `/`을 연다.
+2. 첫 viewport에서 BLRO 정의와 주요 CTA를 확인한다.
+3. 4개 사업축과 3개 방문자 section을 키보드로 순회한다.
+4. 모든 홈 CTA를 실행해 404, console error, focus loss가 없는지 확인한다.
+
+**Commit:** `feat(home): publish basic BLRO homepage`
+
+## 6A. PR-04B BLRO details
+
+**Create**
+
+- `app/blro/page.tsx`, `app/blro/how-we-work/page.tsx`, `app/blro/expertise/page.tsx`
+- 상세 페이지에 필요한 marketing section components
+- `tests/e2e/blro-journeys.spec.ts`
+
+**Acceptance**
+
+- 회사 정의, 수행 방식, 전문역량이 홈 요약과 모순되지 않는다.
+- 공개 승인 없는 고객·벤더·파트너·정량 성과 claim을 렌더링하지 않는다.
+- breadcrumb와 현재 경로가 정확하고 키보드로 홈에 복귀할 수 있다.
+- 세 route가 production build에서 정적 생성된다.
+
+**Commit:** `feat(blro): add company detail pages`
 
 ## 7. PR-05 Solutions
 

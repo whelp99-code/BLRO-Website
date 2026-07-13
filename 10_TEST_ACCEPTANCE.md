@@ -4,6 +4,21 @@
 
 테스트가 녹색인 것만으로 완료하지 않는다. 모든 Must 요구사항의 자동 검증, 실제 브라우저 여정, 운영 URL smoke, 외부 문의 전달 증거가 있어야 한다.
 
+단, 구현은 단계별로 판정한다. `PR-04A`는 아래 기본 홈페이지 게이트만 통과하면 독립 완료할 수 있고, 전체 MVP·운영 출시는 AC-001~AC-013과 운영 검증을 모두 통과해야 한다. 기본 홈페이지 완료를 production release 완료로 보고하지 않는다.
+
+### 기본 홈페이지 우선 게이트 (`PR-04A`)
+
+| ID | 수락 기준 | 증거 |
+|---|---|---|
+| `HOME-001` | 첫 viewport에서 승인된 BLRO 정의와 주요 CTA를 확인 | 320/768/1440 screenshot |
+| `HOME-002` | 한 페이지에서 4개 사업축과 3개 방문자 경로를 이해 | home E2E + 30초 이해 점검 |
+| `HOME-003` | 홈의 모든 CTA가 실제 section 또는 구현된 공개 route로 이동 | CTA link report + browser action log |
+| `HOME-004` | 공개 승인 없는 claim과 가짜 성과 수치가 없음 | publication audit |
+| `HOME-005` | 키보드 순서·focus visible·skip link·landmark가 정상 | keyboard ledger |
+| `HOME-006` | 320px·768px·1440px에서 404·console error·가로 overflow가 0 | Playwright + screenshot |
+
+`PR-04A`에서는 inquiry 전달, 상세 route, 전체 locale, JSON-LD, Lighthouse release budget을 요구하지 않는다. 이 항목들은 해당 후속 PR의 완료 게이트에서 검증한다.
+
 ## 2. 요구사항 추적
 
 | ID | 수락 기준 | 증거 |

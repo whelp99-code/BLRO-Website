@@ -8,6 +8,8 @@
 
 **Tech Stack:** Next.js, React, TypeScript strict, Tailwind CSS, shadcn/ui, MDX, Zod, Vitest, Testing Library, Playwright, axe, Lighthouse CI.
 
+**Delivery Strategy:** 완성된 기본 홈페이지를 가장 먼저 확보한다. `PR-04A`에서 `/`만으로 BLRO 정의와 핵심 사업을 이해할 수 있는 홈페이지를 독립 완료하고, 회사 상세 페이지·솔루션 상세·영문·콘텐츠 탐색·문의 자동화·SEO·운영 기능은 후속 파동으로 분리한다.
+
 ## Global Constraints
 
 - 사업·브랜드 정의는 [01_BLUEPRINT.md](01_BLUEPRINT.md)를 변경하지 않는다.
@@ -18,6 +20,8 @@
 - 회원, 결제, 고객 포털, 실시간 채팅, AI 챗봇, 복잡한 CMS는 구현하지 않는다.
 - `as any`, TypeScript 오류 억제, 테스트 skip, 보안·접근성 규칙 비활성화를 금지한다.
 - 각 PR은 독립적으로 build와 관련 테스트가 통과해야 한다.
+- 기본 홈페이지의 CTA는 구현되지 않은 상세 route로 연결하지 않는다. 후속 route가 준비되기 전에는 같은 페이지의 실제 section 또는 이미 공개된 route만 사용한다.
+- `PR-04A` 완료는 기본 홈페이지 완료를 의미하며 production release 완료를 의미하지 않는다. 운영 문의와 전체 route 출시는 `PR-12`에서 판정한다.
 
 ---
 
@@ -28,18 +32,32 @@ PR-00 Foundation
 ├── PR-01 Content core
 ├── PR-02 Design system
 └── PR-03 Global shell
-    ├── PR-04 Home + BLRO
-    ├── PR-05 Solutions
-    ├── PR-06 Partner + Vendor EN
-    ├── PR-07 AI + Projects + Insights
-    └── PR-08 Inquiry
-        ├── PR-09 SEO + i18n
-        ├── PR-10 Security + accessibility + performance
-        └── PR-11 E2E + operations
-            └── PR-12 Production release
+    └── PR-04A Basic homepage
+        ├── PR-04B BLRO detail pages
+        ├── PR-05 Solutions
+        ├── PR-06 Partner + Vendor EN
+        └── PR-07 AI + Projects + Insights
+
+PR-04B + PR-05 + PR-06 + PR-07
+└── PR-08 Inquiry
+    ├── PR-09 SEO + i18n
+    ├── PR-10 Security + accessibility + performance
+    └── PR-11 E2E + operations
+        └── PR-12 Production release
 ```
 
 PR-01과 PR-02는 PR-00 이후 병렬 가능하다. 동일 파일을 수정하는 PR은 병렬화하지 않는다.
+
+## 전달 파동
+
+| 파동 | 목표 | 포함 PR | 종료 기준 |
+|---|---|---|---|
+| Wave 1 | 가장 기본적인 홈페이지 완성 | `PR-04A` | `/`에서 30초 안에 BLRO 정의·4개 사업축·3개 방문자 경로를 이해하고, CTA 404·console error·가로 overflow가 없음 |
+| Wave 2 | 정적 상세 정보 확장 | `PR-04B`, `PR-05`, `PR-06`, `PR-07` | 회사·솔루션·파트너·영문·콘텐츠 상세 route가 승인 범위 내에서 동작 |
+| Wave 3 | 전환과 발견 기능 | `PR-08`, `PR-09` | 3종 문의와 SEO/locale surface가 실제 route·콘텐츠 index에 연결 |
+| Wave 4 | 품질·운영·출시 | `PR-10`, `PR-11`, `PR-12` | 보안·접근성·성능·전체 회귀·운영 배포 게이트 통과 |
+
+Wave 1이 끝나기 전에는 Wave 2의 상세 페이지를 시작하지 않는다. Wave 2 안에서는 파일 소유권이 겹치지 않는 PR만 병렬화할 수 있다.
 
 ## PR-00: Repository foundation
 
@@ -89,17 +107,30 @@ PR-01과 PR-02는 PR-00 이후 병렬 가능하다. 동일 파일을 수정하�
 
 완료 게이트: 마우스 없이 모든 1차 route에 도달하고 Escape/포커스 복귀가 정상.
 
-## PR-04: Home and BLRO pages
+## PR-04A: Basic homepage first
 
-**산출물:** 홈, 회사소개, 수행방식, 전문역량 페이지.
+**산출물:** 상세 기능 없이도 BLRO를 이해할 수 있는 완성된 기본 홈페이지 `/`.
 
-- [ ] 홈 Hero와 3종 CTA
-- [ ] 4개 사업축, 3개 audience entry, 수행 timeline
-- [ ] 승인된 프로젝트·인사이트만 노출
-- [ ] BLRO 회사 정의와 차별화 메시지
-- [ ] metadata와 responsive QA
+- [ ] 승인된 headline, company definition, 핵심 설명이 있는 Hero
+- [ ] 4개 사업축 요약과 3개 audience entry를 한 페이지 안에서 제공
+- [ ] 수행 방식 요약과 승인된 프로젝트·인사이트만 노출
+- [ ] 3개 주요 CTA는 같은 페이지의 실제 section 또는 이미 구현된 공개 route만 사용
+- [ ] 기본 title/description과 320px·768px·1440px responsive QA
+- [ ] 상세 페이지, 문의 API, 필터, 영문 route, JSON-LD는 이 PR에서 구현하지 않음
 
-완료 게이트: 30초 이해 테스트용 정보가 첫 viewport와 다음 섹션에 존재하고 모든 CTA가 올바른 유형으로 이동.
+완료 게이트: 첫 viewport와 다음 섹션에서 30초 이해 테스트를 통과하고, 홈의 모든 CTA가 404 없이 동작하며 console error와 horizontal overflow가 0이다.
+
+## PR-04B: BLRO detail pages
+
+**산출물:** 회사소개, 수행방식, 전문역량 상세 페이지.
+
+- [ ] `/blro`, `/blro/how-we-work`, `/blro/expertise` 구현
+- [ ] 홈의 요약 정보와 상세 페이지의 메시지·용어 일치
+- [ ] 공개 승인 없는 회사 사실·수치·파트너 claim 차단
+- [ ] breadcrumb, 현재 경로, 관련 페이지 간 이동 검증
+- [ ] route metadata와 responsive QA
+
+완료 게이트: 세 BLRO route가 정적 생성되고 홈에서 상세 페이지로 이동한 뒤 홈으로 복귀하는 키보드 여정이 정상이다.
 
 ## PR-05: Solutions
 
