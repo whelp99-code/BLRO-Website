@@ -2,7 +2,7 @@ export const BOOTSTRAP_HEADING = "BLRO Website Foundation"
 
 export default function Home() {
   return (
-    <main className="bootstrap-shell">
+    <div className="bootstrap-shell">
       <section aria-labelledby="bootstrap-heading" className="bootstrap-panel">
         <p className="bootstrap-kicker">BLRO · Enterprise Technology Business</p>
         <h1 id="bootstrap-heading">{BOOTSTRAP_HEADING}</h1>
@@ -11,6 +11,6 @@ export default function Home() {
           the next verified milestones.
         </p>
       </section>
-    </main>
+    </div>
   )
 }

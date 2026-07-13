@@ -14,5 +14,9 @@ describe("bootstrap document shell", () => {
     // Then
     expect(markup).toContain('lang="ko"')
     expect(markup).toContain(`<h1 id="bootstrap-heading">${BOOTSTRAP_HEADING}</h1>`)
+    expect(markup).toContain('href="#main-content"')
+    expect(markup).toContain('<header class="blro-site-header">')
+    expect(markup).toContain('<main id="main-content" tabindex="-1"><div class="bootstrap-shell">')
+    expect(markup).toContain('<footer class="blro-site-footer">')
   })
 })

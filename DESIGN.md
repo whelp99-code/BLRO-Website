@@ -149,6 +149,37 @@ Base unit: 4px.
 - Generic `INPUT 00` and `OUTPUT 01` labels carry no customer, location, metric, or outcome claim.
 - The route is reusable content structure rather than a background ornament; pages must supply a concise accessible label.
 
+### Global Header & Navigation
+
+- The header is a stable 72px surface above page content; it never changes height when a menu opens and becomes compact only below the 1024px shell breakpoint.
+- Desktop navigation is one horizontal roving group. `ArrowLeft`/`ArrowRight` move between primary controls, `Home`/`End` jump to the bounds, and `ArrowDown` enters an available submenu.
+- Only Solutions and Partner Business open depth-two panels. Expanded, current-route, hover, focus-visible, and pressed states remain visually distinct without relying on color alone.
+- `Escape`, outside activation, or route change closes an open menu. Focus returns to the control that opened it when the user explicitly dismisses a menu.
+- The mobile drawer is depth-three at most, locks background scroll, traps focus, exposes an explicit close control, and always restores focus to its trigger after dismissal.
+- Navigation destinations are route-registry data. A planned destination may be linked before its content PR, but the shell must not create placeholder pages or claim that future content exists.
+
+### Breadcrumb
+
+- The breadcrumb is a compact ordered list immediately before page-specific content. The final item is text with `aria-current="page"`; earlier items are links.
+- Labels and hierarchy come from the route registry. Unknown paths render no breadcrumb rather than guessing a label.
+- Home pages omit the breadcrumb because there is no deeper hierarchy to communicate.
+
+### Locale Switch
+
+- The locale control is a text-labelled link, never a flag icon. It renders only when a published counterpart is available for the current route.
+- Counterpart relationships are typed route data. Missing or future-only counterparts produce no control and no dead link.
+
+### Global Footer
+
+- The footer is a navy information field with one factual BLRO definition, route-derived business links, three distinct inquiry transitions, policy links, and an optional locale switch.
+- Contact details, customer names, credentials, legal entity names, and metrics are omitted until approved source data exists.
+- Footer groups remain semantic lists and preserve source order at every breakpoint; responsive layout may stack groups but may not remove them.
+
+### Skip Link & Landmarks
+
+- The skip link is the first focusable element, remains visually hidden until focus, and targets the single global `main#main-content` landmark.
+- Every page shell contains exactly one banner, primary navigation, main, and contentinfo landmark. Sticky/fixed shell surfaces must not obscure focused content.
+
 ### Primitive Showcase
 
 - Development-only `/design-preview` presents every variant and state.
