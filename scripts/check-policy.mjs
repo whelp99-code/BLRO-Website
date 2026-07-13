@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises"
 import { extname, join, relative } from "node:path"
 
-const roots = ["app", "lib", "scripts", "tests"]
+const roots = ["app", "components", "lib", "scripts", "tests"]
 const rootFiles = ["next.config.ts", "playwright.config.ts", "vitest.config.ts"]
 const sourceExtensions = new Set([".js", ".mjs", ".ts", ".tsx"])
 const forbidden = [
