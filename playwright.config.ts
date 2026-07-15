@@ -22,7 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm start --port 4173",
+    command: "pnpm build && pnpm exec wrangler pages dev out --port 4173",
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

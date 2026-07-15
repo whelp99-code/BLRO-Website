@@ -1,6 +1,8 @@
 allowBuilds:
+  esbuild: true
   sharp: true
   unrs-resolver: true
+  workerd: true
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - deslop-js@0.7.6

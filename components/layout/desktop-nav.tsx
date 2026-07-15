@@ -1,8 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
-import { isCurrentRoute, primaryNavigation, publishedRoutes } from "@/lib/navigation"
+import { isCurrentRoute, primaryNavigation } from "@/lib/navigation"
 
 export type DesktopNavProps = {
   readonly pathname: string
@@ -119,36 +118,34 @@ export function DesktopNav({ pathname }: DesktopNavProps) {
                   <span aria-hidden="true">⌄</span>
                 </button>
               ) : (
-                <Link
+                <a
                   aria-current={isCurrent ? "page" : undefined}
                   className={item.href === "/contact" ? "blro-nav-cta" : undefined}
                   data-primary-control
                   href={item.href}
                   onKeyDown={(event) => handleControlKey(event, index)}
-                  prefetch={publishedRoutes.has(item.href)}
                   tabIndex={activeIndex === index ? 0 : -1}
                 >
                   {item.label}
-                </Link>
+                </a>
               )}
               {isOpen ? (
                 <div className="blro-megamenu" id={`desktop-menu-${index}`}>
-                  <Link
+                  <a
                     aria-label={`${item.label} 전체 개요 보기`}
                     className="blro-megamenu__overview"
                     href={item.href}
-                    prefetch={publishedRoutes.has(item.href)}
                   >
                     <strong>{item.label}</strong>
                     <span>전체 개요 보기</span>
-                  </Link>
+                  </a>
                   <ul>
                     {item.children.map((child) => (
                       <li key={child.href}>
-                        <Link href={child.href} prefetch={publishedRoutes.has(child.href)}>
+                        <a href={child.href}>
                           <strong>{child.label}</strong>
                           <span>{child.description}</span>
-                        </Link>
+                        </a>
                       </li>
                     ))}
                   </ul>

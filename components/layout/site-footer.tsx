@@ -1,13 +1,12 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Container } from "@/components/layout/container"
 import { LocaleSwitch } from "@/components/layout/locale-switch"
 import {
+  footerBusinessRoutes,
   footerInquiries,
   footerPolicyLinks,
-  primaryNavigation,
   publishedRoutes,
 } from "@/lib/navigation"
 
@@ -30,11 +29,11 @@ export function SiteFooter({ pathname }: SiteFooterProps) {
         <nav aria-label="Footer business routes">
           <h2>Business</h2>
           <ul>
-            {primaryNavigation.slice(0, 6).map((item) => (
+            {footerBusinessRoutes.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} prefetch={publishedRoutes.has(item.href)}>
+                <a href={item.href}>
                   {item.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -44,9 +43,9 @@ export function SiteFooter({ pathname }: SiteFooterProps) {
           <ul>
             {footerInquiries.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} prefetch={publishedRoutes.has(item.href)}>
+                <a href={item.href}>
                   {item.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -56,9 +55,9 @@ export function SiteFooter({ pathname }: SiteFooterProps) {
         <span>© BLRO</span>
         <nav aria-label="정책">
           {footerPolicyLinks.map((item) => (
-            <Link href={item.href} key={item.href} prefetch={publishedRoutes.has(item.href)}>
+            <a href={item.href} key={item.href}>
               {item.label}
-            </Link>
+            </a>
           ))}
         </nav>
         <LocaleSwitch pathname={pathname} publishedRoutes={publishedRoutes} />

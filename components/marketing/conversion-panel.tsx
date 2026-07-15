@@ -1,12 +1,12 @@
+import { TrackableLink } from "@/components/analytics/trackable-link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
-import { ActionLink } from "@/components/ui/link"
 
 const CONVERSIONS = [
-  { href: "#customer-path", label: "기술 프로젝트 상담", note: "환경과 목표에서 검토 범위를 정리합니다." },
-  { href: "#partner-path", label: "파트너 공동사업", note: "고객과 역량에 맞는 협업 방식을 논의합니다." },
-  { href: "#vendor-path", label: "한국 시장 진출", note: "시장 가설과 현지 실행 범위를 검토합니다." },
+  { href: "/contact?type=customer-project", label: "전환 진단 상담", note: "우선순위 워크로드와 검증 범위를 함께 정리합니다." },
+  { href: "/contact?type=partner-collaboration", label: "파트너 공동 수행", note: "제안부터 구축까지 역할과 실행 기준을 논의합니다." },
+  { href: "/contact?type=vendor-korea-entry", label: "한국 시장 실행", note: "고객 검증과 현지 기술 수행 체계를 설계합니다." },
 ] as const
 
 export function ConversionPanel() {
@@ -17,19 +17,24 @@ export function ConversionPanel() {
           <div className="conversion-panel__intro">
             <Eyebrow>START FROM THE CURRENT STATE</Eyebrow>
             <Heading id="conversion-heading" level={2}>
-              제품이나 과제가 아직 <span className="blro-nowrap">명확하지 않아도</span> 괜찮습니다.
+              무엇부터 바꿔야 할지 <span className="blro-nowrap">명확하지 않아도</span> 괜찮습니다.
             </Heading>
-            <Text variant="inverse">현재 환경과 목표에서 시작해 검토 범위를 함께 정리합니다.</Text>
+            <Text variant="inverse">현재 환경, 업무 영향, 허용 가능한 전환 위험을 기준으로 첫 번째 검증 범위를 함께 정리합니다.</Text>
           </div>
           <nav aria-label="대상별 시작점" className="conversion-panel__actions">
             {CONVERSIONS.map((conversion) => (
-              <ActionLink className="conversion-action" href={conversion.href} key={conversion.href} variant="standalone">
+              <TrackableLink
+                className="blro-link blro-link--standalone conversion-action"
+                href={conversion.href}
+                key={conversion.href}
+                properties={{ ctaId: `conversion-${conversion.href}`, placement: "conversion-panel" }}
+              >
                 <span>
                   <strong>{conversion.label}</strong>
                   <small>{conversion.note}</small>
                 </span>
                 <span aria-hidden="true">↗</span>
-              </ActionLink>
+              </TrackableLink>
             ))}
           </nav>
         </div>

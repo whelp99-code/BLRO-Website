@@ -1,0 +1,99 @@
+---
+contentId: insight-globalprotect-auth-override-response
+title: "GlobalProtect 인증 우회: 패치 전에 쿠키 사용 경계부터 확인할 것"
+summary: "KEV 등재 PAN-OS 인증 우회 이슈에서 영향 조건, 전환 묶음, 임시 완화의 종료 기준을 빠르게 판단하는 리뷰 초안"
+slug: globalprotect-auth-override-response
+locale: ko
+status: review
+updatedAt: 2026-07-15
+audience: [customer, partner]
+tags: [pan-os, globalprotect, kev, vpn, security]
+evidenceRefs:
+  - "https://nvd.nist.gov/vuln/detail/CVE-2026-0257"
+  - "https://security.paloaltonetworks.com/CVE-2026-0257"
+  - "https://docs.paloaltonetworks.com/ngfw/help/11-1/globalprotect/network-globalprotect-portals/globalprotect-portals-agent-configuration-tab/globalprotect-portals-agent-authentication-tab"
+  - "https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-upgrade/upgrade-pan-os/pan-os-upgrade-checklist"
+  - "https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-0257"
+relatedContent: ["service:network-security", "insight:secure-access-selection"]
+---
+
+## 한눈에 보기
+
+- **영향 조건:** GlobalProtect 포털 또는 게이트웨이에서 인증 우회 쿠키를 생성하거나 수락하는 구성
+- **우선 판단:** PAN-OS 버전보다 먼저, 내부·외부 포털과 게이트웨이의 쿠키 사용 경계를 한 묶음으로 파악
+- **변경 영향:** 고정 버전 적용 후 사용자는 한 번 재인증해야 함
+- **임시 완화:** 인증 우회 비활성화 또는 전용 인증서 분리. 혼합 버전 호환성 설정은 종료 시점이 있는 전환 조치로만 사용
+
+## 왜 지금 확인해야 하나
+
+`CVE-2026-0257`은 CISA KEV에 등재되어 있으며, NVD는 CISA의 required action을 벤더 완화 적용 또는 제품 사용 중단으로 안내합니다. 이 글의 핵심은 모든 PAN-OS 장비를 같은 방식으로 취급하는 것이 아닙니다. 인증 우회 쿠키를 실제로 쓰는 GlobalProtect 경계를 식별하고, 그 경계 안의 포털과 게이트웨이를 함께 전환하는 것입니다.
+
+## 영향 조건: 먼저 확인할 3가지
+
+### 1. 인증 우회 쿠키가 켜져 있는가
+
+Palo Alto Networks 문서에서 인증 우회는 사용자가 처음 인증한 뒤 유효한 암호화 쿠키로 다시 인증하도록 하는 구성입니다. 포털과 게이트웨이 각각에서 쿠키를 **생성**하거나 **수락**하는지 확인합니다. 이 구성이 없다면 이 글에서 다루는 쿠키 전환 위험은 동일하게 적용되지 않습니다.
+
+### 2. 쿠키를 주고받는 경계가 어디까지인가
+
+내부·외부 GlobalProtect 포털과 게이트웨이, 하이브리드 Prisma Access 연동을 하나의 흐름으로 봅니다. 벤더는 인증 우회 쿠키 환경에서 모든 관련 포털과 게이트웨이를 고정 버전으로 올려야 부분 적용에 따른 호환성 문제를 피할 수 있다고 안내합니다.
+
+### 3. 쿠키용 인증서가 분리돼 있는가
+
+벤더의 완화 지침은 인증 우회 쿠키에 전용 인증서를 새로 발급해 사용하고, 포털·게이트웨이 인증서나 다른 기능과 재사용하지 말 것을 권고합니다. 기존 인증서를 다른 용도로 썼다면 제거 후 재사용하는 방식도 허용하지 않습니다.
+
+## 지금 결정할 것
+
+| 결정 항목 | 확인 기준 | 결정 결과 |
+| --- | --- | --- |
+| 전환 범위 | 쿠키를 생성·수락하는 포털, 게이트웨이, 하이브리드 구간 | 같은 변경 창에 둘 구성의 목록 |
+| 고정 버전 | 현재 PAN-OS와 벤더 advisory의 영향·고정 버전 표 | 목표 버전과 업그레이드 경로 |
+| 사용자 영향 | 재인증 대상, GlobalProtect 앱 최소 버전, 헬프데스크 대응 | 공지·지원·롤백 준비 항목 |
+| 임시 완화 | 즉시 전환이 불가능한 구간과 인증서 분리 가능 여부 | 완화 방식과 해제 일시 |
+
+## 전환 원칙
+
+### 패치는 쿠키 흐름 단위로 묶습니다
+
+전환 범위는 장비 위치가 아니라 쿠키 호환성으로 정합니다. 벤더 advisory는 내부·외부 포털과 게이트웨이를 함께 업그레이드하도록 안내하며, 하이브리드 Prisma Access 환경에서는 온프레미스 NGFW도 고정 버전으로 올려야 한다고 명시합니다.
+
+### 재인증은 예상된 운영 이벤트로 처리합니다
+
+고정 버전 적용 시 더 안전한 방식으로 쿠키가 다시 생성되므로, 기존 쿠키가 유효해도 사용자는 한 번 재인증해야 합니다. 변경 공지, VPN 접속 안내, 헬프데스크 응답 문구를 패치 계획에 포함합니다.
+
+### 임시 호환성 설정에는 해제 조건이 필요합니다
+
+혼합 버전 전환 중에는 벤더가 strict cookie HMAC validation을 일시적으로 끄는 절차를 제시합니다. 이는 인증 실패를 줄이기 위한 전환 조치일 뿐입니다. 관련 구성의 고정 버전 적용 완료와 validation 재활성화 시점을 변경 기록에 함께 남깁니다.
+
+## 실행 체크리스트
+
+1. 포털과 게이트웨이에서 인증 우회 쿠키의 생성·수락 여부와 유효기간을 기록합니다.
+2. 내부·외부·하이브리드 구간을 포함해 쿠키를 공유하는 구성 목록을 만듭니다.
+3. 현재 PAN-OS와 advisory의 고정 버전을 대조하고, 중간 feature release를 건너뛸 수 없는 업그레이드 경로를 확인합니다.
+4. GlobalProtect 앱 최소 버전과 변경 후 재인증 대상 사용자군을 확인합니다.
+5. 인증 우회 쿠키 전용 인증서의 신규 발급·보관·교체 책임을 지정합니다.
+6. 혼합 버전이 불가피하면 임시 호환성 설정의 적용 구간, 해제 조건, 만료 시각을 기록합니다.
+7. 전환 후에는 포털·게이트웨이별 쿠키 동작, 재인증, 예외 정책 잔존 여부를 점검합니다.
+
+## 이 이슈를 BLRO가 다루는 방식
+
+관련 서비스: [네트워크와 보안](/Users/jmpark/Documents/blro-website/content/services/ko/network-security.mdx)
+
+- **진단 범위:** 원격 사용자부터 포털·게이트웨이·IdP·헬프데스크까지의 인증 흐름과 예외 정책을 현황화합니다.
+- **의사결정 산출물:** 쿠키 사용 경계, 전환 묶음, 사용자 영향, 임시 완화 종료 조건을 담은 변경 판단표를 만듭니다.
+- **운영 검증:** 실제 원격접속과 장애 시나리오로 전환 절차와 초기 대응 기준을 확인합니다. 차단율, 성능, 무중단 전환은 사전 보장하지 않습니다.
+
+## 제외 범위
+
+- 취약점 악용 코드 분석, 위협 행위자 식별, 고객별 침해사고 조사
+- 타 원격접속 제품과의 기능·성능·가격 비교
+- 고객별 유지보수 계약, 다운타임, 호환성 또는 보안 효과 보장
+- 비공개 주소 체계, 인증서 자산 목록, 인증 예외 목록의 공개
+
+## 출처와 확인 날짜
+
+- NVD `CVE-2026-0257`: [https://nvd.nist.gov/vuln/detail/CVE-2026-0257](https://nvd.nist.gov/vuln/detail/CVE-2026-0257) (확인일: 2026-07-15)
+- Palo Alto Networks advisory: [https://security.paloaltonetworks.com/CVE-2026-0257](https://security.paloaltonetworks.com/CVE-2026-0257) (확인일: 2026-07-15)
+- Palo Alto Networks, GlobalProtect authentication override 설정: [https://docs.paloaltonetworks.com/ngfw/help/11-1/globalprotect/network-globalprotect-portals/globalprotect-portals-agent-configuration-tab/globalprotect-portals-agent-authentication-tab](https://docs.paloaltonetworks.com/ngfw/help/11-1/globalprotect/network-globalprotect-portals/globalprotect-portals-agent-configuration-tab/globalprotect-portals-agent-authentication-tab) (확인일: 2026-07-15)
+- Palo Alto Networks, PAN-OS upgrade checklist: [https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-upgrade/upgrade-pan-os/pan-os-upgrade-checklist](https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-upgrade/upgrade-pan-os/pan-os-upgrade-checklist) (확인일: 2026-07-15)
+- CISA KEV catalog entry: [https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-0257](https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-0257) (확인일: 2026-07-15)

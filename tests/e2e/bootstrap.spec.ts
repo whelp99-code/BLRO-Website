@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test"
-
-const HOME_HEADING = "글로벌 기술을 한국 시장의 실제 사업으로 연결합니다."
+import { HOME_HEADING } from "@/app/page"
 
 test("serves the accessible homepage without browser errors", async ({ context, page }) => {
   // Given
@@ -23,7 +22,7 @@ test("serves the accessible homepage without browser errors", async ({ context, 
   const faviconPage = await context.newPage()
   const faviconResponse = await faviconPage.goto("/favicon.ico", { waitUntil: "load" })
   expect(faviconResponse?.status()).toBe(200)
-  expect(faviconResponse?.headers()["content-type"]).toContain("image/x-icon")
+  expect(faviconResponse?.headers()["content-type"]).toMatch(/^image\/(x-icon|vnd\.microsoft\.icon)$/u)
   await faviconPage.close()
 
   await page.evaluate(

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title description">
+  <title id="title">BLRO 전환 중심 홈 히어로 예상 화면</title>
+  <desc id="description">기업 고객의 전환 진단을 주요 행동으로 둔 BLRO 홈페이지 와이어프레임</desc>
+  <rect width="1440" height="900" fill="#f6f8fc"/>
+  <rect y="0" width="1440" height="72" fill="#ffffff"/>
+  <path d="M0 72H1440" stroke="#dce3ec"/>
+  <text x="84" y="45" fill="#101d33" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="3">BLRO</text>
+  <rect x="171" y="27" width="9" height="9" rx="2" fill="#40b5db"/>
+  <g fill="#536176" font-family="Arial, sans-serif" font-size="15" font-weight="600">
+    <text x="640" y="43">Solutions</text><text x="756" y="43">AI &amp; Automation</text><text x="925" y="43">Partner Business</text><text x="1097" y="43">Projects</text><text x="1193" y="43">Insights</text>
+  </g>
+  <rect x="1281" y="16" width="92" height="40" rx="7" fill="#245cf4"/>
+  <text x="1302" y="42" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="700">Contact</text>
+  <text x="84" y="196" fill="#34518d" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="2">BLRO · TRANSITION DIAGNOSTIC</text>
+  <g fill="#101d33" font-family="Arial, sans-serif" font-size="53" font-weight="700">
+    <text x="84" y="282">가상화·보안 전환,</text><text x="84" y="347">무엇부터 검증할지</text><text x="84" y="412">먼저 정리합니다.</text>
+  </g>
+  <text x="84" y="477" fill="#3d4a5e" font-family="Arial, sans-serif" font-size="20">현재 환경의 업무 영향·보안 조건·전환 위험을 기준으로</text>
+  <text x="84" y="507" fill="#3d4a5e" font-family="Arial, sans-serif" font-size="20">첫 번째 검증 범위와 다음 결정을 함께 설계합니다.</text>
+  <rect x="84" y="555" width="214" height="56" rx="7" fill="#245cf4"/>
+  <text x="111" y="590" fill="#ffffff" font-family="Arial, sans-serif" font-size="17" font-weight="700">전환 진단 범위 확인  ↗</text>
+  <text x="84" y="651" fill="#637187" font-family="Arial, sans-serif" font-size="15">파트너 공동사업</text>
+  <text x="226" y="651" fill="#637187" font-family="Arial, sans-serif" font-size="15">·</text>
+  <text x="248" y="651" fill="#637187" font-family="Arial, sans-serif" font-size="15">한국 시장 진출</text>
+  <rect x="760" y="158" width="560" height="534" rx="4" fill="#ffffff" stroke="#cfd8e6" stroke-width="2"/>
+  <rect x="760" y="158" width="560" height="74" fill="#101d33"/>
+  <text x="792" y="202" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1">첫 상담에서 함께 정리하는 것</text>
+  <g font-family="Arial, sans-serif">
+    <text x="802" y="291" fill="#245cf4" font-size="14" font-weight="700">01</text><text x="852" y="291" fill="#101d33" font-size="22" font-weight="700">우선 검증할 워크로드</text><text x="852" y="322" fill="#56657a" font-size="16">업무 영향과 허용 중단 시간을 기준으로 분류</text>
+    <path d="M802 352H1278" stroke="#dce3ec"/>
+    <text x="802" y="412" fill="#245cf4" font-size="14" font-weight="700">02</text><text x="852" y="412" fill="#101d33" font-size="22" font-weight="700">반드시 지켜야 할 조건</text><text x="852" y="443" fill="#56657a" font-size="16">보안 경계, 데이터 보호, 규정과 운영 제약 확인</text>
+    <path d="M802 473H1278" stroke="#dce3ec"/>
+    <text x="802" y="533" fill="#245cf4" font-size="14" font-weight="700">03</text><text x="852" y="533" fill="#101d33" font-size="22" font-weight="700">다음 검증과 의사결정</text><text x="852" y="564" fill="#56657a" font-size="16">PoC, 전환 리허설 또는 추가 진단의 범위 합의</text>
+  </g>
+  <rect x="802" y="609" width="476" height="48" rx="4" fill="#eef4ff"/>
+  <text x="827" y="640" fill="#34518d" font-family="Arial, sans-serif" font-size="15" font-weight="700">제품 추천보다 판단 기준과 검증 범위를 먼저 정리합니다.</text>
+  <text x="84" y="791" fill="#34518d" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="2">WHAT YOU WILL VERIFY</text>
+  <text x="84" y="844" fill="#101d33" font-family="Arial, sans-serif" font-size="33" font-weight="700">도입 전, 운영 가능한 선택인지 확인하는 네 가지 기준</text>
+  <path d="M84 873H1320" stroke="#dce3ec"/>
+</svg>

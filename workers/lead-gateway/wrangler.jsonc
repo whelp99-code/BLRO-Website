@@ -1,0 +1,44 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "blro-lead-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "INQUIRY_INTAKE_ENABLED": "true",
+    "ALLOWED_ORIGINS": "https://blro.co.kr,https://www.blro.co.kr,https://preview.blro-website.pages.dev"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "blro-leads",
+      "database_id": "c11910c7-4037-498e-bf09-200250b6c917",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "LEAD_MAGNETS",
+      "bucket_name": "blro-lead-magnets"
+    }
+  ],
+  "queues": {
+    "producers": [
+      { "binding": "LEAD_QUEUE", "queue": "blro-lead-delivery" }
+    ],
+    "consumers": [
+      {
+        "queue": "blro-lead-delivery",
+        "max_batch_size": 5,
+        "max_retries": 3,
+        "dead_letter_queue": "blro-lead-delivery-dlq"
+      }
+    ]
+  },
+  "triggers": { "crons": ["0 18 * * *"] },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

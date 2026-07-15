@@ -7,7 +7,7 @@ import { Hero } from "@/components/marketing/hero"
 import { ProcessTimeline } from "@/components/marketing/process-timeline"
 import { createContentIndex } from "@/lib/content"
 
-export const HOME_HEADING = "글로벌 기술을 한국 시장의 실제 사업으로 연결합니다."
+export const HOME_HEADING = "가상화·보안 전환, 무엇부터 검증할지 먼저 정리합니다."
 
 export default async function Home() {
   const content = await createContentIndex({

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  footerBusinessRoutes,
   footerInquiries,
   getBreadcrumbs,
   getLocaleCounterpart,
@@ -8,16 +9,15 @@ import {
 } from "@/lib/navigation"
 
 describe("navigation registry", () => {
-  it("defines the exact primary order and only two megamenus", () => {
+  it("exposes only launch-ready primary routes and one solution megamenu", () => {
     // Given
     const expectedLabels = [
-      "BLRO",
       "Solutions",
       "AI & Automation",
-      "Partner Business",
       "Projects",
       "Insights",
-      "Contact",
+      "Partner Business",
+      "전환 진단 범위 확인",
     ]
 
     // When
@@ -25,7 +25,18 @@ describe("navigation registry", () => {
 
     // Then
     expect(primaryNavigation.map((item) => item.label)).toEqual(expectedLabels)
-    expect(megamenus.map((item) => item.label)).toEqual(["Solutions", "Partner Business"])
+    expect(megamenus.map((item) => item.label)).toEqual(["Solutions"])
+  })
+
+  it("keeps company information in the footer without diluting the primary journey", () => {
+    expect(footerBusinessRoutes.map((item) => item.label)).toEqual([
+      "BLRO",
+      "Solutions",
+      "AI & Automation",
+      "Projects",
+      "Insights",
+      "Partner Business",
+    ])
   })
 
   it("matches only a route or its true descendants", () => {

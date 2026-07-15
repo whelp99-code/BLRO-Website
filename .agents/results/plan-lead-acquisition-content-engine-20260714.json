@@ -1,0 +1,187 @@
+{
+  "project_name": "BLRO 검색·콘텐츠·상담 전환 엔진",
+  "description": "HCI, 가상화, VDI, 보안, DR, SASE의 고의도 검색 수요를 BLRO 사이트로 연결하고 상담·영업 피드백까지 추적하는 90일 실행 계획.",
+  "outcome": "채널별 유입, 콘텐츠 소비, 전환 진단 요청, 유효 미팅을 하나의 측정 가능한 퍼널로 운영한다.",
+  "scope": {
+    "included": [
+      "기술 SEO와 검색도구 등록",
+      "상담 폼 또는 예약 전환 경로",
+      "실무 인사이트의 블로그·LinkedIn·YouTube·소셜 재활용 체계",
+      "분석 이벤트와 주간 영업 피드백 루프"
+    ],
+    "excluded": [
+      "광고 집행과 예산 확정",
+      "고객명·성과·벤더 우위의 미승인 공개",
+      "리드 수나 매출 성과의 사전 보장"
+    ]
+  },
+  "architecture_decisions": [
+    {
+      "decision": "웹사이트를 모든 콘텐츠의 원문과 전환 목적지로 둔다.",
+      "rationale": "외부 채널은 발견과 신뢰 형성에 쓰고, 고객 데이터·검색 자산·전환 측정은 BLRO가 통제하는 사이트에 축적한다.",
+      "alternatives_considered": ["네이버 블로그를 주 채널로 운영", "소셜 채널별 독립 콘텐츠 운영"]
+    },
+    {
+      "decision": "매일 2건의 리서치는 초안 풀로 유지하고, 공개는 주 2~3건의 승인 원고로 제한한다.",
+      "rationale": "대량 게시보다 독창적 판단 기준과 운영 경험이 검색 신뢰와 상담 품질에 유리하다.",
+      "alternatives_considered": ["모든 초안을 즉시 공개", "월 1회 장문 보고서만 발행"]
+    },
+    {
+      "decision": "첫 전환 오퍼는 무료 기술진단이 아니라 범위가 명확한 전환 진단 상담과 체크리스트 다운로드로 시작한다.",
+      "rationale": "고의도 고객은 상담을, 초기 탐색 고객은 자료 제공을 선택할 수 있어 리드 품질을 분리할 수 있다.",
+      "alternatives_considered": ["일반 문의 폼만 제공", "즉시 데모 예약만 제공"]
+    }
+  ],
+  "milestones": [
+    {"id": "M1", "name": "측정 가능한 사이트", "target": "1~2주", "exit": "검색 등록·색인 기준·전환 이벤트가 작동"},
+    {"id": "M2", "name": "상담 전환 경로", "target": "3~4주", "exit": "고객이 상담 또는 체크리스트를 선택하고 안전하게 제출"},
+    {"id": "M3", "name": "콘텐츠 재활용 운영", "target": "5~8주", "exit": "원문 1건이 채널별 형식으로 재활용되고 성과가 추적"},
+    {"id": "M4", "name": "검증·확장", "target": "9~12주", "exit": "검색어·CTA·유효 미팅 데이터를 기준으로 다음 분기 우선순위 결정"}
+  ],
+  "tasks": [
+    {
+      "id": "P1-01",
+      "agent": "frontend",
+      "title": "운영 도메인과 기술 SEO 기반 확정",
+      "description": "NEXT_PUBLIC_SITE_URL을 실제 도메인으로 전환하고 robots.txt, sitemap.xml, canonical, Open Graph, Organization/WebSite/Service/Article JSON-LD를 실제 공개 정보 범위에서 구현한다.",
+      "priority": 1,
+      "dependencies": [],
+      "estimated_complexity": "medium",
+      "acceptance_criteria": ["운영 도메인 기준 절대 canonical이 모든 색인 페이지에 존재", "robots.txt와 sitemap.xml이 배포 URL에서 200 응답", "홈·서비스·인사이트의 구조화 데이터가 실제 화면과 일치", "preview·draft·문의 성공 화면은 noindex"],
+      "artifacts_expected": ["robots.ts", "sitemap.ts", "metadata tests", "structured-data tests"],
+      "scope": ["app/", "components/", "tests/"]
+    },
+    {
+      "id": "P1-02",
+      "agent": "operations",
+      "title": "Google·네이버 검색도구 등록과 기준선 측정",
+      "description": "Google Search Console과 네이버 서치어드바이저에 운영 도메인을 등록하고 사이트맵을 제출한다. 브랜드·솔루션 키워드의 초기 노출·클릭·색인 상태를 기록한다.",
+      "priority": 2,
+      "dependencies": ["P1-01", "운영 도메인 소유자 승인"],
+      "estimated_complexity": "low",
+      "acceptance_criteria": ["두 검색도구의 소유권 인증 완료", "sitemap 제출 성공", "초기 검색 성과 대시보드 또는 기준선 문서 저장", "색인 제외·크롤링 오류의 담당자와 해결 기한 정의"],
+      "artifacts_expected": ["검색 등록 기록", "초기 SEO 기준선"],
+      "scope": ["external-search-console", "external-naver-search-advisor"]
+    },
+    {
+      "id": "P1-03",
+      "agent": "analytics",
+      "title": "동의 기반 퍼널 측정 설계",
+      "description": "유입 채널, 검색 랜딩 페이지, CTA 클릭, 체크리스트 요청, 상담 제출, 유효 미팅, 제안 전환을 연결하는 이벤트 사전과 대시보드 기준을 만든다.",
+      "priority": 1,
+      "dependencies": ["개인정보 처리방침 검토"],
+      "estimated_complexity": "medium",
+      "acceptance_criteria": ["이벤트 이름·속성·목적·보존기간이 문서화", "동의 전 비필수 분석은 실행되지 않음", "UTM 규칙이 채널 전반에 동일", "주간 보고에서 콘텐츠→상담 전환을 확인 가능"],
+      "artifacts_expected": ["measurement-plan.md", "UTM convention", "analytics dashboard"],
+      "scope": ["app/", "lib/", "docs/"]
+    },
+    {
+      "id": "P2-01",
+      "agent": "backend",
+      "title": "안전한 전환 진단 상담 접수 API",
+      "description": "회사·담당자·업무 이메일·문의 유형·현재 환경·문의 내용·동의를 수집하고 Slack/CRM으로 전달하는 서버 경로를 만든다.",
+      "priority": 2,
+      "dependencies": ["P1-03", "수신 CRM 또는 Slack 담당자 결정", "개인정보 처리방침 승인"],
+      "estimated_complexity": "high",
+      "acceptance_criteria": ["서버 측 스키마 검증, Origin 검증, honeypot, rate limit, PII 마스킹 적용", "전달 실패가 사용자에게 명확히 안내되고 재시도 가능", "원본 문의와 접근 토큰이 클라이언트 로그에 노출되지 않음", "보관·파기·담당자 정책이 처리방침과 일치"],
+      "artifacts_expected": ["POST /api/inquiries", "delivery adapter", "security tests"],
+      "scope": ["app/api/", "lib/", "tests/"]
+    },
+    {
+      "id": "P2-02",
+      "agent": "frontend",
+      "title": "상담·체크리스트 전환 UI",
+      "description": "홈과 5개 솔루션 페이지의 CTA를 실제 상담 폼으로 연결하고, HCI 전환·VDI·DR 중 하나의 체크리스트 다운로드 경로를 제공한다.",
+      "priority": 3,
+      "dependencies": ["P2-01", "P1-03", "다운로드 자산 승인"],
+      "estimated_complexity": "high",
+      "acceptance_criteria": ["각 솔루션 CTA가 해당 문의 유형과 주제를 미리 채운 폼으로 연결", "필수 항목·동의·오류·성공 상태가 접근성 기준 충족", "제출·다운로드 CTA 이벤트가 측정", "모바일 320px와 키보드만으로 전체 흐름 완료"],
+      "artifacts_expected": ["contact route", "lead magnet delivery", "e2e conversion tests"],
+      "scope": ["app/", "components/", "tests/"]
+    },
+    {
+      "id": "P3-01",
+      "agent": "content-strategy",
+      "title": "검색 의도 기반 콘텐츠 클러스터와 편집 캘린더",
+      "description": "VMware 전환/HCI, VDI, 보안 운영, DR, SASE의 상업·문제 해결·비교·검증 의도를 분류하고 12주 편집 캘린더를 만든다.",
+      "priority": 2,
+      "dependencies": ["P1-01", "영업 우선 산업·고객 세그먼트 결정"],
+      "estimated_complexity": "medium",
+      "acceptance_criteria": ["주제별 핵심 서비스 허브와 최소 4개 지원 인사이트 연결", "각 원고에 독자 질문, BLRO 관점, 출처, CTA 지정", "비공개 VMware–Nutanix 비교의 공개 기준 분리", "주 2~3건 공개 한도와 편집 승인자 지정"],
+      "artifacts_expected": ["keyword-intent map", "12-week editorial calendar", "content brief template"],
+      "scope": ["content/", ".agents/results/"]
+    },
+    {
+      "id": "P3-02",
+      "agent": "content-operations",
+      "title": "원문 1건의 채널별 재활용 패키지",
+      "description": "승인된 사이트 인사이트 1건을 네이버 블로그 요약, LinkedIn 의사결정 포스트, YouTube 3~7분 스크립트, Threads·Instagram 짧은 포맷으로 변환하는 템플릿과 승인 흐름을 만든다.",
+      "priority": 3,
+      "dependencies": ["P3-01", "채널 계정·브랜드 가이드 접근", "P1-03"],
+      "estimated_complexity": "medium",
+      "acceptance_criteria": ["원문 URL·CTA·UTM이 모든 외부 포스트에 포함", "채널별 문체·길이·시각 자산 규격 정의", "기술·보안·벤더 claim은 출처와 승인 상태 확인", "외부 게시 전 검토자와 게시 담당자 명확화"],
+      "artifacts_expected": ["repurposing playbook", "channel templates", "approval checklist"],
+      "scope": ["content/", "docs/", ".agents/results/"]
+    },
+    {
+      "id": "P3-03",
+      "agent": "marketing",
+      "title": "90일 채널 파일럿 운영",
+      "description": "우선순위 채널을 웹사이트·네이버·LinkedIn·YouTube로 제한해 12주 동안 콘텐츠 공개와 재활용을 운영한다. Threads와 Instagram은 핵심 자산의 짧은 확산 포맷으로만 사용한다.",
+      "priority": 4,
+      "dependencies": ["P2-02", "P3-02"],
+      "estimated_complexity": "high",
+      "acceptance_criteria": ["매주 승인 원문 2~3건, LinkedIn 2건, 네이버 요약 2건, 격주 YouTube 1건 운영", "모든 링크에 UTM 적용", "게시 기록·주제·CTA·성과가 한 곳에 기록", "2주마다 저성과 주제·채널을 중단 또는 수정"],
+      "artifacts_expected": ["publishing log", "channel report", "video backlog"],
+      "scope": ["external-channels", ".agents/results/"]
+    },
+    {
+      "id": "P4-01",
+      "agent": "sales-operations",
+      "title": "콘텐츠 리드의 영업 피드백 루프",
+      "description": "상담 접수 후 리드 품질, 미팅 여부, 기회 생성, 실격 사유를 콘텐츠·채널·CTA별로 주간 회고한다.",
+      "priority": 4,
+      "dependencies": ["P1-03", "P2-01", "P3-03"],
+      "estimated_complexity": "medium",
+      "acceptance_criteria": ["영업이 유효·보류·부적합 리드를 공통 기준으로 분류", "주간 회의에서 상위 유입 주제와 유효 미팅을 함께 검토", "콘텐츠 주제·CTA 개선이 다음 2주 운영 계획에 반영", "월간 리포트가 리드 수뿐 아니라 유효 미팅·기회 전환을 표시"],
+      "artifacts_expected": ["lead-quality rubric", "weekly growth review", "monthly funnel report"],
+      "scope": ["crm", "analytics", ".agents/results/"]
+    }
+  ],
+  "api_contracts": [
+    {
+      "endpoint": "/api/inquiries",
+      "method": "POST",
+      "request": {"company": "string", "name": "string", "workEmail": "email", "topic": "hci|vdi|security|sase|dr|other", "message": "string", "consent": "true", "website": "honeypot optional"},
+      "response": {"requestId": "opaque string", "status": "accepted"},
+      "headers": {"Content-Type": "application/json", "Origin": "allowed production origin"}
+    }
+  ],
+  "non_functional_requirements": {
+    "security": ["PII 최소수집", "서버 검증·rate limit·honeypot·Origin 검증", "Slack/CRM 자격증명은 서버 비밀값으로만 보관"],
+    "performance": ["분석 스크립트는 동의 후 최소 로드", "핵심 랜딩 페이지의 성능 예산 유지"],
+    "scalability": ["콘텐츠와 채널이 늘어도 원문 URL·UTM·승인 상태가 단일 기준으로 추적"]
+  },
+  "testing_strategy": {
+    "unit_tests": "메타데이터, sitemap, 이벤트 payload, 문의 스키마·rate limit",
+    "integration_tests": "색인 가능 페이지/구조화 데이터와 문의 전달 adapter",
+    "e2e_tests": "서비스 페이지→상담 폼→성공 상태와 동의 전 분석 차단",
+    "performance_tests": "운영 URL의 모바일 Lighthouse와 Search Console 색인 상태"
+  },
+  "success_metrics": {
+    "leading": ["색인된 핵심 URL 수", "비브랜드 검색 노출·클릭", "CTA 클릭률", "체크리스트 요청률"],
+    "business": ["상담 제출 수", "유효 미팅률", "제안 전환 수", "콘텐츠/채널별 기회 생성"],
+    "review_cadence": "주간 운영 회고, 월간 경영 검토"
+  },
+  "top_risks": [
+    {"risk": "초안 대량 공개로 신뢰·검색 품질 저하", "treatment": "공개 한도와 사람 검토·출처·승인 게이트 유지"},
+    {"risk": "문의 수집이 개인정보 정책보다 앞섬", "treatment": "수집·보관·수신자 확정 후 폼을 공개"},
+    {"risk": "채널이 늘어 운영이 분산됨", "treatment": "90일간 웹사이트·네이버·LinkedIn·YouTube만 핵심 KPI로 관리"},
+    {"risk": "리드 수만 보고 저품질 유입을 확대", "treatment": "유효 미팅·기회 생성 기준을 영업과 공동 소유"}
+  ],
+  "governance": {
+    "decision_owner": "BLRO 사업 책임자",
+    "approvals_required_for": ["운영 도메인·검색 계정 연결", "개인정보 수집·CRM/Slack 수신", "외부 채널 개설 및 게시", "공개 고객·벤더 claim"],
+    "working_owners": {"website": "BLRO 웹 운영", "content": "기술·마케팅 검토자", "lead_followup": "영업 책임자"}
+  }
+}

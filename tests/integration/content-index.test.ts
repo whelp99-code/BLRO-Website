@@ -19,7 +19,7 @@ afterEach(async () => {
 
 describe("content index", () => {
   it("indexes only deterministic approved and published real content", async () => {
-    const now = new Date("2026-07-13T00:00:00.000Z")
+    const now = new Date("2026-07-14T00:00:00.000Z")
 
     const [index, services, projects, insights] = await Promise.all([
       createContentIndex({ contentRoot: join(process.cwd(), "content"), now }),
@@ -42,7 +42,24 @@ describe("content index", () => {
       "review",
       "review",
     ])
-    expect(insights).toHaveLength(5)
+    expect(insights).toHaveLength(8)
+    expect(index.allRecords.filter((record) => record.type === "insight").map((record) => [
+      record.meta.slug,
+      record.meta.status,
+    ])).toContainEqual(["security-consulting-baseline", "approved"])
+    expect(index.allRecords.filter((record) => record.type === "insight").map((record) => [
+      record.meta.slug,
+      record.meta.status,
+    ])).toContainEqual(["infrastructure-consulting-baseline", "approved"])
+    expect(index.allRecords.filter((record) => record.type === "insight").map((record) => [
+      record.meta.slug,
+      record.meta.status,
+    ])).toContainEqual(["virtualization-hci-migration-guide", "approved"])
+    expect(index.allRecords.filter((record) => record.type === "insight").map((record) => [
+      record.meta.slug,
+      record.meta.status,
+    ])).toContainEqual(["vmware-nutanix-evaluation-matrix", "draft"])
+    expect(index.publicRecords.map((record) => record.meta.slug)).not.toContain("vmware-nutanix-evaluation-matrix")
     const firstInsight = insights.at(0)
     expect(firstInsight).toBeDefined()
     if (firstInsight === undefined) {

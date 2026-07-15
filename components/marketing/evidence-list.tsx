@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
@@ -35,7 +36,7 @@ export function EvidenceList({ insights, services }: EvidenceListProps) {
               {insights.map((insight) => (
                 <article className="evidence-insight" id={`insight-${insight.meta.slug}`} key={insight.meta.contentId}>
                   <Text className="evidence-insight__date" variant="small">{insight.meta.publishedAt}</Text>
-                  <Heading level={3}>{formatSolutionCopy(insight.meta.title, PROTECTED_INSIGHT_TITLE_PHRASES)}</Heading>
+                  <Heading level={3}><Link href={`/insights/${insight.meta.slug}`}>{formatSolutionCopy(insight.meta.title, PROTECTED_INSIGHT_TITLE_PHRASES)}</Link></Heading>
                   <Text>{formatSolutionCopy(insight.meta.summary)}</Text>
                 </article>
               ))}

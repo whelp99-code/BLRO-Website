@@ -1,0 +1,43 @@
+---
+contentId: insight-virtualization-hci-migration-guide
+title: "서버 가상화와 HCI 마이그레이션: 검증 가능한 전환 순서"
+summary: "기존 가상화 환경에서 HCI 또는 대체 운영 모델로 이동할 때 워크로드 분류, PoC, 전환 파동과 롤백 기준을 정리하는 자료"
+slug: virtualization-hci-migration-guide
+locale: ko
+status: approved
+publishedAt: 2026-07-14
+updatedAt: 2026-07-14
+audience: [customer, partner]
+tags: [virtualization, hci, migration]
+evidenceRefs: ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:133-148"]
+claimIds: [claim-insight-virtualization-hci-migration-guide]
+approvalRefs: [approval-insight-virtualization-hci-migration-guide]
+relatedContent: ["service:hci-private-cloud", "service:backup-disaster-recovery", "insight:hci-readiness-checklist"]
+---
+
+## 이 자료의 목적
+
+가상화 마이그레이션은 플랫폼을 바꾸는 일만이 아니라 업무 중단 허용 범위, 데이터 보호, 네트워크 경로와 운영 절차를 함께 바꾸는 전환 작업입니다. 이 자료는 서버 가상화와 HCI 전환을 검증 가능한 단계로 나누기 위한 초안입니다. 공개 전 기술·사업 검토가 필요합니다.
+
+## 1. 전환 전 워크로드 분류
+
+- 업무 중요도와 허용 가능한 중단 시간
+- 운영체제, 애플리케이션, 데이터베이스와 외부 연동 의존성
+- CPU, 메모리, 스토리지 성능과 성장률
+- 백업, 복제, 복구 절차와 실제 복구 검증 기록
+- 라이선스, 유지보수, 변경 창과 담당 운영자
+
+## 2. 목표 구조와 PoC
+
+PoC는 기능 시연이 아니라 실제 전환 판단에 필요한 가설을 검증합니다. 대표 워크로드, 장애도메인, 운영 도구, 백업·복구 연동, 성능 기준과 실패 시 복귀 조건을 사전에 합의합니다.
+
+## 3. 전환 파동
+
+1. 의존성이 낮고 복구가 쉬운 워크로드로 절차를 검증합니다.
+2. 운영팀이 모니터링, 백업, 장애 대응과 롤백을 수행할 수 있는지 확인합니다.
+3. 중요 업무는 업무 소유자 승인, 리허설, 전환 창과 복구 기준을 갖춘 뒤 이동합니다.
+4. 각 파동의 결과를 반영해 다음 파동의 일정·위험·용량 가정을 갱신합니다.
+
+## 4. 완료 기준
+
+전환 완료는 VM이 실행되는 시점이 아닙니다. 업무 검증, 모니터링, 백업·복구, 운영 인수, 문서와 책임자 확인까지 끝난 상태를 완료로 판단합니다.

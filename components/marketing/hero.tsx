@@ -1,19 +1,27 @@
+import { TrackableLink } from "@/components/analytics/trackable-link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
-import { ActionLink } from "@/components/ui/link"
-import { SignalRoute } from "@/components/visual/signal-route"
 
 const COMPANY_DEFINITION =
-  "BLRO는 글로벌 엔터프라이즈 기술을 한국 시장의 실제 사업으로 연결하고, 고객·파트너·벤더가 도입·판매·운영할 수 있는 체계를 만드는 B2B 기술사업 회사다."
+  "BLRO는 인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 운영 판단으로 바꿀 수 있도록, 현황 진단부터 검증·전환·안정화까지 연결하는 기술사업 회사다."
 
 const SUPPORTING_COPY =
-  "BLRO는 엔터프라이즈 인프라·클라우드·보안 기술의 시장 개발부터 파트너 양성, 기술 프리세일즈, PoC, 구축 지원과 AI 업무 자동화까지 제공합니다."
+  "가상화와 HCI, VDI, 데이터 보호, SASE·보안 운영을 검토할 때 제품을 먼저 권하지 않습니다. 업무 영향·보안 경계·전환 위험·운영 역량을 기준으로, 지금 확인할 범위와 다음 결정을 설계합니다."
 
-const ACTIONS = [
-  { href: "#customer-path", label: "기술 프로젝트 상담" },
-  { href: "#partner-path", label: "파트너 공동사업" },
-  { href: "#vendor-path", label: "한국 시장 진출" },
+const DIAGNOSTIC_OUTPUTS = [
+  {
+    title: "우선 검증할 워크로드와 제외 범위",
+    detail: "업무 영향과 허용 중단 시간을 기준으로 현재 판단이 필요한 범위를 구분합니다.",
+  },
+  {
+    title: "운영 조건의 확인 항목",
+    detail: "보안 경계, 데이터 보호, 규정과 기존 운영 제약을 함께 확인합니다.",
+  },
+  {
+    title: "다음 검증과 의사결정",
+    detail: "PoC, 전환 리허설 또는 추가 진단 중 무엇을 먼저 할지 합의합니다.",
+  },
 ] as const
 
 type HeroProps = {
@@ -25,37 +33,60 @@ export function Hero({ heading }: HeroProps) {
     <Section aria-labelledby="home-heading" className="home-hero" spacing="generous" tone="canvas">
       <Container className="home-hero__layout">
         <div className="home-hero__copy">
-          <Eyebrow>BLRO · THE KEY TO THE NEXT CLOUD MARKET</Eyebrow>
+          <Eyebrow>BLRO · INFRASTRUCTURE DECISIONS THAT OPERATE</Eyebrow>
           <Heading aria-label={heading} id="home-heading" level={1} size="display">
-            <span>글로벌 기술을</span>{" "}
-            <span className="blro-nowrap">한국 시장의</span>{" "}
-            <span className="blro-nowrap">실제 사업으로</span>{" "}
-            <span>연결합니다.</span>
+            <span>가상화·보안 전환,</span>{" "}
+            <span className="blro-nowrap">무엇부터 검증할지</span>{" "}
+            <span>먼저 정리합니다.</span>
           </Heading>
           <Text aria-label={COMPANY_DEFINITION} className="home-hero__definition" variant="lead">
-            BLRO는 글로벌 엔터프라이즈 기술을 한국 시장의 실제 사업으로 연결하고,
-            고객·파트너·벤더가 <span className="blro-nowrap">도입·판매·운영</span>할 수 있는 체계를
-            만드는 B2B 기술사업 회사다.
+            인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 <span className="blro-nowrap">운영 판단</span>으로
+            바꿀 수 있도록, 현황 진단부터 검증·전환·안정화까지 연결합니다.
           </Text>
           <Text className="home-hero__support">{SUPPORTING_COPY}</Text>
-          <nav aria-label="홈 주요 문의" className="home-action-row">
-            {ACTIONS.map((action, index) => (
-              <ActionLink
-                className={index === 0 ? "home-action home-action--primary" : "home-action"}
-                href={action.href}
-                key={action.href}
-                variant="standalone"
-              >
-                {action.label}
-                <span aria-hidden="true">↘</span>
-              </ActionLink>
-            ))}
+          <nav aria-label="기업 고객 전환 진단" className="home-action-row">
+            <TrackableLink
+              className="blro-link blro-link--standalone home-action home-action--primary"
+              href="/contact?type=customer-project"
+              properties={{ ctaId: "hero-customer-diagnostic", placement: "hero" }}
+            >
+              전환 진단 범위 확인
+              <span aria-hidden="true">↗</span>
+            </TrackableLink>
+            <TrackableLink
+              className="blro-link home-action"
+              href="/insights/hci-readiness-checklist"
+              properties={{ ctaId: "hero-hci-readiness-checklist", placement: "hero" }}
+            >
+              HCI 전환 체크리스트 보기
+              <span aria-hidden="true">↗</span>
+            </TrackableLink>
+          </nav>
+          <nav aria-label="파트너와 벤더 문의 경로" className="home-hero__secondary-actions">
+            <TrackableLink href="/contact?type=partner-collaboration" properties={{ ctaId: "hero-partner-path", placement: "hero" }}>
+              파트너 공동사업을 검토 중이신가요? <span aria-hidden="true">↗</span>
+            </TrackableLink>
+            <TrackableLink href="/contact?type=vendor-korea-entry" properties={{ ctaId: "hero-vendor-path", placement: "hero" }}>
+              한국 시장 진출을 준비 중이신가요? <span aria-hidden="true">↗</span>
+            </TrackableLink>
           </nav>
         </div>
-        <SignalRoute
-          className="home-hero__route"
-          label="시장과 운영 조건을 분석해 설계, 검증, 실행으로 연결하는 BLRO 수행 흐름"
-        />
+        <section aria-labelledby="diagnostic-output-heading" className="home-diagnostic-output">
+          <Eyebrow>FIRST CONVERSATION OUTPUT</Eyebrow>
+          <Heading id="diagnostic-output-heading" level={2}>첫 상담에서 함께 정리하는 것</Heading>
+          <ol>
+            {DIAGNOSTIC_OUTPUTS.map((output, index) => (
+              <li key={output.title}>
+                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <Heading level={3}>{output.title}</Heading>
+                  <Text>{output.detail}</Text>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <Text className="home-diagnostic-output__note" variant="small">제품 추천보다 판단 기준과 검증 범위를 먼저 정리합니다.</Text>
+        </section>
       </Container>
     </Section>
   )

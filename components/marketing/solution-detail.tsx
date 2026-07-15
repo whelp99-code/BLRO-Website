@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { TrackableLink } from "@/components/analytics/trackable-link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { Container } from "@/components/layout/container"
@@ -120,7 +121,7 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
               <Link
                 aria-label={`관련 인사이트: ${insight.meta.title}`}
                 className="solution-related__link"
-                href={`/#insight-${insight.meta.slug}`}
+                href={`/insights/${insight.meta.slug}`}
                 key={insight.meta.contentId}
               >
                 <span>{insight.meta.publishedAt}</span>
@@ -141,7 +142,9 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
           <Heading id="solution-cta-heading" level={2}>현재 조건에서 검증할 첫 단계를 정리합니다.</Heading>
           <Text variant="inverse">제품 제안보다 먼저 환경, 목표, 제약과 필요한 증거를 확인합니다.</Text>
           <div className="solution-next__actions">
-            <Link className="solution-next__link" href="/#customer-path">기술 프로젝트 상담 <span aria-hidden="true">↗</span></Link>
+            <TrackableLink className="solution-next__link" href="/contact?type=customer-project" properties={{ ctaId: `solution-${solution.meta.slug}-consultation`, placement: "solution-detail" }}>
+              전환 진단 범위 확인 <span aria-hidden="true">↗</span>
+            </TrackableLink>
             <Link className="solution-next__secondary" href="/solutions">다른 솔루션 보기</Link>
           </div>
         </Container>

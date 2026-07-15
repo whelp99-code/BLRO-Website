@@ -52,3 +52,7 @@ The two setup CLIs are interactive and mutate application wiring, so they are de
 ## Planning package
 
 Start with `00_INDEX.md`. The accepted delivery sequence and test gates are defined in `08_PR_PLAN.md`, `09_PR_SUB_DETAIL.md`, and `10_TEST_ACCEPTANCE.md`.
+
+## Business ideas
+
+Customer-value hypotheses, validation status, and next actions are maintained in [`docs/idea-vault/README.md`](docs/idea-vault/README.md). Ideas stay separate from approved website scope until their promotion conditions are met.

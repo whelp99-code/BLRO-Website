@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { SolutionDetail } from "@/components/marketing/solution-detail"
+import { getBreadcrumbs } from "@/lib/navigation"
+import { absoluteUrl, breadcrumbStructuredData, canonicalMetadata } from "@/lib/site"
 import { getRelatedInsights, getSolutionCatalog, SOLUTION_SLUGS } from "@/lib/solutions"
 
 type SolutionPageProps = {
@@ -17,8 +19,12 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
   const solution = catalog.solutions.find((record) => record.meta.slug === slug)
 
   return solution
-    ? { title: `${solution.meta.title} | BLRO Solutions`, description: solution.meta.summary }
-    : { title: "솔루션을 찾을 수 없습니다. | BLRO" }
+    ? {
+        title: `${solution.meta.title} · Solutions`,
+        description: solution.meta.summary,
+        ...canonicalMetadata(`/solutions/${solution.meta.slug}`),
+      }
+    : { title: "솔루션을 찾을 수 없습니다." }
 }
 
 export default async function SolutionPage({ params }: SolutionPageProps) {
@@ -35,13 +41,11 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
     description: solution.meta.summary,
     name: solution.meta.title,
     provider: { "@type": "Organization", name: "BLRO" },
-    url: `/solutions/${solution.meta.slug}`,
+    url: absoluteUrl(`/solutions/${solution.meta.slug}`),
   }
 
-  return (
-    <>
-      <script type="application/ld+json">{JSON.stringify(structuredData).replaceAll("<", "\\u003c")}</script>
-      <SolutionDetail insights={getRelatedInsights(solution, catalog.insights)} solution={solution} />
-    </>
-  )
+  const pathname = `/solutions/${solution.meta.slug}`
+  const structuredDataWithBreadcrumbs = [structuredData, breadcrumbStructuredData(getBreadcrumbs(pathname))]
+
+  return <><script type="application/ld+json">{JSON.stringify(structuredDataWithBreadcrumbs).replaceAll("<", "\\u003c")}</script><SolutionDetail insights={getRelatedInsights(solution, catalog.insights)} solution={solution} /></>
 }

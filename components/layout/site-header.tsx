@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation"
 import { Container } from "@/components/layout/container"
 import { DesktopNav } from "@/components/layout/desktop-nav"
 import { MobileNav } from "@/components/layout/mobile-nav"
-import { publishedRoutes } from "@/lib/navigation"
 
 export function SiteHeader() {
   const pathname = usePathname() ?? "/"
@@ -17,7 +16,6 @@ export function SiteHeader() {
           aria-label="BLRO 홈"
           className="blro-wordmark"
           href="/"
-          prefetch={publishedRoutes.has("/")}
         >
           <span>BLRO</span>
           <span aria-hidden="true" className="blro-wordmark__signal" />

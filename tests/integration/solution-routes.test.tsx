@@ -30,14 +30,14 @@ describe("solution routes", () => {
     const markup = renderToStaticMarkup(page)
 
     // Then
-    expect(metadata.title).toBe("네트워크와 보안 | BLRO Solutions")
+    expect(metadata.title).toBe("네트워크와 보안 · Solutions")
     expect(markup).toContain("검토가 필요한 상황")
     expect(markup).toContain("BLRO의 역할")
     expect(markup).toContain("주요 산출물")
     expect(markup).toContain('"@type":"Service"')
     expect(markup).toContain("ZTNA와 SSL VPN 적용 기준 비교")
-    expect(markup).toContain('href="/#insight-secure-access-selection"')
-    expect(markup).toContain('href="/#customer-path"')
+    expect(markup).toContain('href="/insights/secure-access-selection"')
+    expect(markup).toContain('href="/contact?type=customer-project"')
   })
 
   it("renders a recovery link when the route-local not-found boundary is used", () => {

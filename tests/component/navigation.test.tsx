@@ -13,9 +13,7 @@ describe("desktop navigation", () => {
     const user = userEvent.setup()
     render(<DesktopNav pathname="/solutions/network-security" />)
     const solutions = screen.getByRole("button", { name: "Solutions 메뉴" })
-    const blro = screen.getByRole("link", { name: "BLRO" })
     const automation = screen.getByRole("link", { name: "AI & Automation" })
-    expect(blro).toHaveAttribute("tabindex", "-1")
     expect(solutions).toHaveAttribute("tabindex", "0")
     solutions.focus()
 
@@ -25,14 +23,13 @@ describe("desktop navigation", () => {
     // Then
     expect(automation).toHaveFocus()
     expect(automation).toHaveAttribute("tabindex", "0")
-    expect(blro).toHaveAttribute("tabindex", "-1")
     expect(solutions).toHaveAttribute("aria-current", "page")
 
     // When
     await user.keyboard("{End}")
 
     // Then
-    expect(screen.getByRole("link", { name: "Contact" })).toHaveFocus()
+    expect(screen.getByRole("link", { name: "전환 진단 범위 확인" })).toHaveFocus()
   })
 
   it("enters a megamenu with ArrowDown and escapes from inside it", async () => {
@@ -83,7 +80,7 @@ describe("desktop navigation", () => {
         <button type="button">Outside</button>
       </div>,
     )
-    const trigger = screen.getByRole("button", { name: "Partner Business 메뉴" })
+    const trigger = screen.getByRole("button", { name: "Solutions 메뉴" })
     await user.click(trigger)
 
     // When
@@ -96,13 +93,13 @@ describe("desktop navigation", () => {
     await user.click(trigger)
     view.rerender(
       <div>
-        <DesktopNav pathname="/projects" />
+        <DesktopNav pathname="/insights" />
         <button type="button">Outside</button>
       </div>,
     )
 
     // Then
-    expect(screen.getByRole("button", { name: "Partner Business 메뉴" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Solutions 메뉴" })).toHaveAttribute(
       "aria-expanded",
       "false",
     )
@@ -116,7 +113,7 @@ describe("desktop navigation", () => {
     )
 
     // Then
-    expect(screen.getByRole("button", { name: "Partner Business 메뉴" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Solutions 메뉴" })).toHaveAttribute(
       "aria-expanded",
       "false",
     )
@@ -153,7 +150,7 @@ describe("mobile navigation", () => {
     render(<MobileNav pathname="/" />)
     await user.click(screen.getByRole("button", { name: "메뉴 열기" }))
     const close = screen.getByRole("button", { name: "메뉴 닫기" })
-    const contact = screen.getByRole("link", { name: "Contact" })
+    const contact = screen.getByRole("link", { name: "전환 진단 범위 확인" })
 
     // When
     await user.keyboard("{Shift>}{Tab}{/Shift}")
@@ -250,7 +247,7 @@ describe("route-derived shell components", () => {
     expect(within(footer).getByText("실행 파트너")).toHaveClass("blro-nowrap")
   })
 
-  it("keeps Contact in order while giving it primary CTA hierarchy", () => {
+  it("keeps the diagnostic scope CTA in order with primary hierarchy", () => {
     // Given / When
     render(<DesktopNav pathname="/" />)
 
@@ -258,7 +255,9 @@ describe("route-derived shell components", () => {
     const controls = screen.getByRole("navigation", { name: "주 내비게이션" }).querySelectorAll(
       "[data-primary-control]",
     )
-    expect(controls.item(controls.length - 1)).toHaveTextContent("Contact")
-    expect(screen.getByRole("link", { name: "Contact" })).toHaveClass("blro-nav-cta")
+    expect(controls.item(controls.length - 1)).toHaveTextContent("전환 진단 범위 확인")
+    expect(screen.getByRole("link", { name: "전환 진단 범위 확인" })).toHaveClass(
+      "blro-nav-cta",
+    )
   })
 })

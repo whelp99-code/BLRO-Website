@@ -29,22 +29,24 @@ const solutionChildren = [
   { href: "/solutions/sase-global-connectivity", label: "SASE & Global Connectivity", description: "분산 조직을 위한 안전한 글로벌 연결" },
 ] as const satisfies readonly NavigationChild[]
 
-const partnerChildren = [
-  { href: "/partner-business/partner-program", label: "Partner Program", description: "지속 가능한 파트너 사업 체계" },
-  { href: "/partner-business/presales-support", label: "Presales Support", description: "기회 발굴부터 기술 검증까지" },
-  { href: "/partner-business/joint-business", label: "Joint Business", description: "공동 제안과 시장 실행" },
-  { href: "/partner-business/korea-market-entry", label: "Korea Market Entry", description: "글로벌 벤더의 한국 시장 진입" },
-] as const satisfies readonly NavigationChild[]
-
 export const primaryNavigation = [
-  { href: "/blro", label: "BLRO", children: [] },
   { href: "/solutions", label: "Solutions", children: solutionChildren },
   { href: "/ai-automation", label: "AI & Automation", children: [] },
-  { href: "/partner-business", label: "Partner Business", children: partnerChildren },
   { href: "/projects", label: "Projects", children: [] },
   { href: "/insights", label: "Insights", children: [] },
-  { href: "/contact", label: "Contact", children: [] },
+  { href: "/partner-business", label: "Partner Business", children: [] },
+  { href: "/contact", label: "전환 진단 범위 확인", children: [] },
 ] as const satisfies readonly NavigationItem[]
+
+// 기업 고객의 탐색 흐름은 상단에 집중하고, 회사 소개는 푸터에서만 제공한다.
+export const footerBusinessRoutes = [
+  { href: "/blro", label: "BLRO" },
+  { href: "/solutions", label: "Solutions" },
+  { href: "/ai-automation", label: "AI & Automation" },
+  { href: "/projects", label: "Projects" },
+  { href: "/insights", label: "Insights" },
+  { href: "/partner-business", label: "Partner Business" },
+] as const
 
 export const footerInquiries = [
   { href: "/contact?type=customer-project", label: "고객 프로젝트 상담" },
@@ -59,6 +61,14 @@ export const footerPolicyLinks = [
 
 export const publishedRoutes: ReadonlySet<string> = new Set([
   "/",
+  "/blro",
+  "/ai-automation",
+  "/partner-business",
+  "/projects",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/insights",
   "/solutions",
   ...solutionChildren.map((item) => item.href),
 ])
@@ -67,23 +77,18 @@ const routeLabels = new Map<string, string>([
   ["/", "Home"],
   ["/blro", "BLRO"],
   ["/ai-automation", "AI & Automation"],
+  ["/partner-business", "Partner Business"],
   ["/projects", "Projects"],
   ["/insights", "Insights"],
   ["/contact", "Contact"],
   ["/privacy", "개인정보 처리방침"],
   ["/terms", "이용안내"],
   ["/solutions", "Solutions"],
-  ["/partner-business", "Partner Business"],
   ...solutionChildren.map((item) => [item.href, item.label] as const),
-  ...partnerChildren.map((item) => [item.href, item.label] as const),
 ])
 
 const localePairs = [
   ["/", "/en"],
-  ["/blro", "/en/blro"],
-  ["/partner-business/korea-market-entry", "/en/korea-market-entry"],
-  ["/contact", "/en/contact"],
-  ["/privacy", "/en/privacy"],
 ] as const
 
 function normalizePath(pathname: string) {

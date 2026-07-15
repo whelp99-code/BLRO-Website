@@ -1,8 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
-import { isCurrentRoute, primaryNavigation, publishedRoutes } from "@/lib/navigation"
+import { isCurrentRoute, primaryNavigation } from "@/lib/navigation"
 
 export type MobileNavProps = {
   readonly pathname: string
@@ -94,21 +93,20 @@ export function MobileNav({ pathname }: MobileNavProps) {
             <ul>
                 {primaryNavigation.map((item) => (
                   <li key={item.href}>
-                    <Link
+                    <a
                       aria-current={isCurrentRoute(pathname, item.href) ? "page" : undefined}
                       className={item.href === "/contact" ? "blro-nav-cta" : undefined}
                       href={item.href}
-                      prefetch={publishedRoutes.has(item.href)}
                     >
                       {item.label}
-                    </Link>
+                    </a>
                     {item.children.length > 0 ? (
                       <ul>
                         {item.children.map((child) => (
                           <li key={child.href}>
-                            <Link href={child.href} prefetch={publishedRoutes.has(child.href)}>
+                            <a href={child.href}>
                               {child.label}
-                            </Link>
+                            </a>
                           </li>
                         ))}
                       </ul>

@@ -1,0 +1,50 @@
+{
+  "objective": "Publish at least two evidence-led BLRO practical insights every calendar day without exposing unapproved vendor, customer, pricing, or security-sensitive claims.",
+  "cadence": {
+    "daily": "Two public candidates and one reserve draft",
+    "weekly": "Fourteen published insights, seven reserve drafts, and one portfolio review",
+    "review_sla": "Research completes before the publication day; technical and publication approval complete before public status"
+  },
+  "tasks": [
+    {
+      "id": "DR-01",
+      "title": "Create a research intake and evidence ledger",
+      "priority": 1,
+      "scope": ["content/", "docs/"],
+      "acceptanceCriteria": ["Each candidate has a question, audience, source URLs, access date, claim notes, reviewer, and public-status decision.", "Vendor comparison, pricing, compatibility, incident, and customer data are classified before drafting."],
+      "dependencies": []
+    },
+    {
+      "id": "DR-02",
+      "title": "Define daily topic lanes and a four-week editorial backlog",
+      "priority": 1,
+      "scope": ["content/", "docs/"],
+      "acceptanceCriteria": ["Every business day has two named topics plus a reserve.", "The first four weeks prioritize security consulting, infrastructure consulting, virtualization/HCI migration, and VMware-Nutanix evaluation questions."],
+      "dependencies": []
+    },
+    {
+      "id": "DR-03",
+      "title": "Run the daily deep-research and drafting workflow",
+      "priority": 2,
+      "scope": ["content/"],
+      "acceptanceCriteria": ["Each draft uses at least two primary sources or one primary source plus a clearly labelled field-practice source.", "Each insight states decision context, scope, exclusions, evidence date, and linked BLRO service."],
+      "dependencies": ["DR-01", "DR-02"]
+    },
+    {
+      "id": "DR-04",
+      "title": "Add a publish gate and enforce draft isolation",
+      "priority": 2,
+      "scope": ["content/", "content/_registry/", "tests/"],
+      "acceptanceCriteria": ["Only reviewed and approved MDX enters the public index.", "VMware-Nutanix comparisons stay draft until source, legal, and publication review are complete."],
+      "dependencies": ["DR-01"]
+    },
+    {
+      "id": "DR-05",
+      "title": "Measure and improve the content system weekly",
+      "priority": 3,
+      "scope": ["docs/", "content/"],
+      "acceptanceCriteria": ["Weekly report records published count, backlog, review age, source quality, corrections, and CTA engagement.", "Topics with weak evidence or no practical decision value are retired or rewritten."],
+      "dependencies": ["DR-03", "DR-04"]
+    }
+  ]
+}
