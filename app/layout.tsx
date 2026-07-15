@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: { default: "BLRO | 복잡한 전환을 운영 가능한 선택으로", template: "%s | BLRO" },
   description: siteDescription,
   alternates: { canonical: "/" },
+  verification: {
+    other: {
+      "naver-site-verification": "31a34b84b4e54d714d367bded4b7a007ffea207b",
+    },
+  },
   openGraph: { type: "website", locale: "ko_KR", siteName, title: "BLRO | 복잡한 전환을 운영 가능한 선택으로", description: siteDescription },
   icons: {
     icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
