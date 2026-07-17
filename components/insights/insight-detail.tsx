@@ -12,51 +12,11 @@ type InsightBlock =
   | { readonly type: "paragraph"; readonly value: string }
   | { readonly type: "unordered-list"; readonly values: readonly string[] }
   | { readonly type: "ordered-list"; readonly values: readonly string[] }
-  | { readonly type: "table"; readonly headers: readonly string[]; readonly rows: readonly (readonly string[])[] }
-
-type InlinePart =
-  | { readonly type: "text"; readonly value: string }
-  | { readonly type: "strong"; readonly value: string }
-  | { readonly type: "link"; readonly label: string; readonly href: string }
 
 type InsightSection = {
   readonly heading: string | undefined
   readonly level: 2 | 3
   readonly blocks: readonly InsightBlock[]
-}
-
-function parseTableRow(line: string): readonly string[] | undefined {
-  const trimmed = line.trim()
-  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return undefined
-  return trimmed.slice(1, -1).split("|").map((cell) => cell.trim())
-}
-
-function isTableDivider(line: string): boolean {
-  const cells = parseTableRow(line)
-  return cells !== undefined && cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/u.test(cell))
-}
-
-function parseInlineParts(value: string): readonly InlinePart[] {
-  const parts: InlinePart[] = []
-  const pattern = /(\*\*([^*]+)\*\*)|(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))/gu
-  let cursor = 0
-  for (const match of value.matchAll(pattern)) {
-    if (match.index === undefined) continue
-    if (match.index > cursor) parts.push({ type: "text", value: value.slice(cursor, match.index) })
-    if (match[2] !== undefined) parts.push({ type: "strong", value: match[2] })
-    if (match[4] !== undefined && match[5] !== undefined) parts.push({ type: "link", label: match[4], href: match[5] })
-    cursor = match.index + match[0].length
-  }
-  if (cursor < value.length) parts.push({ type: "text", value: value.slice(cursor) })
-  return parts.length > 0 ? parts : [{ type: "text", value }]
-}
-
-function renderInline(value: string) {
-  return parseInlineParts(value).map((part, index) => {
-    if (part.type === "strong") return <strong key={`${part.value}-${index}`}>{formatSolutionCopy(part.value)}</strong>
-    if (part.type === "link") return <a href={part.href} key={`${part.href}-${index}`} rel="noreferrer" target="_blank">{formatSolutionCopy(part.label)}</a>
-    return <span key={`${part.value}-${index}`}>{formatSolutionCopy(part.value)}</span>
-  })
 }
 
 function parseInsightBody(body: string): readonly InsightSection[] {
@@ -84,26 +44,10 @@ function parseInsightBody(body: string): readonly InsightSection[] {
       ordered = []
     }
 
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
-      const line = lines[lineIndex] ?? ""
+    for (const line of lines) {
       const trimmed = line.trim()
       if (trimmed.length === 0) {
         flush()
-      } else if (parseTableRow(trimmed) !== undefined && isTableDivider(lines[lineIndex + 1] ?? "")) {
-        flush()
-        const headers = parseTableRow(trimmed) ?? []
-        const rows: Array<readonly string[]> = []
-        lineIndex += 2
-        while (lineIndex < lines.length) {
-          const row = parseTableRow(lines[lineIndex] ?? "")
-          if (row === undefined) {
-            lineIndex -= 1
-            break
-          }
-          rows.push(row)
-          lineIndex += 1
-        }
-        blocks.push({ type: "table", headers, rows })
       } else if (trimmed.startsWith("- ")) {
         if (paragraph.length > 0 || ordered.length > 0) flush()
         unordered.push(trimmed.slice(2))
@@ -144,19 +88,11 @@ export function InsightDetail({ insight }: InsightDetailProps) {
           <div className="insight-detail__body">
             {sections.map((section, index) => (
               <section aria-labelledby={section.heading ? `insight-section-${index}` : undefined} key={`${section.heading ?? "intro"}-${index}`}>
-                {section.heading ? <Heading id={`insight-section-${index}`} level={section.level}>{renderInline(section.heading)}</Heading> : null}
+                {section.heading ? <Heading id={`insight-section-${index}`} level={section.level}>{formatSolutionCopy(section.heading)}</Heading> : null}
                 {section.blocks.map((block, blockIndex) => {
-                  if (block.type === "paragraph") return <Text key={blockIndex}>{renderInline(block.value)}</Text>
-                  if (block.type === "table") return (
-                    <div className="insight-detail__table-wrap" key={blockIndex}>
-                      <table className="insight-detail__table">
-                        <thead><tr>{block.headers.map((header) => <th key={header} scope="col">{renderInline(header)}</th>)}</tr></thead>
-                        <tbody>{block.rows.map((row, rowIndex) => <tr key={`${row.join("-")}-${rowIndex}`}>{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`}>{renderInline(cell)}</td>)}</tr>)}</tbody>
-                      </table>
-                    </div>
-                  )
+                  if (block.type === "paragraph") return <Text key={blockIndex}>{formatSolutionCopy(block.value)}</Text>
                   const List = block.type === "ordered-list" ? "ol" : "ul"
-                  return <List key={blockIndex}>{block.values.map((value) => <li key={value}>{renderInline(value)}</li>)}</List>
+                  return <List key={blockIndex}>{block.values.map((value) => <li key={value}>{formatSolutionCopy(value)}</li>)}</List>
                 })}
               </section>
             ))}

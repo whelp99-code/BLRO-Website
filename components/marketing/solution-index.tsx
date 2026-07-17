@@ -3,11 +3,17 @@ import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
 import type { ContentRecord } from "@/lib/content"
-import { audienceLabels, formatSolutionCopy } from "@/lib/solutions"
+import { formatSolutionCopy } from "@/lib/solutions"
 
 type SolutionIndexProps = {
   readonly solutions: readonly ContentRecord[]
 }
+
+const audienceLabels = {
+  customer: "기업 고객",
+  partner: "국내 파트너",
+  vendor: "글로벌 벤더",
+} as const
 
 export function SolutionIndex({ solutions }: SolutionIndexProps) {
   return (

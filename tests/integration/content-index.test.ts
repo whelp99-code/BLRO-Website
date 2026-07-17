@@ -19,7 +19,7 @@ afterEach(async () => {
 
 describe("content index", () => {
   it("indexes only deterministic approved and published real content", async () => {
-    const now = new Date("2026-07-15T00:00:00.000Z")
+    const now = new Date("2026-07-14T00:00:00.000Z")
 
     const [index, services, projects, insights] = await Promise.all([
       createContentIndex({ contentRoot: join(process.cwd(), "content"), now }),

@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test"
 
 const SOLUTIONS = [
-  { breadcrumb: "HCI & Private Cloud", insight: "HCI 도입 체크리스트: 노드 수보다 먼저 확인할 운영 조건", insightSlug: "hci-readiness-checklist", slug: "hci-private-cloud", title: "HCI와 프라이빗 클라우드" },
-  { breadcrumb: "VDI & Digital Workspace", insight: "VDI 용량 산정: 사용자 수보다 피크 세션과 업무 패턴을 측정해야 하는 이유", insightSlug: "vdi-capacity-planning", slug: "vdi-digital-workspace", title: "VDI와 디지털 워크스페이스" },
-  { breadcrumb: "Backup & Disaster Recovery", insight: "RPO·RTO를 숫자로 정하기 전에: 업무 복구 순서부터 합의하는 방법", insightSlug: "recovery-objectives-guide", slug: "backup-disaster-recovery", title: "백업과 재해복구" },
-  { breadcrumb: "Network Security", insight: "ZTNA와 SSL VPN: 제품 비교보다 먼저 확인할 접근 경로 5가지", insightSlug: "secure-access-selection", slug: "network-security", title: "네트워크와 보안" },
-  { breadcrumb: "SASE & Global Connectivity", insight: "SASE와 SD-WAN: 해외지사에서 무엇을 각각 검증해야 하는가", insightSlug: "sase-sdwan-roles", slug: "sase-global-connectivity", title: "SASE와 글로벌 연결" },
+  { breadcrumb: "HCI & Private Cloud", insight: "HCI 도입 전 확인할 운영 기준", insightSlug: "hci-readiness-checklist", slug: "hci-private-cloud", title: "HCI와 프라이빗 클라우드" },
+  { breadcrumb: "VDI & Digital Workspace", insight: "VDI 사용자 유형별 자원 산정", insightSlug: "vdi-capacity-planning", slug: "vdi-digital-workspace", title: "VDI와 디지털 워크스페이스" },
+  { breadcrumb: "Backup & Disaster Recovery", insight: "RPO와 RTO를 업무 기준으로 합의하는 방법", insightSlug: "recovery-objectives-guide", slug: "backup-disaster-recovery", title: "백업과 재해복구" },
+  { breadcrumb: "Network Security", insight: "ZTNA와 SSL VPN 적용 기준 비교", insightSlug: "secure-access-selection", slug: "network-security", title: "네트워크와 보안" },
+  { breadcrumb: "SASE & Global Connectivity", insight: "해외지사에서 SASE와 SD-WAN의 역할", insightSlug: "sase-sdwan-roles", slug: "sase-global-connectivity", title: "SASE와 글로벌 연결" },
 ] as const
 
 function normalizeDisplayText(value: string): string {

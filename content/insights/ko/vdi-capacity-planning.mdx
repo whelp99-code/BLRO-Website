@@ -1,50 +1,21 @@
 ---
 contentId: insight-vdi-capacity-planning
-title: "VDI 용량 산정: 사용자 수보다 피크 세션과 업무 패턴을 측정해야 하는 이유"
-summary: "VDI 자원을 사용자군, 애플리케이션, 로그인 피크, 프로필과 장애 시 최소 서비스 기준으로 산정하는 방법"
+title: "VDI 사용자 유형별 자원 산정"
+summary: "동시접속자 수를 넘어 애플리케이션과 사용 패턴으로 자원 가정을 세우는 방법"
 slug: vdi-capacity-planning
 locale: ko
 status: approved
 publishedAt: 2026-07-02
-updatedAt: 2026-07-15
+updatedAt: 2026-07-12
 audience: [customer, partner]
 tags: [vdi, capacity, workspace]
 evidenceRefs: ["05_CONTENT_STRATEGY.md:133-148"]
 claimIds: [claim-insight-vdi-capacity]
 approvalRefs: [approval-insight-vdi-capacity]
-relatedContent: ["service:vdi-digital-workspace", "insight:hci-readiness-checklist", "insight:infrastructure-consulting-baseline"]
+relatedContent: ["service:vdi-digital-workspace"]
 ---
 
-VDI 용량은 전체 사용자 수로 산정하면 실제 업무 경험과 비용을 모두 놓치기 쉽습니다. 중요한 것은 **어떤 사용자가, 어느 시간에, 어떤 애플리케이션을 동시에 쓰는지**와 장애 시 어느 수준의 서비스를 유지해야 하는지입니다.
-
-## 산정 전에 분리할 사용자군
-
-| 사용자군 | 대표 작업 | 측정할 항목 | 검증 방식 |
-| --- | --- | --- | --- |
-| 일반 업무 | 문서·웹·협업 | 로그인 피크, CPU·메모리 | 동시 세션 측정 |
-| 집중 업무 | 다중 앱·대용량 파일 | 디스크·네트워크 지연 | 대표 시나리오 |
-| 개발·설계 | 도구·빌드·그래픽 | GPU·스토리지·프로필 | 개별 업무 PoC |
-| 외부·협력사 | 제한된 앱 접근 | 인증·세션·지원 흐름 | 접근 정책 검증 |
-
-## 실제 측정 순서
-
-1. 전체 인원 대신 사용자군과 대표 애플리케이션을 선정합니다.
-2. 로그인 집중 시간, 일반 업무 시간, 월말·배치 등 피크 상황을 나눠 기록합니다.
-3. 프로필, 이미지, 파일 접근 방식이 스토리지와 네트워크에 주는 영향을 확인합니다.
-4. 장애 시 남은 자원으로 유지할 사용자군과 최소 기능을 합의합니다.
-5. 대표 사용자군으로 PoC를 수행하고, 측정값과 가정을 산정표에 남깁니다.
-
-## 왜 세션 한도가 운영 기준인가
-
-Microsoft의 AVD 운영 가이드도 호스트 풀의 세션 한도, 용량 임계값, 연결·연결 해제 세션, 최소 활성 호스트가 실제 필요한 호스트 수에 영향을 준다고 설명합니다. 특정 제품의 수치를 BLRO가 보장한다는 뜻은 아니지만, **동시 세션과 운영 정책을 측정 없이 고정하면 산정 가정이 흔들린다**는 실무 기준으로 쓸 수 있습니다. [Microsoft AVD autoscale guidance](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-desktop/troubleshoot-autoscale)
-
-## 흔한 오류
-
-평균 사용량만 보면 로그인 폭주와 프로필 로딩 문제를 놓칩니다. 또 모든 사용자를 동일한 데스크톱으로 취급하면 고성능 업무의 병목 또는 일반 업무의 과도한 자원 할당이 생깁니다. 측정 시점·표본·여유율의 근거가 없으면 그 산정표는 견적의 근거가 아니라 추정치입니다.
-
-## 이 단계의 산출물
-
-사용자군 표, 시간대별 동시 세션, 앱·프로필 특성, 장애 시 최소 서비스, PoC 측정 결과가 담긴 용량 가정표를 만듭니다. 이 표가 있어야 VDI·디지털 워크스페이스의 목표 구조와 운영 방식에 대해 비교 가능한 대화를 시작할 수 있습니다.
+VDI 용량은 전체 사용자 수가 아니라 동시에 어떤 작업을 수행하는지에 따라 달라집니다.
 
 ## 산정 순서
 

@@ -5,12 +5,7 @@ import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
 import type { ContentRecord } from "@/lib/content"
-import {
-  audienceLabels,
-  formatSolutionCopy,
-  PROTECTED_INSIGHT_TITLE_PHRASES,
-  solutionDecisionMaps,
-} from "@/lib/solutions"
+import { formatSolutionCopy, PROTECTED_INSIGHT_TITLE_PHRASES } from "@/lib/solutions"
 
 type SolutionDetailProps = {
   readonly insights: readonly ContentRecord[]
@@ -56,7 +51,6 @@ function parseSolutionSections(body: string): readonly SolutionBodySection[] {
 export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
   const sections = parseSolutionSections(solution.body)
   const pathname = `/solutions/${solution.meta.slug}`
-  const decisionMap = solutionDecisionMaps[solution.meta.slug as keyof typeof solutionDecisionMaps]
 
   return (
     <article className="solution-page solution-detail">
@@ -74,30 +68,8 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
             {formatSolutionCopy(solution.meta.summary)}
           </Text>
           <div className="solution-detail__audience" aria-label="주요 대상">
-            {solution.meta.audience.map((audience) => <span key={audience}>{audienceLabels[audience]}</span>)}
+            {solution.meta.audience.map((audience) => <span key={audience}>{audience}</span>)}
           </div>
-        </Container>
-      </Section>
-
-      <Section aria-labelledby="solution-map-heading" className="solution-decision-map" spacing="generous" tone="surface">
-        <Container>
-          <div className="solution-section-heading">
-            <div>
-              <Eyebrow>DECISION MAP</Eyebrow>
-              <Heading id="solution-map-heading" level={2}>{decisionMap.title}</Heading>
-            </div>
-            <Text>{decisionMap.description}</Text>
-          </div>
-          <ol className="solution-decision-map__stages">
-            {decisionMap.stages.map((stage, index) => (
-              <li key={stage.label}>
-                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                <strong>{stage.label}</strong>
-                <Text>{stage.detail}</Text>
-              </li>
-            ))}
-          </ol>
-          <Text className="solution-decision-map__outcome" variant="lead">{decisionMap.outcome}</Text>
         </Container>
       </Section>
 
