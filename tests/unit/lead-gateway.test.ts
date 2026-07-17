@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
+import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
 import { handleRequest, type AnalyticsRateLimiter, type LeadDatabase, type LeadGatewayEnvironment } from "@/workers/lead-gateway/src/index"
 
 const environment = {
@@ -12,7 +13,7 @@ const validInquiry = {
   name: "Hong Gil Dong",
   workEmail: "operator@example.com",
   topic: "vmware-hci",
-  consent: { privacyVersion: "pending", marketing: false },
+  consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: false },
   attribution: { landingPath: "/insights/virtualization-hci-migration-guide", ctaId: "insight", utm: {} },
   turnstileToken: "test-token",
 }
@@ -41,10 +42,15 @@ describe("lead gateway intake boundary", () => {
   it("rejects cross-origin and malformed requests before an inquiry is accepted", async () => {
     const crossOrigin = await handleRequest(request(validInquiry, { origin: "https://untrusted.example" }), environment)
     const malformed = await handleRequest(request({ topic: "unknown" }), environment)
+    const outdatedConsent = await handleRequest(request({
+      ...validInquiry,
+      consent: { privacyVersion: "2026-07-14", marketing: false },
+    }), environment)
 
     expect(crossOrigin.status).toBe(403)
     expect(await crossOrigin.json()).toEqual({ error: "origin_not_allowed" })
     expect(malformed.status).toBe(400)
+    expect(outdatedConsent.status).toBe(400)
   })
 
   it("accepts an allowlisted analytics event without enabling PII intake", async () => {
@@ -115,17 +121,23 @@ describe("lead gateway intake boundary", () => {
   })
 
   it("keeps checklist requests behind the same approved intake boundary", async () => {
-    const result = await handleRequest(leadMagnetRequest({
+    const validChecklist = {
       company: "Example Corp",
       name: "Hong Gil Dong",
       workEmail: "operator@example.com",
-      consent: { privacyVersion: "pending", marketing: true },
+      consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: false },
       attribution: { landingPath: "/insights/hci-readiness-checklist", ctaId: "download", utm: {} },
       turnstileToken: "test-token",
+    }
+    const result = await handleRequest(leadMagnetRequest(validChecklist), environment)
+    const marketingRequest = await handleRequest(leadMagnetRequest({
+      ...validChecklist,
+      consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: true },
     }), environment)
 
     expect(result.status).toBe(503)
     expect(await result.json()).toEqual({ error: "intake_not_enabled" })
+    expect(marketingRequest.status).toBe(400)
   })
 
   it("returns CORS preflight headers only for a configured origin", async () => {

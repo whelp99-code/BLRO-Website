@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { PRIVACY_NOTICE_VERSION } from "../../../lib/privacy-notice"
 
 export const inquiryTopics = ["vmware-hci", "vdi", "security", "sase", "dr", "general"] as const
 
@@ -9,7 +10,7 @@ const inquirySchema = z.object({
   phone: z.string().trim().min(7).max(30).optional(),
   topic: z.enum(inquiryTopics),
   message: z.string().trim().min(1).max(2000).optional(),
-  consent: z.object({ privacyVersion: z.string().trim().min(1).max(40), marketing: z.literal(false) }),
+  consent: z.object({ privacyVersion: z.literal(PRIVACY_NOTICE_VERSION), marketing: z.literal(false) }),
   attribution: z.object({
     landingPath: z.string().startsWith("/").max(240),
     ctaId: z.string().trim().min(1).max(120),

@@ -21,15 +21,48 @@ describe("external evidence publication boundary", () => {
     expect(() => validateExternalEvidence(changed, EXTERNAL_EVIDENCE_APPROVAL_REGISTRY, approvalDate)).toThrow("no active approval")
   })
 
-  it("rejects approvals after their review boundary", () => {
-    const expiredRegistry = {
+  it("rejects an overdue review while the approval expiry remains active", () => {
+    const overdueRegistry = {
       approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) => ({
         ...approval,
-        expiresAt: "2026-07-16",
         reviewAt: "2026-07-16",
       })),
     }
 
+    expect(() => validateExternalEvidence(SANGFOR_KOREA_CASES, overdueRegistry, approvalDate)).toThrow("no active approval")
+  })
+
+  it("rejects an expired approval independently of its review date", () => {
+    const expiredRegistry = {
+      approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) => ({
+        ...approval,
+        expiresAt: "2026-07-16",
+      })),
+    }
+
     expect(() => validateExternalEvidence(SANGFOR_KOREA_CASES, expiredRegistry, approvalDate)).toThrow("no active approval")
+  })
+
+  it("rejects approval metadata that no longer records the site-owner direction", () => {
+    const untrustedRegistry = {
+      approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) => ({
+        ...approval,
+        approverRole: "unknown",
+        source: "unreviewed-import",
+      })),
+    }
+
+    expect(() => validateExternalEvidence(SANGFOR_KOREA_CASES, untrustedRegistry, approvalDate)).toThrow("no active approval")
+  })
+
+  it.each(["approvedAt", "reviewAt", "expiresAt"] as const)("rejects a malformed %s value", (field) => {
+    const malformedRegistry = {
+      approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) => ({
+        ...approval,
+        [field]: "not-a-date",
+      })),
+    }
+
+    expect(() => validateExternalEvidence(SANGFOR_KOREA_CASES, malformedRegistry, approvalDate)).toThrow("no active approval")
   })
 })

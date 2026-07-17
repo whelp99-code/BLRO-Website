@@ -1,12 +1,13 @@
 import { z } from "zod"
+import { PRIVACY_NOTICE_VERSION } from "../../../lib/privacy-notice"
 
 const leadMagnetSchema = z.object({
   company: z.string().trim().min(2).max(100),
   name: z.string().trim().min(2).max(80),
   workEmail: z.string().trim().email().max(254),
   consent: z.object({
-    marketing: z.boolean(),
-    privacyVersion: z.string().trim().min(1).max(40),
+    marketing: z.literal(false),
+    privacyVersion: z.literal(PRIVACY_NOTICE_VERSION),
   }),
   attribution: z.object({
     landingPath: z.string().startsWith("/").max(240),

@@ -2,16 +2,23 @@
 
 import Link from "next/link"
 import { useSyncExternalStore } from "react"
+import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
 
 const CONSENT_STORAGE_KEY = "blro-analytics-consent"
 export const CONSENT_CHANGE_EVENT = "blro:analytics-consent-change"
 
 export type AnalyticsConsent = "accepted" | "rejected" | "undecided"
 
+function consentStorageValue(consent: Exclude<AnalyticsConsent, "undecided">): string {
+  return `${PRIVACY_NOTICE_VERSION}:${consent}`
+}
+
 export function getAnalyticsConsent(): AnalyticsConsent {
   if (typeof window === "undefined") return "undecided"
   const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY)
-  return stored === "accepted" || stored === "rejected" ? stored : "undecided"
+  if (stored === consentStorageValue("accepted")) return "accepted"
+  if (stored === consentStorageValue("rejected")) return "rejected"
+  return "undecided"
 }
 
 export function subscribeToConsent(onStoreChange: () => void) {
@@ -27,7 +34,7 @@ export function ConsentManager() {
   const consent = useSyncExternalStore(subscribeToConsent, getAnalyticsConsent, () => "undecided")
 
   function decide(nextConsent: Exclude<AnalyticsConsent, "undecided">) {
-    window.localStorage.setItem(CONSENT_STORAGE_KEY, nextConsent)
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, consentStorageValue(nextConsent))
     window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT))
   }
 

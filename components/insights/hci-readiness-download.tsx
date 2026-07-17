@@ -47,7 +47,7 @@ export function HciReadinessDownload() {
         company: value(formData, "company"),
         name: value(formData, "name"),
         workEmail: value(formData, "workEmail"),
-        consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: formData.get("marketingConsent") === "on" },
+        consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: false },
         attribution: { ctaId: "insight-hci-readiness-download", landingPath: window.location.pathname, utm: {} },
         turnstileToken,
       })
@@ -74,10 +74,6 @@ export function HciReadinessDownload() {
         <label className="hci-readiness-download__consent">
           <input name="privacyConsent" required type="checkbox" />
           <span><a href="/privacy" target="_blank">개인정보 처리 안내</a>를 확인했으며, 체크리스트 제공과 BLRO 전달을 위한 개인정보 수집·이용에 동의합니다.</span>
-        </label>
-        <label className="hci-readiness-download__consent">
-          <input name="marketingConsent" type="checkbox" />
-          <span>BLRO의 실무 인사이트와 행사 정보를 받아보겠습니다. <em>(선택)</em></span>
         </label>
         {!ready ? <p className="hci-readiness-download__notice">안전한 다운로드 연결을 준비 중입니다.</p> : null}
         {status === "error" ? <p className="hci-readiness-download__error" role="alert">정보를 확인한 뒤 다시 시도해 주세요.</p> : null}

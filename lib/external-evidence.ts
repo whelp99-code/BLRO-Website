@@ -30,6 +30,12 @@ export type ExternalEvidenceApprovalRegistry = Readonly<{
 
 export const EXTERNAL_EVIDENCE_APPROVAL_REGISTRY: ExternalEvidenceApprovalRegistry = approvalRegistrySource
 
+function isIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) return false
+  const date = new Date(`${value}T00:00:00.000Z`)
+  return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value
+}
+
 export function createExternalEvidenceDigest(evidence: ExternalCaseEvidence): string {
   const payload = {
     evidenceId: evidence.evidenceId,
@@ -61,9 +67,16 @@ export function validateExternalEvidence(
       (candidate) =>
         candidate.approvalId === evidence.approvalRef &&
         candidate.evidenceId === evidence.evidenceId &&
+        candidate.approverRole === "site-owner" &&
+        candidate.source === "user-directed-official-source-review" &&
         candidate.publicScopes.includes("website:public:ko") &&
+        isIsoDate(candidate.approvedAt) &&
+        isIsoDate(candidate.reviewAt) &&
+        isIsoDate(candidate.expiresAt) &&
         candidate.approvedAt <= today &&
+        candidate.reviewAt >= candidate.approvedAt &&
         candidate.reviewAt >= today &&
+        candidate.expiresAt >= candidate.reviewAt &&
         candidate.expiresAt >= today &&
         candidate.contentSha256 === contentSha256 &&
         candidate.evidenceRefs.includes(evidence.sourceUrl) &&
