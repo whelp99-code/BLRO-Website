@@ -88,6 +88,12 @@
   margin: 0;
 }
 
+.diagnostic-sample__decision-title-line {
+  display: block;
+  width: fit-content;
+  word-break: keep-all;
+}
+
 .diagnostic-sample__decision-table dl > div {
   display: grid;
   gap: var(--space-2);
@@ -123,6 +129,7 @@
 .diagnostic-sample__verification span {
   color: var(--color-brand-strong);
   font: var(--type-small);
+  word-break: keep-all;
 }
 
 .diagnostic-sample__takeaway {

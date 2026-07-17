@@ -10,7 +10,7 @@ export function SangforKoreaCases() {
           <Heading id="sangfor-cases-heading" level={3}>Sangfor 국내 공식 사례</Heading>
         </div>
         <Text>
-          Sangfor 공식 사이트의 공개 사례를 BLRO의 진단 관점으로 정리한 외부 참고 자료입니다. BLRO 수행 실적 또는 성과 보증이 아닙니다.
+          Sangfor 공식 사이트의 공개 사례를 BLRO의 진단 관점으로 정리한 외부 참고 자료입니다. <span className="blro-nowrap">BLRO 수행 실적</span> 또는 <span className="blro-nowrap">성과 보증</span>이 아닙니다.
         </Text>
       </div>
       <ol className="external-cases__list">

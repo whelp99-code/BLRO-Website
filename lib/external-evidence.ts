@@ -12,7 +12,7 @@ export const SANGFOR_KOREA_CASES = [
     customer: "SECUI",
     technology: "HCI",
     operatingSituation: "보안관제센터의 서버·스토리지·네트워크 자원을 통합하고, 수요 변화에 즉시 대응할 운영 가시성이 필요했던 사례입니다.",
-    decisionLesson: "자원 통합 여부만 보지 않고, 웹 기반 가시성·확장 방식·가상 방화벽 운영까지 함께 검증해야 합니다.",
+    decisionLesson: "자원 통합 여부만 보지 않고, 운영 가시성·확장 방식·가상 방화벽 운영까지 함께 검증해야 합니다.",
     sourceTitle: "Sangfor HCI 고객 사례 — SECUI",
     sourceUrl: "https://www.sangfor.com/kr/success-stories/hci-gogaeg-salye-secui",
   },

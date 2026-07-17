@@ -16,10 +16,10 @@ describe("lead storage migration", () => {
     const sql = await readFile(join(process.cwd(), "workers/lead-gateway/migrations/0002_analytics_events.sql"), "utf8")
     const database = new DatabaseSync(":memory:")
     database.exec(sql)
-    const columns = database.prepare("PRAGMA table_info(analytics_events)").all() as readonly { readonly name: string }[]
+    const columns = database.prepare("PRAGMA table_info(analytics_events)").all().map((row) => Reflect.get(row, "name"))
     database.close()
 
-    expect(columns.map((column) => column.name)).toEqual([
+    expect(columns).toEqual([
       "event_id",
       "received_at",
       "event_name",

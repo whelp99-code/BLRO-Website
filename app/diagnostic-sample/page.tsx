@@ -15,19 +15,19 @@ export const metadata: Metadata = {
 
 const decisionRows = [
   {
-    title: "서비스별 복구 목표를 정의했는가",
+    title: ["서비스별 복구 목표", "정의 여부"],
     condition: "전체 시스템에 하나의 복구 목표만 있고, 핵심 업무와 일반 업무의 허용 중단 시간이 구분되지 않았습니다.",
     evidence: "최근 복구 훈련 기록, 서비스 의존성, 업무별 허용 중단 시간 승인이 필요합니다.",
     rule: "핵심 서비스의 복구 목표와 복구 순서가 합의되기 전에는 해당 워크로드를 1차 전환 범위에서 보류합니다.",
   },
   {
-    title: "레거시 워크로드를 원복 가능하게 검증하는가",
+    title: ["레거시 원복 검증", "가능 여부"],
     condition: "구형 운영체제와 하드웨어 종속 라이선스가 섞여 있어 일괄 마이그레이션의 실패 비용이 큽니다.",
     evidence: "OS·드라이버·라이선스 목록, 애플리케이션 담당자 확인, 원복 가능한 테스트 복제본이 필요합니다.",
     rule: "테스트 복제본에서 기동·업무 기능·라이선스·원복을 모두 통과한 워크로드만 전환 후보로 올립니다.",
   },
   {
-    title: "관리 경계와 백업 권한을 분리했는가",
+    title: ["관리·백업 권한", "분리 여부"],
     condition: "가상화 관리자와 백업 관리자의 권한 경계가 불명확하고, 사고 시 동일 계정 체계가 함께 영향을 받을 수 있습니다.",
     evidence: "관리자 계정·네트워크 경로·백업 저장소 권한과 다중 인증 적용 범위를 확인해야 합니다.",
     rule: "관리 경로와 복구 사본의 권한 분리가 확인되기 전에는 운영 인수 완료로 판정하지 않습니다.",
@@ -81,14 +81,17 @@ export default function DiagnosticSamplePage() {
         <Container>
           <div className="diagnostic-sample__section-heading">
             <Eyebrow>02 · DECISION REGISTER</Eyebrow>
-            <Heading id="sample-decision-heading" level={2}>현재 판단, 필요한 증거, 결정 규칙</Heading>
+            <Heading id="sample-decision-heading" level={2}>현재 판단, 필요한 증거, <span className="blro-nowrap">결정 규칙</span></Heading>
             <Text>모르는 것을 감추지 않고, 어떤 증거가 확인되면 결정이 바뀌는지 기록합니다.</Text>
           </div>
           <ol className="diagnostic-sample__decision-table">
             {decisionRows.map((row, index) => (
-              <li key={row.title}>
+              <li key={row.title.join(" ")}>
                 <span className="diagnostic-sample__decision-number">{String(index + 1).padStart(2, "0")}</span>
-                <Heading level={3}>{row.title}</Heading>
+                <Heading level={3}>
+                  <span className="diagnostic-sample__decision-title-line">{row.title[0]}</span>{" "}
+                  <span className="diagnostic-sample__decision-title-line">{row.title[1]}</span>
+                </Heading>
                 <dl>
                   <div><dt>현재 조건</dt><dd>{row.condition}</dd></div>
                   <div><dt>추가 증거</dt><dd>{row.evidence}</dd></div>
