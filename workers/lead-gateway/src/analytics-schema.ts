@@ -1,17 +1,28 @@
-const EVENT_NAMES = new Set([
-  "cta_clicked",
-  "form_started",
-  "form_validation_failed",
-  "turnstile_failed",
-  "inquiry_accepted",
-  "lead_magnet_delivered",
-])
-const PLACEMENTS = new Set(["hero", "conversion-panel", "audience-path", "solution-detail", "insight-detail", "strategic-page", "contact-form", "diagnostic-sample"])
-const TOPICS = new Set(["vmware-hci", "vdi", "security", "sase", "dr", "general"])
-const FIELDS = new Set(["company", "name", "workEmail", "phone", "topic", "consent", "message"])
+import { isAnalyticsCtaId } from "../../../lib/analytics/cta-ids"
+import { ANALYTICS_EVENTS, ANALYTICS_FIELDS, ANALYTICS_PLACEMENTS, ANALYTICS_TOPICS } from "../../../lib/analytics/events"
+
+const EVENT_NAMES: ReadonlySet<string> = new Set(ANALYTICS_EVENTS)
+const PLACEMENTS: ReadonlySet<string> = new Set(ANALYTICS_PLACEMENTS)
+const TOPICS: ReadonlySet<string> = new Set(ANALYTICS_TOPICS)
+const FIELDS: ReadonlySet<string> = new Set(ANALYTICS_FIELDS)
 const EVENT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u
-const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,79}$/u
 const ALLOWED_PROPERTY_KEYS = new Set(["ctaId", "field", "landingPath", "placement", "topic"])
+const REQUIRED_PROPERTY_KEYS: Readonly<Record<string, ReadonlySet<string>>> = {
+  cta_clicked: new Set(["ctaId", "landingPath", "placement"]),
+  form_started: new Set(["ctaId", "landingPath", "placement"]),
+  form_validation_failed: new Set(["field", "landingPath", "placement", "topic"]),
+  inquiry_accepted: new Set(["ctaId", "landingPath", "placement", "topic"]),
+  lead_magnet_delivered: new Set(["ctaId", "landingPath", "placement", "topic"]),
+  turnstile_failed: new Set(["landingPath", "placement", "topic"]),
+}
+const EVENT_PROPERTY_KEYS: Readonly<Record<string, ReadonlySet<string>>> = {
+  cta_clicked: new Set(["ctaId", "landingPath", "placement", "topic"]),
+  form_started: new Set(["ctaId", "landingPath", "placement", "topic"]),
+  form_validation_failed: new Set(["field", "landingPath", "placement", "topic"]),
+  inquiry_accepted: new Set(["ctaId", "landingPath", "placement", "topic"]),
+  lead_magnet_delivered: new Set(["ctaId", "landingPath", "placement", "topic"]),
+  turnstile_failed: new Set(["landingPath", "placement", "topic"]),
+}
 
 export type ParsedAnalyticsEvent = Readonly<{
   eventId: string
@@ -38,7 +49,12 @@ export function parseAnalyticsEvent(value: unknown): ParsedAnalyticsEvent | unde
   if (typeof value["name"] !== "string" || !EVENT_NAMES.has(value["name"])) return undefined
   if (!isRecord(value["properties"])) return undefined
   const properties = value["properties"]
-  if (Object.keys(properties).some((key) => !ALLOWED_PROPERTY_KEYS.has(key))) return undefined
+  const requiredKeys = REQUIRED_PROPERTY_KEYS[value["name"]]
+  const eventKeys = EVENT_PROPERTY_KEYS[value["name"]]
+  if (requiredKeys === undefined || eventKeys === undefined) return undefined
+  const propertyKeys = Object.keys(properties)
+  if (propertyKeys.some((key) => !ALLOWED_PROPERTY_KEYS.has(key) || !eventKeys.has(key))) return undefined
+  if (Array.from(requiredKeys).some((key) => properties[key] === undefined)) return undefined
 
   const ctaId = properties["ctaId"]
   const field = properties["field"]
@@ -46,7 +62,7 @@ export function parseAnalyticsEvent(value: unknown): ParsedAnalyticsEvent | unde
   const placement = properties["placement"]
   const topic = properties["topic"]
 
-  if (ctaId !== undefined && (typeof ctaId !== "string" || !ID_PATTERN.test(ctaId))) return undefined
+  if (ctaId !== undefined && !isAnalyticsCtaId(ctaId)) return undefined
   if (field !== undefined && (typeof field !== "string" || !FIELDS.has(field))) return undefined
   if (landingPath !== undefined && !isLandingPath(landingPath)) return undefined
   if (placement !== undefined && (typeof placement !== "string" || !PLACEMENTS.has(placement))) return undefined

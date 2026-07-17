@@ -3,6 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react"
 import { getAnalyticsConsent, subscribeToConsent } from "@/components/analytics/consent-manager"
 import type { AnalyticsEvent } from "@/lib/analytics/events"
+import { createClientUuid } from "@/lib/client-id"
 
 const ANALYTICS_ENDPOINT = process.env.NEXT_PUBLIC_LEAD_API_URL
 const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN
@@ -34,7 +35,7 @@ export function AnalyticsProvider() {
 
     function sendEvent(event: Event) {
       if (!(event instanceof CustomEvent) || !isAnalyticsDetail(event.detail)) return
-      const envelope = JSON.stringify({ eventId: crypto.randomUUID(), ...event.detail })
+      const envelope = JSON.stringify({ eventId: createClientUuid(), ...event.detail })
       navigator.sendBeacon?.(`${ANALYTICS_ENDPOINT}/v1/analytics`, new Blob([envelope], { type: "text/plain;charset=UTF-8" }))
     }
 

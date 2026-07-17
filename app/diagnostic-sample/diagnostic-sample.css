@@ -10,6 +10,12 @@
   max-width: 52rem;
 }
 
+.diagnostic-sample__title-line {
+  display: block;
+  width: fit-content;
+  word-break: keep-all;
+}
+
 .diagnostic-sample__notice {
   max-width: 52rem;
   padding: var(--space-5);
@@ -73,7 +79,7 @@
 .diagnostic-sample__state {
   color: var(--color-brand-strong);
   font: var(--type-eyebrow);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
 }
 
 .diagnostic-sample__decision-table dl {

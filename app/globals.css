@@ -441,6 +441,7 @@ a {
 .blro-consent a {
   color: var(--color-brand-strong);
   text-underline-offset: 0.2em;
+  white-space: nowrap;
 }
 
 .blro-consent > div {

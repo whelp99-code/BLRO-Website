@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function PartnerBusinessPage() {
   return (
     <StrategicPage
+      ctaId="strategic-partner-collaboration"
       ctaHref="/contact?type=partner-collaboration"
       ctaLabel="파트너 협업 문의"
       eyebrow="PARTNER BUSINESS · JOINT EXECUTION"

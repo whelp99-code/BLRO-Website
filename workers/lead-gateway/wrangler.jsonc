@@ -17,6 +17,18 @@
       "migrations_dir": "migrations"
     }
   ],
+  "ratelimits": [
+    {
+      "name": "ANALYTICS_RATE_LIMITER",
+      "namespace_id": "2026071701",
+      "simple": { "limit": 60, "period": 60 }
+    },
+    {
+      "name": "ANALYTICS_GLOBAL_RATE_LIMITER",
+      "namespace_id": "2026071702",
+      "simple": { "limit": 3000, "period": 60 }
+    }
+  ],
   "r2_buckets": [
     {
       "binding": "LEAD_MAGNETS",

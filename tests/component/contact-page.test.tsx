@@ -13,8 +13,13 @@ describe("contact page", () => {
     expect(screen.getByText("다음 검증")).toBeVisible()
     expect(screen.getAllByRole("textbox")).toHaveLength(5)
     expect(screen.getByRole("checkbox", { name: /개인정보 처리 안내/u })).toBeRequired()
-    expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toBeDisabled()
-    expect(screen.getByText("안전한 접수 서비스 연결을 준비 중입니다.")).toBeVisible()
+    const intakeConfigured = process.env.NEXT_PUBLIC_LEAD_API_URL !== undefined && process.env["NEXT_PUBLIC_TURNSTILE_SITE_KEY"] !== undefined
+    expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toHaveProperty("disabled", !intakeConfigured)
+    if (intakeConfigured) {
+      expect(screen.queryByText("안전한 접수 서비스 연결을 준비 중입니다.")).not.toBeInTheDocument()
+    } else {
+      expect(screen.getByText("안전한 접수 서비스 연결을 준비 중입니다.")).toBeVisible()
+    }
     expect(metadata.robots).toBeUndefined()
   })
 })

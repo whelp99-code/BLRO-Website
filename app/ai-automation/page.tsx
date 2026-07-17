@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function AiAutomationPage() {
   return (
     <StrategicPage
+      ctaId="strategic-customer-project"
       ctaHref="/contact?type=customer-project"
       ctaLabel="자동화 검토 상담"
       eyebrow="AI & AUTOMATION · CONTROLLED OPERATIONS"

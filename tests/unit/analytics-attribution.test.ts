@@ -13,9 +13,9 @@ describe("analytics attribution", () => {
   })
 
   it("creates events only from the explicit non-PII properties contract", () => {
-    expect(createAnalyticsEvent("cta_clicked", { ctaId: "hero-customer", placement: "hero" })).toEqual({
+    expect(createAnalyticsEvent("cta_clicked", { ctaId: "hero-customer-diagnostic", placement: "hero" })).toEqual({
       name: "cta_clicked",
-      properties: { ctaId: "hero-customer", placement: "hero" },
+      properties: { ctaId: "hero-customer-diagnostic", placement: "hero" },
     })
   })
 })

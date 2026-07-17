@@ -16,7 +16,7 @@ for (const viewport of VIEWPORTS) {
     const response = await page.goto("/diagnostic-sample", { waitUntil: "networkidle" })
 
     expect(response?.status()).toBe(200)
-    await expect(page.getByRole("heading", { level: 1, name: "고객이 가져가는 것은 제품 목록이 아니라, 다음 결정을 내릴 문서입니다." })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "제품 목록이 아닌, 다음 결정을 내릴 진단 문서입니다." })).toBeVisible()
     await expect(page.getByRole("heading", { level: 2, name: "현재 판단, 필요한 증거, 결정 규칙" })).toBeVisible()
     await expect(page.getByRole("heading", { level: 2, name: "상담 후 고객에게 남는 것" })).toBeVisible()
     await expect(page.getByRole("link", { name: "내 환경의 진단 범위 확인" })).toHaveAttribute("href", "/contact?type=customer-project")

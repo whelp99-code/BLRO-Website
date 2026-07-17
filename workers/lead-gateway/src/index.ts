@@ -19,8 +19,14 @@ export type LeadDatabase = Readonly<{
   prepare(query: string): LeadDatabaseStatement
 }>
 
+export type AnalyticsRateLimiter = Readonly<{
+  limit(input: Readonly<{ key: string }>): Promise<Readonly<{ success: boolean }>>
+}>
+
 export type LeadGatewayEnvironment = {
   readonly ALLOWED_ORIGINS: string
+  readonly ANALYTICS_GLOBAL_RATE_LIMITER?: AnalyticsRateLimiter
+  readonly ANALYTICS_RATE_LIMITER?: AnalyticsRateLimiter
   readonly DB?: LeadDatabase
   readonly ENVIRONMENT: "preview" | "production"
   readonly INQUIRY_INTAKE_ENABLED: "true" | "false"
@@ -267,6 +273,16 @@ async function handleHciReadinessRequest(
 
 async function handleAnalyticsEvent(request: Request, origin: string, env: LeadGatewayEnvironment): Promise<Response> {
   if (!hasAnalyticsContentType(request)) return response(415, { error: "analytics_content_type_required" }, origin)
+  if (env.DB === undefined || env.ANALYTICS_RATE_LIMITER === undefined || env.ANALYTICS_GLOBAL_RATE_LIMITER === undefined) {
+    return response(503, { error: "analytics_not_configured" }, origin)
+  }
+  const clientAddress = request.headers.get("cf-connecting-ip") ?? "address-unavailable"
+  const clientKey = await sha256(`analytics:${clientAddress}`)
+  const [clientLimit, globalLimit] = await Promise.all([
+    env.ANALYTICS_RATE_LIMITER.limit({ key: clientKey }),
+    env.ANALYTICS_GLOBAL_RATE_LIMITER.limit({ key: "analytics" }),
+  ])
+  if (!clientLimit.success || !globalLimit.success) return response(429, { error: "analytics_rate_limited" }, origin)
   const text = await readTextWithinLimit(request)
   if (text === undefined) return response(413, { error: "payload_too_large" }, origin)
 
@@ -278,8 +294,6 @@ async function handleAnalyticsEvent(request: Request, origin: string, env: LeadG
   }
   const event = parseAnalyticsEvent(payload)
   if (event === undefined) return response(400, { error: "invalid_analytics_event" }, origin)
-  if (env.DB === undefined) return response(503, { error: "analytics_not_configured" }, origin)
-
   const now = new Date().toISOString()
   await env.DB.prepare(
     "INSERT OR IGNORE INTO analytics_events (event_id, received_at, event_name, cta_id, placement, landing_path, topic, field, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",

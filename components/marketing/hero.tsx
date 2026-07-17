@@ -76,7 +76,7 @@ export function Hero({ heading }: HeroProps) {
         <section aria-labelledby="diagnostic-output-heading" className="home-diagnostic-output">
           <div className="home-diagnostic-output__header">
             <Eyebrow>FIRST CONVERSATION OUTPUT</Eyebrow>
-            <Heading id="diagnostic-output-heading" level={2}>첫 상담에서 함께 정리하는 것</Heading>
+            <Heading id="diagnostic-output-heading" level={2}>첫 상담의 진단 결과물</Heading>
           </div>
           <div className="home-diagnostic-output__route">
             <SignalRoute label="현재 운영 조건에서 다음 검증과 의사결정으로 이어지는 전환 진단 흐름" />

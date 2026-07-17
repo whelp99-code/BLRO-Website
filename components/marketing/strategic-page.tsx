@@ -11,6 +11,7 @@ type StrategicSection = {
 }
 
 export type StrategicPageProps = {
+  readonly ctaId: "strategic-customer-project" | "strategic-partner-collaboration" | "strategic-vendor-korea-entry"
   readonly ctaHref: string
   readonly ctaLabel: string
   readonly eyebrow: string
@@ -20,7 +21,7 @@ export type StrategicPageProps = {
   readonly supportingCopy: string
 }
 
-export function StrategicPage({ ctaHref, ctaLabel, eyebrow, heading, intro, sections, supportingCopy }: StrategicPageProps) {
+export function StrategicPage({ ctaHref, ctaId, ctaLabel, eyebrow, heading, intro, sections, supportingCopy }: StrategicPageProps) {
   return (
     <article className="strategic-page">
       <Section aria-labelledby="strategic-heading" className="strategic-page__hero" spacing="generous">
@@ -62,7 +63,7 @@ export function StrategicPage({ ctaHref, ctaLabel, eyebrow, heading, intro, sect
           <Eyebrow>NEXT DECISION</Eyebrow>
           <Heading id="strategic-next-heading" level={2}>현재 조건에서 확인할 첫 번째 범위를 정리합니다.</Heading>
           <Text variant="inverse">완성된 답을 전제하지 않습니다. 현재 운영 조건과 의사결정 시점을 함께 확인한 뒤, 필요한 검증과 제외 범위를 정합니다.</Text>
-          <TrackableLink className="strategic-page__cta" href={ctaHref} properties={{ ctaId: `strategic-${ctaHref}`, placement: "strategic-page" }}>
+          <TrackableLink className="strategic-page__cta" href={ctaHref} properties={{ ctaId, placement: "strategic-page" }}>
             {ctaLabel} <span aria-hidden="true">↗</span>
           </TrackableLink>
         </Container>

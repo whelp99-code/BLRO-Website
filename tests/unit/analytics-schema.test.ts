@@ -12,10 +12,26 @@ describe("analytics event boundary", () => {
     expect(parseAnalyticsEvent(validEvent)).toEqual(validEvent)
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, email: "person@example.com" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/contact?email=person" } })).toBeUndefined()
+    expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, ctaId: "010-1234-5678" } })).toBeUndefined()
+    expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, ctaId: "contact-secret-campaign" } })).toBeUndefined()
   })
 
   it("rejects unknown names and non-v4 event identifiers", () => {
     expect(parseAnalyticsEvent({ ...validEvent, name: "page_profiled" })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, eventId: "visitor-1" })).toBeUndefined()
+  })
+
+  it("enforces the property contract for each event type", () => {
+    expect(parseAnalyticsEvent({ ...validEvent, properties: { ctaId: "hero-customer-diagnostic", landingPath: "/" } })).toBeUndefined()
+    expect(parseAnalyticsEvent({
+      ...validEvent,
+      name: "form_validation_failed",
+      properties: { field: "consent", landingPath: "/contact", placement: "contact-form", topic: "general" },
+    })).toBeDefined()
+    expect(parseAnalyticsEvent({
+      ...validEvent,
+      name: "turnstile_failed",
+      properties: { ctaId: "contact-general", landingPath: "/contact", placement: "contact-form", topic: "general" },
+    })).toBeUndefined()
   })
 })

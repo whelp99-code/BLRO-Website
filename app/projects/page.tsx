@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function ProjectsPage() {
   return (
     <StrategicPage
+      ctaId="strategic-customer-project"
       ctaHref="/contact?type=customer-project"
       ctaLabel="전환 진단 범위 확인"
       eyebrow="PROJECTS · ANONYMIZED SCENARIOS"

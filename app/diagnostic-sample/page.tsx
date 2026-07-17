@@ -15,19 +15,19 @@ export const metadata: Metadata = {
 
 const decisionRows = [
   {
-    title: "복구 목표가 서비스별로 정의되어 있는가",
+    title: "서비스별 복구 목표를 정의했는가",
     condition: "전체 시스템에 하나의 복구 목표만 있고, 핵심 업무와 일반 업무의 허용 중단 시간이 구분되지 않았습니다.",
     evidence: "최근 복구 훈련 기록, 서비스 의존성, 업무별 허용 중단 시간 승인이 필요합니다.",
     rule: "핵심 서비스의 복구 목표와 복구 순서가 합의되기 전에는 해당 워크로드를 1차 전환 범위에서 보류합니다.",
   },
   {
-    title: "레거시 워크로드의 호환성을 되돌릴 수 있게 검증하는가",
+    title: "레거시 워크로드를 원복 가능하게 검증하는가",
     condition: "구형 운영체제와 하드웨어 종속 라이선스가 섞여 있어 일괄 마이그레이션의 실패 비용이 큽니다.",
     evidence: "OS·드라이버·라이선스 목록, 애플리케이션 담당자 확인, 원복 가능한 테스트 복제본이 필요합니다.",
     rule: "테스트 복제본에서 기동·업무 기능·라이선스·원복을 모두 통과한 워크로드만 전환 후보로 올립니다.",
   },
   {
-    title: "관리 경계와 백업 권한이 분리되어 있는가",
+    title: "관리 경계와 백업 권한을 분리했는가",
     condition: "가상화 관리자와 백업 관리자의 권한 경계가 불명확하고, 사고 시 동일 계정 체계가 함께 영향을 받을 수 있습니다.",
     evidence: "관리자 계정·네트워크 경로·백업 저장소 권한과 다중 인증 적용 범위를 확인해야 합니다.",
     rule: "관리 경로와 복구 사본의 권한 분리가 확인되기 전에는 운영 인수 완료로 판정하지 않습니다.",
@@ -43,7 +43,7 @@ const scopeDecisions = [
 const verificationSteps = [
   ["01 · 복구 검증", "선택한 테스트 워크로드를 격리 복구하고 업무 담당자가 기능을 확인합니다.", "통과: 합의한 시간 안에 서비스와 데이터가 확인됨"],
   ["02 · 원복 리허설", "전환 실패를 가정해 기존 환경으로 되돌리는 절차와 담당자 역할을 실행합니다.", "통과: 변경 기록과 원복 순서가 재현됨"],
-  ["03 · 운영 인수", "경보, 용량, 계정, 백업, 장애 연락 체계를 운영팀이 직접 확인합니다.", "통과: 운영자가 문서 없이 핵심 상태를 설명할 수 있음"],
+  ["03 · 운영 인수", "경보, 용량, 계정, 백업, 장애 연락 체계를 운영팀이 직접 확인합니다.", "통과: 운영자가 핵심 상태와 대응 절차를 설명함"],
 ] as const
 
 export default function DiagnosticSamplePage() {
@@ -52,7 +52,11 @@ export default function DiagnosticSamplePage() {
       <Section aria-labelledby="diagnostic-sample-heading" spacing="generous">
         <Container className="diagnostic-sample__intro">
           <Eyebrow>ILLUSTRATIVE DECISION DOSSIER</Eyebrow>
-          <Heading id="diagnostic-sample-heading" level={1}>고객이 가져가는 것은 제품 목록이 아니라, 다음 결정을 내릴 문서입니다.</Heading>
+          <Heading id="diagnostic-sample-heading" level={1}>
+            <span className="diagnostic-sample__title-line">제품 목록이 아닌,</span>{" "}
+            <span className="diagnostic-sample__title-line">다음 결정을 내릴</span>{" "}
+            <span className="diagnostic-sample__title-line">진단 문서입니다.</span>
+          </Heading>
           <Text variant="lead">전환 진단 후에는 무엇을 먼저 검증하고, 무엇을 보류하며, 어떤 조건에서 중단할지를 한 문서로 정리합니다.</Text>
           <p className="diagnostic-sample__notice"><strong>공개용 예시:</strong> 아래 내용은 특정 고객의 환경·성과가 아닌 가상 시나리오입니다. 실제 결과는 고객 환경의 증거와 담당자 합의를 바탕으로 달라집니다.</p>
         </Container>

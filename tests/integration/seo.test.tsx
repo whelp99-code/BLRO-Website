@@ -4,10 +4,13 @@ import sitemap from "@/app/sitemap"
 import { absoluteUrl, breadcrumbStructuredData, isIndexableSite, siteUrl } from "@/lib/site"
 
 describe("search foundation", () => {
-  it("uses one canonical site URL and refuses to index local or preview origins", () => {
+  it("uses one canonical site URL and indexes only the production origin", () => {
     expect(absoluteUrl("/contact")).toBe(new URL("/contact", siteUrl).toString())
-    expect(isIndexableSite()).toBe(false)
-    expect(robots()).toEqual({ rules: { userAgent: "*", disallow: "/" } })
+    const isProductionOrigin = siteUrl.toString() === "https://blro.co.kr/"
+    expect(isIndexableSite()).toBe(isProductionOrigin)
+    expect(robots()).toEqual(isProductionOrigin
+      ? { rules: { userAgent: "*", allow: "/" }, sitemap: "https://blro.co.kr/sitemap.xml" }
+      : { rules: { userAgent: "*", disallow: "/" } })
   })
 
   it("lists static conversion routes and approved public content only", async () => {

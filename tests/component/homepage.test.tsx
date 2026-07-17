@@ -39,7 +39,7 @@ describe("BLRO basic homepage", () => {
     for (const audience of AUDIENCES) {
       expect(screen.getByRole("heading", { level: 3, name: audience })).toBeVisible()
     }
-    expect(screen.getByRole("heading", { level: 2, name: "첫 상담에서 함께 정리하는 것" })).toBeVisible()
+    expect(screen.getByRole("heading", { level: 2, name: "첫 상담의 진단 결과물" })).toBeVisible()
     expect(screen.getByRole("heading", { level: 3, name: "우선 검증할 워크로드와 제외 범위" })).toBeVisible()
     expect(screen.getByRole("img", { name: "현재 운영 조건에서 다음 검증과 의사결정으로 이어지는 전환 진단 흐름" })).toBeVisible()
   })
@@ -68,7 +68,7 @@ describe("BLRO basic homepage", () => {
 
     const evidence = screen.getByRole("region", { name: "공개된 실무 인사이트" })
     expect(within(evidence).getAllByRole("article")).toHaveLength(8)
-    expect(within(evidence).getByText("HCI 도입 체크리스트: 노드 수보다 먼저 확인할 운영 조건")).toBeVisible()
+    expect(within(evidence).getByText("HCI 도입 전 확인할 운영 기준")).toBeVisible()
     expect(document.querySelector("#insight-secure-access-selection")).toBeInTheDocument()
     expect(document.querySelector("#insight-sase-sdwan-roles")).toBeInTheDocument()
     expect(screen.queryByText(/template/iu)).not.toBeInTheDocument()
@@ -78,8 +78,8 @@ describe("BLRO basic homepage", () => {
   it("separates Sangfor-published Korea cases from BLRO delivery evidence", async () => {
     render(await Home())
 
-    expect(screen.getByRole("heading", { name: "Sangfor가 공개한 국내 운영 사례" })).toBeVisible()
-    expect(screen.getByText(/BLRO의 수행 실적이나 성과 보증을 의미하지 않습니다/u)).toBeVisible()
+    expect(screen.getByRole("heading", { name: "Sangfor 국내 공식 사례" })).toBeVisible()
+    expect(screen.getByText(/BLRO 수행 실적 또는 성과 보증이 아닙니다/u)).toBeVisible()
     expect(screen.getAllByRole("link", { name: /Sangfor 공식 원문 확인/u })).toHaveLength(3)
     expect(screen.getByRole("heading", { level: 3, name: "SECUI" })).toBeVisible()
     expect(screen.getByRole("heading", { level: 3, name: "롯데건설" })).toBeVisible()
@@ -94,7 +94,7 @@ describe("BLRO basic homepage", () => {
     expect(container.querySelectorAll(".home-hero h1 .blro-nowrap")).toHaveLength(1)
     expect(screen.getByText("무엇부터 검증할지")).toHaveClass("blro-nowrap")
     expect(screen.getByText("운영 판단")).toHaveClass("blro-nowrap")
-    expect(screen.getByRole("link", { name: /SASE와.*해외지사/u })).toBeVisible()
+    expect(screen.getByRole("link", { name: /해외지사에서.*SASE/u })).toBeVisible()
     expect(screen.getByText("전환 리허설")).toHaveClass("capability-index__scope-term")
     expect(screen.getByText("설계·PoC·전환·안정화")).toHaveClass("blro-nowrap")
   })

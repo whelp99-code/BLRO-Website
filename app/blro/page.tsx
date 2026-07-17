@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function BlroPage() {
   return (
     <StrategicPage
+      ctaId="strategic-customer-project"
       ctaHref="/contact?type=customer-project"
       ctaLabel="기술 프로젝트 상담"
       eyebrow="BLRO · OPERATING PARTNER"

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { handleRequest, type LeadDatabase, type LeadGatewayEnvironment } from "@/workers/lead-gateway/src/index"
+import { handleRequest, type AnalyticsRateLimiter, type LeadDatabase, type LeadGatewayEnvironment } from "@/workers/lead-gateway/src/index"
 
 const environment = {
   ALLOWED_ORIGINS: "https://preview.blro-website.pages.dev",
@@ -33,6 +33,10 @@ function leadMagnetRequest(body: unknown, headers: HeadersInit = {}): Request {
   })
 }
 
+function analyticsRateLimiter(success = true): AnalyticsRateLimiter {
+  return { limit: vi.fn().mockResolvedValue({ success }) }
+}
+
 describe("lead gateway intake boundary", () => {
   it("rejects cross-origin and malformed requests before an inquiry is accepted", async () => {
     const crossOrigin = await handleRequest(request(validInquiry, { origin: "https://untrusted.example" }), environment)
@@ -49,10 +53,15 @@ describe("lead gateway intake boundary", () => {
     const bind = vi.fn().mockReturnValue({ first, run })
     const prepare = vi.fn().mockReturnValue({ bind })
     const database = { batch: vi.fn(), prepare } satisfies LeadDatabase
-    const analyticsEnvironment = { ...environment, DB: database } satisfies LeadGatewayEnvironment
+    const analyticsEnvironment = {
+      ...environment,
+      ANALYTICS_GLOBAL_RATE_LIMITER: analyticsRateLimiter(),
+      ANALYTICS_RATE_LIMITER: analyticsRateLimiter(),
+      DB: database,
+    } satisfies LeadGatewayEnvironment
     const result = await handleRequest(new Request("https://api.blro.example/v1/analytics", {
       method: "POST",
-      headers: { "content-type": "text/plain;charset=UTF-8", origin: "https://preview.blro-website.pages.dev" },
+      headers: { "cf-connecting-ip": "192.0.2.10", "content-type": "text/plain;charset=UTF-8", origin: "https://preview.blro-website.pages.dev" },
       body: JSON.stringify({
         eventId: "6d6ad56d-9616-49e9-b4a1-6ea7d95beab8",
         name: "cta_clicked",
@@ -73,6 +82,28 @@ describe("lead gateway intake boundary", () => {
       null,
       expect.any(String),
     )
+  })
+
+  it("rejects analytics before D1 when an edge rate limit is exhausted", async () => {
+    const prepare = vi.fn()
+    const database = { batch: vi.fn(), prepare } satisfies LeadDatabase
+    const result = await handleRequest(new Request("https://api.blro.example/v1/analytics", {
+      method: "POST",
+      headers: { "cf-connecting-ip": "192.0.2.11", "content-type": "text/plain", origin: "https://preview.blro-website.pages.dev" },
+      body: JSON.stringify({
+        eventId: "6d6ad56d-9616-49e9-b4a1-6ea7d95beab8",
+        name: "cta_clicked",
+        properties: { ctaId: "hero-customer-diagnostic", placement: "hero", landingPath: "/" },
+      }),
+    }), {
+      ...environment,
+      ANALYTICS_GLOBAL_RATE_LIMITER: analyticsRateLimiter(),
+      ANALYTICS_RATE_LIMITER: analyticsRateLimiter(false),
+      DB: database,
+    })
+
+    expect(result.status).toBe(429)
+    expect(prepare).not.toHaveBeenCalled()
   })
 
   it("keeps valid inquiries unavailable until approved delivery bindings exist", async () => {

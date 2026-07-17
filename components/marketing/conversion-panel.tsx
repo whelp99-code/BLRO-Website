@@ -4,9 +4,9 @@ import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
 
 const CONVERSIONS = [
-  { href: "/contact?type=customer-project", label: "전환 진단 상담", note: "우선순위 워크로드와 검증 범위를 함께 정리합니다." },
-  { href: "/contact?type=partner-collaboration", label: "파트너 공동 수행", note: "제안부터 구축까지 역할과 실행 기준을 논의합니다." },
-  { href: "/contact?type=vendor-korea-entry", label: "한국 시장 실행", note: "고객 검증과 현지 기술 수행 체계를 설계합니다." },
+  { ctaId: "conversion-customer-project", href: "/contact?type=customer-project", label: "전환 진단 상담", note: "우선순위 워크로드와 검증 범위를 함께 정리합니다." },
+  { ctaId: "conversion-partner-collaboration", href: "/contact?type=partner-collaboration", label: "파트너 공동 수행", note: "제안부터 구축까지 역할과 실행 기준을 논의합니다." },
+  { ctaId: "conversion-vendor-korea-entry", href: "/contact?type=vendor-korea-entry", label: "한국 시장 실행", note: "고객 검증과 현지 기술 수행 체계를 설계합니다." },
 ] as const
 
 export function ConversionPanel() {
@@ -27,7 +27,7 @@ export function ConversionPanel() {
                 className="blro-link blro-link--standalone conversion-action"
                 href={conversion.href}
                 key={conversion.href}
-                properties={{ ctaId: `conversion-${conversion.href}`, placement: "conversion-panel" }}
+                properties={{ ctaId: conversion.ctaId, placement: "conversion-panel" }}
               >
                 <span>
                   <strong>{conversion.label}</strong>

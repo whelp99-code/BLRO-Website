@@ -7,10 +7,10 @@ export function SangforKoreaCases() {
       <div className="external-cases__heading">
         <div>
           <Eyebrow>VENDOR-PUBLISHED KOREA CASES</Eyebrow>
-          <Heading id="sangfor-cases-heading" level={3}>Sangfor가 공개한 국내 운영 사례</Heading>
+          <Heading id="sangfor-cases-heading" level={3}>Sangfor 국내 공식 사례</Heading>
         </div>
         <Text>
-          아래 내용은 Sangfor 공식 사이트의 공개 사례를 BLRO의 진단 관점으로 정리한 외부 참고 자료입니다. BLRO의 수행 실적이나 성과 보증을 의미하지 않습니다.
+          Sangfor 공식 사이트의 공개 사례를 BLRO의 진단 관점으로 정리한 외부 참고 자료입니다. BLRO 수행 실적 또는 성과 보증이 아닙니다.
         </Text>
       </div>
       <ol className="external-cases__list">

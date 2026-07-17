@@ -19,17 +19,25 @@ function topicFromType(type: string | null): InquiryTopic {
   return "general"
 }
 
+function contactCtaId(type: string | null): "contact-customer-project" | "contact-partner-collaboration" | "contact-vendor-korea-entry" | "contact-general" {
+  if (type === "customer-project") return "contact-customer-project"
+  if (type === "partner-collaboration") return "contact-partner-collaboration"
+  if (type === "vendor-korea-entry") return "contact-vendor-korea-entry"
+  return "contact-general"
+}
+
 export function InquiryForm() {
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
   const [hasStarted, setHasStarted] = useState(false)
   const topic = topicFromType(searchParams?.get("type") ?? null)
+  const analyticsCtaId = contactCtaId(searchParams?.get("type") ?? null)
   const ready = endpoint !== undefined && siteKey !== undefined
 
   function trackStart() {
     if (hasStarted) return
     setHasStarted(true)
-    emitAnalyticsEvent("form_started", { ctaId: `contact-${searchParams?.get("type") ?? "general"}`, placement: "contact-form", topic })
+    emitAnalyticsEvent("form_started", { ctaId: analyticsCtaId, placement: "contact-form", topic })
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -62,7 +70,7 @@ export function InquiryForm() {
         attribution: { ctaId: "contact-form", landingPath: window.location.pathname, utm: {} },
         turnstileToken,
       })
-      emitAnalyticsEvent("inquiry_accepted", { ctaId: `contact-${searchParams?.get("type") ?? "general"}`, placement: "contact-form", topic })
+      emitAnalyticsEvent("inquiry_accepted", { ctaId: analyticsCtaId, placement: "contact-form", topic })
       setStatus("success")
       event.currentTarget.reset()
     } catch {

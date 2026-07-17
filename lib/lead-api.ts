@@ -1,3 +1,5 @@
+import { createClientUuid } from "@/lib/client-id"
+
 export type InquiryTopic = "vmware-hci" | "vdi" | "security" | "sase" | "dr" | "general"
 
 export type InquiryInput = Readonly<{
@@ -22,8 +24,7 @@ export type HciReadinessLeadInput = Readonly<{
 }>
 
 function createIdempotencyKey(): string {
-  if (typeof globalThis.crypto?.randomUUID === "function") return globalThis.crypto.randomUUID()
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`
+  return createClientUuid()
 }
 
 export async function submitInquiry(endpoint: string, input: InquiryInput): Promise<void> {

@@ -208,6 +208,7 @@ Base unit: 4px.
 - `/diagnostic-sample` is an illustrative deliverable, not a customer result or a promised recommendation. The page must label its scenario, assumptions, exclusions, decision rules, and next verification explicitly.
 - The decision table uses editorial rows and state labels rather than dashboard chrome. Each row contains the observed condition, evidence still required, and the rule that changes the decision.
 - The homepage and contact page may preview the dossier, but the full sample route remains the canonical explanation of what a customer receives.
+- The homepage dossier uses a compact `Signal Route` variant inside an already bounded navy field. That compact preview keeps the route and endpoint labels but omits the additional threshold overlay; full-width signal fields retain the threshold layer.
 
 ### External Case Evidence
 
