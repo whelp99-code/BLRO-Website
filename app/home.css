@@ -136,6 +136,7 @@
   gap: var(--space-2);
   color: var(--color-ink-muted);
   font: var(--type-eyebrow);
+  letter-spacing: 0.12em;
 }
 
 .home-diagnostic-output__route .blro-signal-field__label--output {
@@ -165,6 +166,7 @@
 .home-diagnostic-output li > span {
   color: var(--color-brand-strong);
   font: var(--type-eyebrow);
+  letter-spacing: 0.12em;
 }
 
 .home-diagnostic-output li > div {
@@ -340,6 +342,7 @@
   color: var(--color-field);
   background: var(--color-accent);
   font: var(--type-eyebrow);
+  letter-spacing: 0.12em;
 }
 
 .evidence-layout {
@@ -492,6 +495,7 @@
 
 .conversion-action strong {
   font: var(--type-h3);
+  letter-spacing: -0.015em;
 }
 
 .conversion-action small {

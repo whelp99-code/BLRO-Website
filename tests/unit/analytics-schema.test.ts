@@ -12,6 +12,8 @@ describe("analytics event boundary", () => {
     expect(parseAnalyticsEvent(validEvent)).toEqual(validEvent)
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, email: "person@example.com" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/contact?email=person" } })).toBeUndefined()
+    expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/person@example.com" } })).toBeUndefined()
+    expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/010-1234-5678" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, ctaId: "010-1234-5678" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, ctaId: "contact-secret-campaign" } })).toBeUndefined()
   })

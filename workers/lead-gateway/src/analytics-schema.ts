@@ -1,5 +1,5 @@
 import { isAnalyticsCtaId } from "../../../lib/analytics/cta-ids"
-import { ANALYTICS_EVENTS, ANALYTICS_FIELDS, ANALYTICS_PLACEMENTS, ANALYTICS_TOPICS } from "../../../lib/analytics/events"
+import { ANALYTICS_EVENTS, ANALYTICS_FIELDS, ANALYTICS_PLACEMENTS, ANALYTICS_TOPICS, isAnalyticsLandingPath } from "../../../lib/analytics/events"
 
 const EVENT_NAMES: ReadonlySet<string> = new Set(ANALYTICS_EVENTS)
 const PLACEMENTS: ReadonlySet<string> = new Set(ANALYTICS_PLACEMENTS)
@@ -40,10 +40,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
-function isLandingPath(value: unknown): value is string {
-  return typeof value === "string" && value.length <= 240 && value.startsWith("/") && !value.startsWith("//") && !value.includes("?") && !value.includes("#")
-}
-
 export function parseAnalyticsEvent(value: unknown): ParsedAnalyticsEvent | undefined {
   if (!isRecord(value) || typeof value["eventId"] !== "string" || !EVENT_ID_PATTERN.test(value["eventId"])) return undefined
   if (typeof value["name"] !== "string" || !EVENT_NAMES.has(value["name"])) return undefined
@@ -64,7 +60,7 @@ export function parseAnalyticsEvent(value: unknown): ParsedAnalyticsEvent | unde
 
   if (ctaId !== undefined && !isAnalyticsCtaId(ctaId)) return undefined
   if (field !== undefined && (typeof field !== "string" || !FIELDS.has(field))) return undefined
-  if (landingPath !== undefined && !isLandingPath(landingPath)) return undefined
+  if (landingPath !== undefined && !isAnalyticsLandingPath(landingPath)) return undefined
   if (placement !== undefined && (typeof placement !== "string" || !PLACEMENTS.has(placement))) return undefined
   if (topic !== undefined && (typeof topic !== "string" || !TOPICS.has(topic))) return undefined
 
