@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { handleRequest } from "@/workers/lead-gateway/src/index"
+import { describe, expect, it, vi } from "vitest"
+import { handleRequest, type LeadDatabase, type LeadGatewayEnvironment } from "@/workers/lead-gateway/src/index"
 
 const environment = {
   ALLOWED_ORIGINS: "https://preview.blro-website.pages.dev",
@@ -41,6 +41,38 @@ describe("lead gateway intake boundary", () => {
     expect(crossOrigin.status).toBe(403)
     expect(await crossOrigin.json()).toEqual({ error: "origin_not_allowed" })
     expect(malformed.status).toBe(400)
+  })
+
+  it("accepts an allowlisted analytics event without enabling PII intake", async () => {
+    const run = vi.fn().mockResolvedValue({ meta: { changes: 1 } })
+    const first = vi.fn().mockResolvedValue(null)
+    const bind = vi.fn().mockReturnValue({ first, run })
+    const prepare = vi.fn().mockReturnValue({ bind })
+    const database = { batch: vi.fn(), prepare } satisfies LeadDatabase
+    const analyticsEnvironment = { ...environment, DB: database } satisfies LeadGatewayEnvironment
+    const result = await handleRequest(new Request("https://api.blro.example/v1/analytics", {
+      method: "POST",
+      headers: { "content-type": "text/plain;charset=UTF-8", origin: "https://preview.blro-website.pages.dev" },
+      body: JSON.stringify({
+        eventId: "6d6ad56d-9616-49e9-b4a1-6ea7d95beab8",
+        name: "cta_clicked",
+        properties: { ctaId: "hero-customer-diagnostic", placement: "hero", landingPath: "/" },
+      }),
+    }), analyticsEnvironment)
+
+    expect(result.status).toBe(202)
+    expect(prepare).toHaveBeenCalledWith(expect.stringContaining("INSERT OR IGNORE INTO analytics_events"))
+    expect(bind).toHaveBeenCalledWith(
+      "6d6ad56d-9616-49e9-b4a1-6ea7d95beab8",
+      expect.any(String),
+      "cta_clicked",
+      "hero-customer-diagnostic",
+      "hero",
+      "/",
+      null,
+      null,
+      expect.any(String),
+    )
   })
 
   it("keeps valid inquiries unavailable until approved delivery bindings exist", async () => {

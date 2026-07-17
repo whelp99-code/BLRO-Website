@@ -1,9 +1,10 @@
 "use client"
 
+import Link from "next/link"
 import { useSyncExternalStore } from "react"
 
 const CONSENT_STORAGE_KEY = "blro-analytics-consent"
-const CONSENT_CHANGE_EVENT = "blro:analytics-consent-change"
+export const CONSENT_CHANGE_EVENT = "blro:analytics-consent-change"
 
 export type AnalyticsConsent = "accepted" | "rejected" | "undecided"
 
@@ -13,7 +14,7 @@ export function getAnalyticsConsent(): AnalyticsConsent {
   return stored === "accepted" || stored === "rejected" ? stored : "undecided"
 }
 
-function subscribeToConsent(onStoreChange: () => void) {
+export function subscribeToConsent(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange)
   window.addEventListener(CONSENT_CHANGE_EVENT, onStoreChange)
   return () => {
@@ -33,8 +34,10 @@ export function ConsentManager() {
   if (consent !== "undecided") return null
 
   return (
-    <aside aria-label="웹사이트 측정 동의" className="blro-consent" role="dialog">
-      <p>사이트 개선을 위한 비식별 이용 측정에 동의하시겠습니까? 이름, 이메일, 문의 내용은 측정하지 않습니다.</p>
+    <aside aria-labelledby="analytics-consent-heading" className="blro-consent" data-testid="analytics-consent">
+      <p id="analytics-consent-heading">
+        사이트 개선을 위한 비식별 이용 측정입니다. 이름·이메일·문의 내용은 측정하지 않습니다. <Link href="/privacy#usage-measurement">자세히 보기</Link>
+      </p>
       <div>
         <button className="blro-button blro-button--secondary blro-button--compact" onClick={() => decide("rejected")} type="button">
           거부

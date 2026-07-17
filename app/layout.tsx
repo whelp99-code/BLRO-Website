@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
+import { AnalyticsProvider } from "@/components/analytics/analytics-provider"
 import { ConsentManager } from "@/components/analytics/consent-manager"
 import { SiteFooterShell } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
@@ -37,11 +38,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           본문으로 건너뛰기
         </a>
         <SiteHeader />
+        <ConsentManager />
+        <AnalyticsProvider />
         <main id="main-content" tabIndex={-1}>
           {children}
         </main>
         <SiteFooterShell />
-        <ConsentManager />
       </body>
     </html>
   )

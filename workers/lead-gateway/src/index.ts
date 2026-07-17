@@ -1,10 +1,27 @@
+import { parseAnalyticsEvent } from "./analytics-schema"
 import { parseInquiry } from "./inquiry-schema"
 import { parseHciReadinessRequest } from "./lead-magnet-schema"
 import { decryptPayload, encryptPayload, type EncryptedPayload } from "./payload-crypto"
 
+type LeadDatabaseResult = Readonly<{ meta: Readonly<{ changes?: number }> }>
+
+type LeadDatabaseBoundStatement = Readonly<{
+  first<T>(): Promise<T | null>
+  run(): Promise<LeadDatabaseResult>
+}>
+
+type LeadDatabaseStatement = Readonly<{
+  bind(...values: unknown[]): LeadDatabaseBoundStatement
+}>
+
+export type LeadDatabase = Readonly<{
+  batch(statements: readonly LeadDatabaseBoundStatement[]): Promise<readonly LeadDatabaseResult[]>
+  prepare(query: string): LeadDatabaseStatement
+}>
+
 export type LeadGatewayEnvironment = {
   readonly ALLOWED_ORIGINS: string
-  readonly DB?: D1Database
+  readonly DB?: LeadDatabase
   readonly ENVIRONMENT: "preview" | "production"
   readonly INQUIRY_INTAKE_ENABLED: "true" | "false"
   readonly LEAD_MAGNET_DOWNLOAD_SECRET?: string
@@ -23,7 +40,7 @@ type StoredLead = Readonly<{
 }>
 
 type IntakeBindings = Readonly<{
-  DB: D1Database
+  DB: LeadDatabase
   LEAD_QUEUE: Queue<LeadQueueMessage>
   PII_ENCRYPTION_KEY: string
   SLACK_WEBHOOK_URL: string
@@ -52,6 +69,11 @@ function allowedOrigins(value: string): ReadonlySet<string> {
 
 function hasJsonContentType(request: Request): boolean {
   return request.headers.get("content-type")?.toLowerCase().startsWith("application/json") ?? false
+}
+
+function hasAnalyticsContentType(request: Request): boolean {
+  const value = request.headers.get("content-type")?.toLowerCase()
+  return value?.startsWith("application/json") === true || value?.startsWith("text/plain") === true
 }
 
 async function readTextWithinLimit(request: Request): Promise<string | undefined> {
@@ -243,6 +265,38 @@ async function handleHciReadinessRequest(
   return new Response(JSON.stringify({ status: "accepted", downloadUrl: downloadUrl.toString() }), { status: 202, headers: { ...NO_STORE_HEADERS, "access-control-allow-origin": origin, vary: "Origin" } })
 }
 
+async function handleAnalyticsEvent(request: Request, origin: string, env: LeadGatewayEnvironment): Promise<Response> {
+  if (!hasAnalyticsContentType(request)) return response(415, { error: "analytics_content_type_required" }, origin)
+  const text = await readTextWithinLimit(request)
+  if (text === undefined) return response(413, { error: "payload_too_large" }, origin)
+
+  let payload: unknown
+  try {
+    payload = JSON.parse(text)
+  } catch {
+    return response(400, { error: "invalid_json" }, origin)
+  }
+  const event = parseAnalyticsEvent(payload)
+  if (event === undefined) return response(400, { error: "invalid_analytics_event" }, origin)
+  if (env.DB === undefined) return response(503, { error: "analytics_not_configured" }, origin)
+
+  const now = new Date().toISOString()
+  await env.DB.prepare(
+    "INSERT OR IGNORE INTO analytics_events (event_id, received_at, event_name, cta_id, placement, landing_path, topic, field, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  ).bind(
+    event.eventId,
+    now,
+    event.name,
+    event.properties.ctaId ?? null,
+    event.properties.placement ?? null,
+    event.properties.landingPath ?? null,
+    event.properties.topic ?? null,
+    event.properties.field ?? null,
+    isoAfterDays(RETENTION_DAYS),
+  ).run()
+  return response(202, { status: "accepted" }, origin)
+}
+
 async function handleHciReadinessDownload(request: Request, env: LeadGatewayEnvironment): Promise<Response> {
   const bindings = leadMagnetBindings(env)
   if (bindings === undefined) return response(503, { error: "lead_magnet_not_configured" })
@@ -297,6 +351,10 @@ export async function handleRequest(request: Request, env: LeadGatewayEnvironmen
     return handleHciReadinessDownload(request, env)
   }
   if (request.method !== "POST" || (path !== "/v1/inquiries" && path !== "/v1/lead-magnets/hci-readiness")) {
+    if (request.method === "POST" && path === "/v1/analytics") {
+      if (origin === undefined) return response(403, { error: "origin_not_allowed" })
+      return handleAnalyticsEvent(request, origin, env)
+    }
     return response(404, { error: "not_found" })
   }
   if (origin === undefined) return response(403, { error: "origin_not_allowed" })
@@ -390,6 +448,12 @@ export default {
     }
   },
   async scheduled(_, env) {
-    if (env.DB !== undefined) await env.DB.prepare("DELETE FROM leads WHERE expires_at <= ?").bind(new Date().toISOString()).run()
+    if (env.DB !== undefined) {
+      const now = new Date().toISOString()
+      await env.DB.batch([
+        env.DB.prepare("DELETE FROM leads WHERE expires_at <= ?").bind(now),
+        env.DB.prepare("DELETE FROM analytics_events WHERE expires_at <= ?").bind(now),
+      ])
+    }
   },
 } satisfies ExportedHandler<LeadGatewayEnvironment, LeadQueueMessage>
