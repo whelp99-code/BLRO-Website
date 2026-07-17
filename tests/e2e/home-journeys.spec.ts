@@ -58,3 +58,64 @@ test("preserves the skip-link and keyboard focus path", async ({ page }) => {
   await page.keyboard.press("End")
   await expect(primaryNavigation.locator(".blro-nav-cta")).toBeFocused()
 })
+
+test("keeps consent and the primary decision action inside the first mobile viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 844 })
+  await page.goto("/", { waitUntil: "networkidle" })
+
+  const consentBox = await page.locator(".blro-consent").boundingBox()
+  const primaryActionBox = await page.locator(".home-action--primary").boundingBox()
+
+  expect(consentBox).not.toBeNull()
+  expect(primaryActionBox).not.toBeNull()
+
+  if (!consentBox || !primaryActionBox) return
+
+  const boxesIntersect = !(
+    consentBox.y + consentBox.height <= primaryActionBox.y ||
+    primaryActionBox.y + primaryActionBox.height <= consentBox.y ||
+    consentBox.x + consentBox.width <= primaryActionBox.x ||
+    primaryActionBox.x + primaryActionBox.width <= consentBox.x
+  )
+
+  expect(boxesIntersect).toBe(false)
+  expect(primaryActionBox.y + primaryActionBox.height).toBeLessThanOrEqual(844)
+})
+
+test("keeps the primary decision action visible and process stages readable on desktop", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto("/", { waitUntil: "networkidle" })
+
+  const primaryActionBox = await page.locator(".home-action--primary").boundingBox()
+  expect(primaryActionBox).not.toBeNull()
+  expect((primaryActionBox?.y ?? 900) + (primaryActionBox?.height ?? 1)).toBeLessThanOrEqual(900)
+
+  const stageWidths = await page.locator(".process-timeline__stage").evaluateAll((stages) =>
+    stages.map((stage) => stage.getBoundingClientRect().width),
+  )
+  expect(stageWidths).toHaveLength(6)
+  expect(Math.min(...stageWidths)).toBeGreaterThanOrEqual(250)
+})
+
+test("loads analytics and sends an allowlisted event only after consent", async ({ page }) => {
+  let analyticsPayload: unknown
+  await page.route("https://static.cloudflareinsights.com/**", (route) => route.fulfill({ body: "", contentType: "application/javascript", status: 200 }))
+  await page.route("**/v1/analytics", async (route) => {
+    analyticsPayload = JSON.parse(route.request().postData() ?? "{}")
+    await route.fulfill({ body: JSON.stringify({ status: "accepted" }), contentType: "application/json", status: 202 })
+  })
+  await page.goto("/", { waitUntil: "networkidle" })
+
+  await expect(page.locator('script[data-blro-analytics="cloudflare"]')).toHaveCount(0)
+  expect(analyticsPayload).toBeUndefined()
+
+  await page.getByRole("button", { name: "동의" }).click()
+  await expect(page.locator('script[data-blro-analytics="cloudflare"]')).toHaveCount(1)
+  await page.getByTestId("hero-primary-cta").click()
+
+  await expect.poll(() => analyticsPayload).toMatchObject({
+    name: "cta_clicked",
+    properties: { ctaId: "hero-customer-diagnostic", landingPath: "/", placement: "hero" },
+  })
+  expect(analyticsPayload).not.toHaveProperty("properties.email")
+})

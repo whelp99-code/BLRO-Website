@@ -6,6 +6,7 @@
 - Lazyweb: 4 queries, 32 results, 6 desktop screens viewed. Reused the low-density hero, immediate proof rail, first-class partner path, and low-chrome capability modules found across Equinix, SentinelOne, ScienceLogic, Zscaler, Paddle, and Checkout.com.
 - Imagen: 8 concept sections inspected. Selected `01-hero.png` as the primary composition contract and the full set as a shared visual grammar: warm off-white paper, deep navy fields, cyan route lines, hairline coordinates, and clipped technical edges.
 - Source constraints: `01_BLUEPRINT.md`, `04_INFORMATION_ARCHITECTURE.md`, `05_CONTENT_STRATEGY.md`, and `06_DESIGN_SYSTEM.md` remain authoritative. No reference logo, copy, customer mark, metric, dashboard, map coordinate, or product claim is copied.
+- Partner-reference redesign (2026-07-15): inspected Cloud1AN, AHTID, SGNINE HCI, and Sangfor public pages. Kept only reusable decision-path grammar — problem, criteria, comparison, execution, next action — and rejected their proprietary marks, customer claims, performance figures, and vendor copy. The current implementation adds an in-context diagnostic Signal Route and solution-specific Decision Map using already approved service concepts.
 
 ## 1. Atmosphere & Identity
 
@@ -195,6 +196,31 @@ Base unit: 4px.
 - `Evidence List` may render only records returned by the public content index. With zero public projects it explicitly shows capability and insight evidence instead of inferred metrics or examples.
 - `Conversion Panel` repeats the three audience decisions in the final navy information mode and links only to the matching homepage audience sections in PR-04A.
 - All homepage sections preserve source order and full content at mobile, tablet, and desktop breakpoints. Section targets use the global header spacing tokens for reliable focused navigation.
+
+### Consent Notice
+
+- The undecided analytics notice is a compact document-flow banner immediately after the global header. It never floats above, obscures, or repositions itself over page actions.
+- The explanation and two native buttons remain visible together at every breakpoint. A privacy link explains the measured fields and retention boundary.
+- Accepting or rejecting removes the banner; only acceptance may load the Cloudflare beacon or send the allowlisted first-party event envelope.
+
+### Diagnostic Decision Dossier
+
+- `/diagnostic-sample` is an illustrative deliverable, not a customer result or a promised recommendation. The page must label its scenario, assumptions, exclusions, decision rules, and next verification explicitly.
+- The decision table uses editorial rows and state labels rather than dashboard chrome. Each row contains the observed condition, evidence still required, and the rule that changes the decision.
+- The homepage and contact page may preview the dossier, but the full sample route remains the canonical explanation of what a customer receives.
+
+### External Case Evidence
+
+- External cases are presented only from a named public source with a direct source link and access date recorded in the evidence ledger.
+- Vendor-published cases are visually and verbally separated from BLRO delivery evidence. Customer names, benefits, and technical details may not imply that BLRO performed the project.
+- Each case explains the operating situation and the decision lesson relevant to a BLRO diagnostic; unverified metrics, partnership status, and outcome guarantees are forbidden.
+
+### Decision Map
+
+- A `Decision Map` translates approved service concepts into four named evaluation stages and one stated output. It is never a feature comparison, a promise of performance, or a customer result.
+- It uses the existing canvas/surface/field, hairline, accent, type, and spacing tokens; no new colors or decorative assets are introduced.
+- On mobile it is a numbered vertical sequence; at tablet and above it becomes four adjacent decision columns. Every stage remains readable without hover, animation, or color-only meaning.
+- The component is required for every public solution detail route so HCI, VDI, DR, network security, and SASE do not collapse into one generic template.
 
 ## 6. Motion & Interaction
 

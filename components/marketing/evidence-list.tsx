@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
+import { SangforKoreaCases } from "@/components/marketing/sangfor-korea-cases"
 import type { ContentRecord } from "@/lib/content"
 import { formatSolutionCopy, PROTECTED_INSIGHT_TITLE_PHRASES } from "@/lib/solutions"
 
@@ -43,6 +44,7 @@ export function EvidenceList({ insights, services }: EvidenceListProps) {
             </div>
           </section>
         </div>
+        <SangforKoreaCases />
       </Container>
     </Section>
   )

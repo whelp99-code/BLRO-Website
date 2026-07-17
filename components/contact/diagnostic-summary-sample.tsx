@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 
 const sampleRows = [
@@ -37,6 +38,7 @@ export function DiagnosticSummarySample() {
           </div>
         ))}
       </dl>
+      <Link className="blro-link" href="/diagnostic-sample">전체 진단 결과물 예시 보기 <span aria-hidden="true">↗</span></Link>
     </section>
   )
 }

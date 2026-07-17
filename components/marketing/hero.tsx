@@ -2,6 +2,7 @@ import { TrackableLink } from "@/components/analytics/trackable-link"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
+import { SignalRoute } from "@/components/visual/signal-route"
 
 const COMPANY_DEFINITION =
   "BLRO는 인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 운영 판단으로 바꿀 수 있도록, 현황 진단부터 검증·전환·안정화까지 연결하는 기술사업 회사다."
@@ -47,6 +48,7 @@ export function Hero({ heading }: HeroProps) {
           <nav aria-label="기업 고객 전환 진단" className="home-action-row">
             <TrackableLink
               className="blro-link blro-link--standalone home-action home-action--primary"
+              data-testid="hero-primary-cta"
               href="/contact?type=customer-project"
               properties={{ ctaId: "hero-customer-diagnostic", placement: "hero" }}
             >
@@ -72,8 +74,18 @@ export function Hero({ heading }: HeroProps) {
           </nav>
         </div>
         <section aria-labelledby="diagnostic-output-heading" className="home-diagnostic-output">
-          <Eyebrow>FIRST CONVERSATION OUTPUT</Eyebrow>
-          <Heading id="diagnostic-output-heading" level={2}>첫 상담에서 함께 정리하는 것</Heading>
+          <div className="home-diagnostic-output__header">
+            <Eyebrow>FIRST CONVERSATION OUTPUT</Eyebrow>
+            <Heading id="diagnostic-output-heading" level={2}>첫 상담에서 함께 정리하는 것</Heading>
+          </div>
+          <div className="home-diagnostic-output__route">
+            <SignalRoute label="현재 운영 조건에서 다음 검증과 의사결정으로 이어지는 전환 진단 흐름" />
+            <div aria-hidden="true" className="home-diagnostic-output__route-labels">
+              <span>현재 조건</span>
+              <span>판단 기준</span>
+              <span>다음 검증</span>
+            </div>
+          </div>
           <ol>
             {DIAGNOSTIC_OUTPUTS.map((output, index) => (
               <li key={output.title}>
@@ -86,6 +98,13 @@ export function Hero({ heading }: HeroProps) {
             ))}
           </ol>
           <Text className="home-diagnostic-output__note" variant="small">제품 추천보다 판단 기준과 검증 범위를 먼저 정리합니다.</Text>
+          <TrackableLink
+            className="blro-link home-diagnostic-output__sample-link"
+            href="/diagnostic-sample"
+            properties={{ ctaId: "hero-diagnostic-sample", placement: "hero" }}
+          >
+            실제 진단 요약 예시 보기 <span aria-hidden="true">↗</span>
+          </TrackableLink>
         </section>
       </Container>
     </Section>

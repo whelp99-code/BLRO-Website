@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next"
 import { createContentIndex } from "@/lib/content"
 import { absoluteUrl } from "@/lib/site"
 
-const STATIC_ROUTES = ["/", "/blro", "/solutions", "/ai-automation", "/partner-business", "/projects", "/insights", "/contact", "/privacy", "/terms"] as const
+const STATIC_ROUTES = ["/", "/blro", "/solutions", "/ai-automation", "/partner-business", "/projects", "/insights", "/diagnostic-sample", "/contact", "/privacy", "/terms"] as const
 
 export const dynamic = "force-static"
 
