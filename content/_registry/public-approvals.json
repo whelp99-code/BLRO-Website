@@ -77,12 +77,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-12",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
-      "contentSha256": "b624f26cc49b50f8caa49a1549bc625e431959e0e0d8a57f56a0407cfca75d0b",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-12"
+      "contentSha256": "5d25e64a8be61d2c1d0ccd015ab956915060f81f6e8fb403f3a237cfac9646c0",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-vdi-capacity",
@@ -91,12 +91,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-12",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
-      "contentSha256": "4cc880f4ca3a5af4e31bb7050e360701d202426407d3d6f3915e81bd3085d024",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-12"
+      "contentSha256": "e6d6a0b341fc88f36304a757cc798b4646a28151d1679e596f1b2b464f2269ee",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-recovery-objectives",
@@ -105,12 +105,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-12",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
-      "contentSha256": "6b1a09601bbfc709f2b8c3ef9badf34a5d6f72d3a28f51766877dca3aaea0b94",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-12"
+      "contentSha256": "89a388d3956534111118e9e4ee7c62a7085a4efadc1cc385c279a1749a4c3257",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-secure-access",
@@ -119,12 +119,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-12",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
-      "contentSha256": "fd52b21c1697dc89becb4d242072479f665460f27b691f79d54770832e5b7717",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-12"
+      "contentSha256": "b4fb6eab3743ce8184993786beb4067838c7f5b5bfafc66641f113bb554152eb",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-sase-roles",
@@ -133,12 +133,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-12",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
-      "contentSha256": "5d56b6551b37bedb2c0df7bb0f50e7fbbdac88acc5433a480fc2e576e23fe71a",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-12"
+      "contentSha256": "01917a38ef393755da1721c687d84753cd4030a5ab31dae461975d2afc192e84",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-security-consulting-baseline",
@@ -147,12 +147,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-14",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:33-42", "05_CONTENT_STRATEGY.md:49-63"],
-      "contentSha256": "9a2a395de3ed3984589d4a18233264613d350670988c2a631a7f92bf6256cbe4",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-14"
+      "contentSha256": "4990d7d19d87a7838a2ee362e82b90a55a838cf1d0341351a683df62ab6e71ac",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-infrastructure-consulting-baseline",
@@ -161,12 +161,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-14",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:49-63"],
-      "contentSha256": "1a7a50550886789e6a0b78de3b7677d159d447e0fec6a9c88cc0522d7eb28c8d",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-14"
+      "contentSha256": "7a848ae829f84f74b981e11d64c0df08b7baa0918d90fb22016b62635657a2b9",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     },
     {
       "approvalId": "approval-insight-virtualization-hci-migration-guide",
@@ -175,12 +175,12 @@
       "locale": "ko",
       "approverRole": "planning-source-owner",
       "source": "approved-planning-package",
-      "approvedAt": "2026-07-14",
+      "approvedAt": "2026-07-15",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:133-148"],
-      "contentSha256": "cc215c3cb754fdb0e01ab421d9ecbcf5771f4c899671bd1bb9df7f2bdf762e3c",
-      "reviewAt": "2026-10-01",
-      "expiresAt": "2027-07-14"
+      "contentSha256": "d9d2a39bb7ec93ed1645345e3cccfd8cffec7c91adea049d21622a7cfe04f8c1",
+      "reviewAt": "2026-10-15",
+      "expiresAt": "2027-07-15"
     }
   ]
 }

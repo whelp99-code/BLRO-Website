@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import SolutionsPage from "@/app/solutions/page"
 import SolutionPage, { generateMetadata, generateStaticParams } from "@/app/solutions/[slug]/page"
 import SolutionNotFound from "@/app/solutions/[slug]/not-found"
-import { formatSolutionCopy, SOLUTION_SLUGS } from "@/lib/solutions"
+import { formatSolutionCopy, solutionDecisionMaps, SOLUTION_SLUGS } from "@/lib/solutions"
 
 describe("solution routes", () => {
   it("renders the approved five-solution hub when the index route is requested", async () => {
@@ -35,9 +35,28 @@ describe("solution routes", () => {
     expect(markup).toContain("BLRO의 역할")
     expect(markup).toContain("주요 산출물")
     expect(markup).toContain('"@type":"Service"')
-    expect(markup).toContain("ZTNA와 SSL VPN 적용 기준 비교")
+    expect(markup).toContain("ZTNA와 SSL VPN: 제품 비교보다 먼저 확인할 접근 경로 5가지")
     expect(markup).toContain('href="/insights/secure-access-selection"')
     expect(markup).toContain('href="/contact?type=customer-project"')
+    expect(markup).toContain("도구 목록이 아니라 접근·대응 책임이 이어지는지 확인합니다.")
+    expect(markup).toContain("기업 고객")
+    expect(markup).not.toContain(">customer<")
+  })
+
+  it("gives every public solution a distinct decision map without exposing internal audience values", async () => {
+    for (const slug of SOLUTION_SLUGS) {
+      const page = await SolutionPage({ params: Promise.resolve({ slug }) })
+      const markup = renderToStaticMarkup(page)
+
+      expect(markup).toContain(solutionDecisionMaps[slug].title)
+      for (const stage of solutionDecisionMaps[slug].stages) {
+        expect(markup).toContain(stage.label)
+        expect(markup).toContain(stage.detail)
+      }
+      expect(markup).not.toContain(">customer<")
+      expect(markup).not.toContain(">partner<")
+      expect(markup).not.toContain(">vendor<")
+    }
   })
 
   it("renders a recovery link when the route-local not-found boundary is used", () => {

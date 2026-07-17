@@ -8,7 +8,7 @@ describe("insight routes", () => {
   it("lists only approved public Korean insights", async () => {
     const markup = renderToStaticMarkup(await InsightsPage())
 
-    expect(markup).toContain("보안 컨설팅: 연결 구조에서 시작하는 점검 기준")
+    expect(markup).toContain("보안 컨설팅의 시작점: 장비 목록이 아닌 접근 흐름 지도")
     expect(markup).toContain('href="/insights/security-consulting-baseline"')
     expect(markup).not.toContain("VMware와 Nutanix 비교 평가 매트릭스")
   })
@@ -19,10 +19,10 @@ describe("insight routes", () => {
     const markup = renderToStaticMarkup(page)
 
     expect(await generateStaticParams()).toContainEqual({ slug: "security-consulting-baseline" })
-    expect(metadata.title).toBe("보안 컨설팅: 연결 구조에서 시작하는 점검 기준")
+    expect(metadata.title).toBe("보안 컨설팅의 시작점: 장비 목록이 아닌 접근 흐름 지도")
     expect(markup).toContain('"@type":"Article"')
-    expect(markup).toMatch(/먼저 확인할\s*범위/u)
-    expect(markup).toMatch(/현재 접근 흐름과 신뢰 경계\s*지도/u)
+    expect(markup).toContain("첫 인터뷰에서 확인할 5개\u00a0축")
+    expect(markup).toContain("현재 접근 흐름과 신뢰 경계\u00a0지도")
     expect(markup).toContain('href="/contact?type=customer-project"')
   })
 
