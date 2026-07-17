@@ -140,6 +140,7 @@
 }
 
 .home-diagnostic-output__route .blro-signal-field__label--output {
+  bottom: calc(var(--space-3) + 1.5rem);
   color: var(--color-brand-strong);
 }
 
@@ -501,6 +502,16 @@
 .conversion-action small {
   color: color-mix(in srgb, var(--color-ink-inverse) 72%, transparent);
   font: var(--type-small);
+}
+
+@media (max-width: 22.5rem) {
+  .home-hero {
+    padding-block: var(--space-6) var(--space-12);
+  }
+
+  .home-hero__copy {
+    gap: var(--space-4);
+  }
 }
 
 @media (min-width: 48rem) {

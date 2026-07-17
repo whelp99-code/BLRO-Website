@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { emitAnalyticsEvent } from "@/components/analytics/emit-analytics-event"
 import { submitInquiry, type InquiryTopic } from "@/lib/lead-api"
+import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
 
 const endpoint = process.env["NEXT_PUBLIC_LEAD_API_URL"]
 const siteKey = process.env["NEXT_PUBLIC_TURNSTILE_SITE_KEY"]
@@ -66,7 +67,7 @@ export function InquiryForm() {
         ...(phone ? { phone } : {}),
         topic,
         ...(message ? { message } : {}),
-        consent: { privacyVersion: "2026-07-14", marketing: false },
+        consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: false },
         attribution: { ctaId: "contact-form", landingPath: window.location.pathname, utm: {} },
         turnstileToken,
       })

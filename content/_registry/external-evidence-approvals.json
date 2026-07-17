@@ -1,0 +1,49 @@
+{
+  "approvals": [
+    {
+      "approvalId": "approval-external-sangfor-secui-hci",
+      "evidenceId": "sangfor-korea-secui-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-07-17",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hci-gogaeg-salye-secui"
+      ],
+      "contentSha256": "a6990d4e7b5277b9bd949d2ee9775d023f9fe4a32ce0cd469056f0315b26d004",
+      "reviewAt": "2026-10-17",
+      "expiresAt": "2027-07-17"
+    },
+    {
+      "approvalId": "approval-external-sangfor-lotte-vdi",
+      "evidenceId": "sangfor-korea-lotte-vdi",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-07-17",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/vdi-losdegeonseol"
+      ],
+      "contentSha256": "d9cc2581fdcdc392a37cecf781d8b41fc09eee7146ab1f8bed7d6da38ede4504",
+      "reviewAt": "2026-10-17",
+      "expiresAt": "2027-07-17"
+    },
+    {
+      "approvalId": "approval-external-sangfor-lg-hh-sdwan",
+      "evidenceId": "sangfor-korea-lg-hh-sdwan",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-07-17",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/sd-wan-lgsaenghwalgeongang-guchug"
+      ],
+      "contentSha256": "488bb42940b4bf79d4515438cde25bab7040772e21c00a49ad4d23b7d0538163",
+      "reviewAt": "2026-10-17",
+      "expiresAt": "2027-07-17"
+    }
+  ]
+}

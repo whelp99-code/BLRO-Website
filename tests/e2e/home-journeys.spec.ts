@@ -40,6 +40,20 @@ for (const viewport of VIEWPORTS) {
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
     expect(overflow).toBeLessThanOrEqual(0)
+
+    const outputLabelBox = await page.locator(".home-diagnostic-output__route .blro-signal-field__label--output").boundingBox()
+    const nextStepLabelBox = await page.locator(".home-diagnostic-output__route-labels span").last().boundingBox()
+    expect(outputLabelBox).not.toBeNull()
+    expect(nextStepLabelBox).not.toBeNull()
+    if (outputLabelBox && nextStepLabelBox) {
+      const labelsIntersect = !(
+        outputLabelBox.y + outputLabelBox.height <= nextStepLabelBox.y ||
+        nextStepLabelBox.y + nextStepLabelBox.height <= outputLabelBox.y ||
+        outputLabelBox.x + outputLabelBox.width <= nextStepLabelBox.x ||
+        nextStepLabelBox.x + nextStepLabelBox.width <= outputLabelBox.x
+      )
+      expect(labelsIntersect).toBe(false)
+    }
     expect(consoleErrors).toEqual([])
   })
 }
@@ -59,8 +73,8 @@ test("preserves the skip-link and keyboard focus path", async ({ page }) => {
   await expect(primaryNavigation.locator(".blro-nav-cta")).toBeFocused()
 })
 
-test("keeps consent and the primary decision action inside the first mobile viewport", async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 844 })
+test("keeps consent and the primary decision action inside the narrowest mobile viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 })
   await page.goto("/", { waitUntil: "networkidle" })
 
   const consentBox = await page.locator(".blro-consent").boundingBox()

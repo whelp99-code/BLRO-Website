@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
+import { PRIVACY_NOTICE_EFFECTIVE_LABEL } from "@/lib/privacy-notice"
 import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function PrivacyPage() {
           <Eyebrow>PRIVACY NOTICE</Eyebrow>
           <Heading id="privacy-heading" level={1}>전환 진단 상담 개인정보 처리 안내</Heading>
           <Text variant="lead">BLRO는 상담 요청을 처리하고 회신하기 위해 필요한 최소한의 정보만 받습니다. 마케팅 수신 동의는 요청하지 않습니다.</Text>
-          <p className="privacy-page__effective">시행일: 2026년 7월 17일</p>
+          <p className="privacy-page__effective">시행일: {PRIVACY_NOTICE_EFFECTIVE_LABEL}</p>
         </Container>
       </Section>
 

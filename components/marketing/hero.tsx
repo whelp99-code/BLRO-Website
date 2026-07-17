@@ -5,7 +5,7 @@ import { Section } from "@/components/layout/section"
 import { SignalRoute } from "@/components/visual/signal-route"
 
 const COMPANY_DEFINITION =
-  "BLRO는 인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 운영 판단으로 바꿀 수 있도록, 현황 진단부터 검증·전환·안정화까지 연결하는 기술사업 회사다."
+  "BLRO는 인프라·보안 전환을 앞둔 기업이 기술 비교를 운영 판단으로 바꾸도록, 현황 진단부터 검증·전환·안정화까지 연결하는 기술사업 회사다."
 
 const SUPPORTING_COPY =
   "가상화와 HCI, VDI, 데이터 보호, SASE·보안 운영을 검토할 때 제품을 먼저 권하지 않습니다. 업무 영향·보안 경계·전환 위험·운영 역량을 기준으로, 지금 확인할 범위와 다음 결정을 설계합니다."
@@ -41,7 +41,7 @@ export function Hero({ heading }: HeroProps) {
             <span>먼저 정리합니다.</span>
           </Heading>
           <Text aria-label={COMPANY_DEFINITION} className="home-hero__definition" variant="lead">
-            인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 <span className="blro-nowrap">운영 판단으로 바꿀 수 있도록</span>,
+            인프라·보안 전환을 앞둔 기업이 기술 비교를 <span className="blro-nowrap">운영 판단으로 바꾸도록</span>,
             현황 진단부터 검증·전환·안정화까지 연결합니다.
           </Text>
           <Text className="home-hero__support">{SUPPORTING_COPY}</Text>

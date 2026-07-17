@@ -4,6 +4,7 @@ import Script from "next/script"
 import { useState } from "react"
 import { emitAnalyticsEvent } from "@/components/analytics/emit-analytics-event"
 import { requestHciReadinessChecklist } from "@/lib/lead-api"
+import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
 
 const endpoint = process.env["NEXT_PUBLIC_LEAD_API_URL"]
 const siteKey = process.env["NEXT_PUBLIC_TURNSTILE_SITE_KEY"]
@@ -46,7 +47,7 @@ export function HciReadinessDownload() {
         company: value(formData, "company"),
         name: value(formData, "name"),
         workEmail: value(formData, "workEmail"),
-        consent: { privacyVersion: "2026-07-15", marketing: formData.get("marketingConsent") === "on" },
+        consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: formData.get("marketingConsent") === "on" },
         attribution: { ctaId: "insight-hci-readiness-download", landingPath: window.location.pathname, utm: {} },
         turnstileToken,
       })

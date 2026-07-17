@@ -22,7 +22,7 @@
     "test:unit": "vitest run --allowOnly=false --passWithNoTests=false tests/unit",
     "test:component": "vitest run --allowOnly=false --passWithNoTests=false tests/component",
     "test:integration": "vitest run --allowOnly=false --passWithNoTests=false tests/integration",
-    "content:validate": "vitest run --allowOnly=false --passWithNoTests=false tests/unit/content-schema.test.ts tests/unit/content-publication.test.ts tests/integration/content-index.test.ts",
+    "content:validate": "vitest run --allowOnly=false --passWithNoTests=false tests/unit/content-schema.test.ts tests/unit/content-publication.test.ts tests/unit/external-evidence.test.ts tests/integration/content-index.test.ts",
     "test:e2e": "playwright test",
     "test:policy": "node scripts/check-policy.mjs",
     "test:lighthouse": "lhci autorun",
