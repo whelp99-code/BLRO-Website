@@ -140,7 +140,7 @@
 }
 
 .home-diagnostic-output__route .blro-signal-field__label--output {
-  bottom: calc(var(--space-3) + 1.5rem);
+  bottom: calc(var(--space-3) + var(--space-10));
   color: var(--color-brand-strong);
 }
 

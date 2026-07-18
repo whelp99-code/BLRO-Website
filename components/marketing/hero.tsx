@@ -45,7 +45,6 @@ export function Hero({ heading }: HeroProps) {
             <span className="blro-nowrap">바꿀 수 있도록</span>,
             현황 진단부터 검증·전환·안정화까지 연결합니다.
           </Text>
-          <Text className="home-hero__support">{SUPPORTING_COPY}</Text>
           <nav aria-label="기업 고객 전환 진단" className="home-action-row">
             <TrackableLink
               className="blro-link blro-link--standalone home-action home-action--primary"
@@ -65,6 +64,7 @@ export function Hero({ heading }: HeroProps) {
               <span aria-hidden="true">↗</span>
             </TrackableLink>
           </nav>
+          <Text className="home-hero__support">{SUPPORTING_COPY}</Text>
           <nav aria-label="파트너와 벤더 문의 경로" className="home-hero__secondary-actions">
             <TrackableLink href="/contact?type=partner-collaboration" properties={{ ctaId: "hero-partner-path", placement: "hero" }}>
               파트너 공동사업을 검토 중이신가요? <span aria-hidden="true">↗</span>
