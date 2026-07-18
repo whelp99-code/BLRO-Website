@@ -181,6 +181,46 @@
       "contentSha256": "cc215c3cb754fdb0e01ab421d9ecbcf5771f4c899671bd1bb9df7f2bdf762e3c",
       "reviewAt": "2026-10-01",
       "expiresAt": "2027-07-14"
+    },
+    {
+      "approvalId": "approval-insight-azure-local-2606-update-readiness",
+      "contentId": "insight-azure-local-2606-update-readiness",
+      "claimId": "claim-insight-azure-local-2606-update-readiness",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-approval-2026-07-18",
+      "approvedAt": "2026-07-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2606",
+        "https://learn.microsoft.com/en-us/azure/azure-local/release-information-23h2?view=azloc-2606",
+        "https://learn.microsoft.com/en-us/azure/azure-local/update/update-phases-23h2?view=azloc-2606",
+        "https://learn.microsoft.com/en-us/azure/azure-local/update/azure-update-manager-23h2?view=azloc-2606",
+        "https://learn.microsoft.com/en-us/azure/azure-local/known-issues?view=azloc-2606",
+        "https://learn.microsoft.com/en-us/azure/azure-local/update/update-best-practices?view=azloc-2606"
+      ],
+      "contentSha256": "f8c94e15132ad26ab951ab3cbe8590999d8e22ecceab315ec955e27835a82628",
+      "reviewAt": "2026-10-18",
+      "expiresAt": "2027-07-18"
+    },
+    {
+      "approvalId": "approval-insight-avd-rdp-multipath-readiness",
+      "contentId": "insight-avd-rdp-multipath-readiness",
+      "claimId": "claim-insight-avd-rdp-multipath-readiness",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-approval-2026-07-18",
+      "approvedAt": "2026-07-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://learn.microsoft.com/ko-kr/azure/virtual-desktop/whats-new",
+        "https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-multipath",
+        "https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-rdp-shortpath",
+        "https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites"
+      ],
+      "contentSha256": "7efb01800b412678ed99174d2dbef92372ca54ec6229b788a0c6e6bd347dcaab",
+      "reviewAt": "2026-10-18",
+      "expiresAt": "2027-07-18"
     }
   ]
 }

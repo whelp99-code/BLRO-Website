@@ -19,7 +19,7 @@ afterEach(async () => {
 
 describe("content index", () => {
   it("indexes only deterministic approved and published real content", async () => {
-    const now = new Date("2026-07-14T00:00:00.000Z")
+    const now = new Date("2026-07-18T00:00:00.000Z")
 
     const [index, services, projects, insights] = await Promise.all([
       createContentIndex({ contentRoot: join(process.cwd(), "content"), now }),
@@ -42,7 +42,13 @@ describe("content index", () => {
       "review",
       "review",
     ])
-    expect(insights).toHaveLength(8)
+    expect(insights).toHaveLength(10)
+    expect(insights.map((record) => record.meta.slug)).toEqual(
+      expect.arrayContaining([
+        "azure-local-2606-update-readiness",
+        "avd-rdp-multipath-readiness",
+      ]),
+    )
     expect(index.allRecords.filter((record) => record.type === "insight").map((record) => [
       record.meta.slug,
       record.meta.status,

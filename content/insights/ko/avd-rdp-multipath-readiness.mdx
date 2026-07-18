@@ -1,0 +1,96 @@
+---
+contentId: insight-avd-rdp-multipath-readiness
+title: "Azure Virtual Desktop RDP Multipath: 활성화보다 경로 검증이 먼저"
+summary: "중복 UDP·TCP 경로의 전제, 방화벽 용량, 클라이언트 버전과 연결 관측 기준을 정리한 VDI 실무 가이드"
+slug: avd-rdp-multipath-readiness
+locale: ko
+status: approved
+publishedAt: 2026-07-18
+updatedAt: 2026-07-18
+audience: [customer, partner]
+tags: [azure-virtual-desktop, vdi, rdp-multipath, network, operations]
+evidenceRefs:
+  - "https://learn.microsoft.com/ko-kr/azure/virtual-desktop/whats-new"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-multipath"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-rdp-shortpath"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites"
+claimIds: [claim-insight-avd-rdp-multipath-readiness]
+approvalRefs: [approval-insight-avd-rdp-multipath-readiness]
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+- 변경점: 2026년 7월 Azure Virtual Desktop의 중복 TCP 전송 경로 RDP Multipath가 일반 공급됨
+- 핵심 결정: RDP Shortpath 사용 범위, Windows App 버전, UDP·TCP 허용 경로, 사용자당 포트 규모, 관측 방법
+- 운영 원칙: 기능이 자동 동작하더라도 실제 세션이 어떤 경로를 쓰는지는 별도로 확인
+- 주의 조건: 다중 경로는 전체 네트워크 단절, 애플리케이션 오류 또는 사용자 단말 문제를 제거하지 않음
+
+## 문제 상황
+
+VDI 연결이 끊길 때 서버 자원, 사용자 단말, 인터넷, 사내 방화벽, UDP 제한과 Azure 경로를 한 번에 의심하면 원인 분리가 늦어집니다. RDP Multipath는 여러 전송 경로를 유지하고 주 경로가 저하되거나 실패할 때 사용 가능한 예비 UDP 또는 TCP 경로로 전환합니다. 하지만 지원 클라이언트, RDP Shortpath 구성, 방화벽과 포트 용량, 관측 기준이 맞지 않으면 “기능은 제공되지만 실제 세션에서는 확인되지 않는” 상태가 됩니다.
+
+## 지금 결정할 것
+
+- 적용 사용자: 지원되는 로컬 Windows 단말과 Windows App 버전을 확인하고 적용 목록을 만듭니다.
+- 주 전송: UDP 기반 RDP Shortpath 허용 여부와 지점·망별 전송 정책을 정합니다.
+- 예비 경로: STUN·TURN·Reverse Connect 경로와 방화벽 예외를 기록합니다.
+- 용량: 사용자당 여러 outbound transport path를 고려해 포트·방화벽 용량을 산정합니다.
+- 검증: 사용자 화면과 AVD Insights에서 경로 전환을 확인할 정상·저하·복구 시험표를 만듭니다.
+
+## 의사결정 기준
+
+### 지원 클라이언트 범위를 먼저 고정합니다
+
+RDP Multipath는 로컬 Windows 장치의 Windows App을 전제로 합니다. Microsoft 문서는 버전 2.0.559.0 이상에서 다중 UDP 경로를 지원하고, 중복 TCP 경로까지 포함한 최신 향상 기능에는 2.0.1069.0 이상을 요구합니다. 다른 클라이언트 플랫폼을 같은 적용 범위로 간주하지 않습니다.
+
+### UDP와 TCP의 역할을 분리합니다
+
+UDP 기반 RDP Shortpath를 사용할 수 있으면 선호 전송으로 동작하며 STUN 또는 TURN 경로를 구성할 수 있습니다. UDP가 제한된 환경에서는 중복 TCP Reverse Connect 경로가 복원력을 보완할 수 있습니다. “TCP도 된다”는 이유로 Shortpath 준비와 UDP 경로 검증을 생략하지 않습니다.
+
+### 방화벽 정책과 포트 규모를 함께 봅니다
+
+한 사용자 세션은 여러 outbound transport path를 만들 수 있습니다. 따라서 단일 연결 기준으로만 방화벽 세션 수와 NAT 포트를 산정하면 운영 피크에서 다른 결과가 날 수 있습니다. 지점별 동시 사용자, 클라이언트 버전, STUN·TURN 사용 조건과 보안 정책을 함께 검토합니다.
+
+### 자동 전환을 실제 관측으로 확인합니다
+
+사용자는 세션 연결 정보에서 RDP Multipath 활성 여부를 확인할 수 있고, 관리자는 Azure Virtual Desktop Insights에서 연결 안정성 정보를 볼 수 있습니다. 정상 연결만 확인하지 말고 허용된 범위에서 주 경로 저하와 복구 시나리오를 시험해 세션 영향과 관측 로그를 남깁니다.
+
+## 실무 체크리스트
+
+1. 대상 사용자의 단말 OS, Windows App 버전, 접속 위치와 네트워크 유형을 분류합니다.
+2. 호스트 풀과 세션 호스트의 RDP Shortpath 설정을 확인합니다.
+3. 사내망, 인터넷, VPN, 프록시, 방화벽에서 UDP·TCP 경로와 차단 지점을 도식화합니다.
+4. STUN 직접 경로, TURN 릴레이와 Reverse Connect 경로의 적용 조건을 구분합니다.
+5. 사용자당 최대 다중 경로와 동시 사용자 수를 기준으로 포트·세션 용량을 검토합니다.
+6. Windows App 버전 배포·업데이트 책임과 예외 단말 처리 기준을 정합니다.
+7. 사용자 연결 정보에서 RDP Multipath 표시와 현재 전송 상태를 확인합니다.
+8. Azure Virtual Desktop Insights에서 연결 끊김과 경로 신호를 수집합니다.
+9. 주 경로 저하, UDP 제한, 네트워크 복구 시의 세션 영향과 자동 전환을 시험합니다.
+10. Multipath로 해결되지 않는 단말, 인증, 애플리케이션, 전체 회선 장애를 별도 장애 분류로 유지합니다.
+
+## 이 이슈를 BLRO가 다루는 방식
+
+관련 서비스는 VDI와 디지털 워크스페이스, VDI 용량 계획입니다.
+
+- 진단 범위: 사용자·단말, Windows App 버전, 호스트 풀, RDP Shortpath, 지점·방화벽 경로와 관측 구성을 현황화합니다.
+- 의사결정 산출물: 적용 사용자, 전송 정책, 포트 용량, 예외 처리와 시험 시나리오를 담은 연결 복원력 판단표를 만듭니다.
+- 운영 검증: 연결 정보와 AVD Insights를 기준으로 정상·저하·복구 경로를 확인합니다. 무중단, 지연시간, 사용자 경험 또는 특정 회선의 성능은 사전 보장하지 않습니다.
+
+## 제외 범위
+
+- 특정 VDI·네트워크·보안 제품의 우열, 가격, 성능 또는 사용자 밀도 비교
+- 지원되지 않는 클라이언트 플랫폼의 Multipath 동작 보장
+- 전체 회선 단절, 애플리케이션 오류, 인증 실패와 단말 장애의 자동 해결 주장
+- 고객별 방화벽 규칙, 공인 IP, 사용자 위치와 내부 네트워크 구성의 공개
+
+## 단일 CTA
+
+페이지 하단의 전환 진단 범위 확인 버튼에서 VDI 연결 경로 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Azure Virtual Desktop July 2026 update. https://learn.microsoft.com/ko-kr/azure/virtual-desktop/whats-new (확인일: 2026-07-18)
+- Microsoft Learn, RDP Multipath behavior, prerequisites, port scaling and verification. https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-multipath (확인일: 2026-07-18)
+- Microsoft Learn, configure RDP Shortpath. https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-rdp-shortpath (확인일: 2026-07-18)
+- Microsoft Learn, Azure Virtual Desktop prerequisites and network transport. https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites (확인일: 2026-07-18)
