@@ -1,6 +1,14 @@
 import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { SANGFOR_KOREA_CASES } from "@/lib/external-evidence"
 
+const sourceVerificationDates = [...new Set(SANGFOR_KOREA_CASES.map((item) => item.verifiedAt))]
+  .sort()
+  .map((value) => {
+    const [year, month, day] = value.split("-")
+    return `${year}년 ${Number(month)}월 ${Number(day)}일`
+  })
+  .join(", ")
+
 export function SangforKoreaCases() {
   return (
     <section aria-labelledby="sangfor-cases-heading" className="external-cases">
@@ -37,7 +45,7 @@ export function SangforKoreaCases() {
           </li>
         ))}
       </ol>
-      <Text className="external-cases__source-note" variant="small">출처 확인일: 2026년 7월 17일 · 사례의 사실관계와 제품 설명은 각 제조사 원문을 우선합니다.</Text>
+      <Text className="external-cases__source-note" variant="small">출처 확인일: {sourceVerificationDates} · 사례의 사실관계와 제품 설명은 각 제조사 원문을 우선합니다.</Text>
     </section>
   )
 }

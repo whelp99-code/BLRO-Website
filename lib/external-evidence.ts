@@ -62,6 +62,9 @@ export function validateExternalEvidence(
       throw new Error(`[external evidence:${evidence.evidenceId}] duplicate evidence ID`)
     }
     evidenceIds.add(evidence.evidenceId)
+    if (!isIsoDate(evidence.verifiedAt) || evidence.verifiedAt > today) {
+      throw new Error(`[external evidence:${evidence.evidenceId}] no active approval for the published claim`)
+    }
     const contentSha256 = createExternalEvidenceDigest(evidence)
     const approved = registry.approvals.some(
       (candidate) =>
@@ -82,7 +85,7 @@ export function validateExternalEvidence(
         candidate.evidenceRefs.includes(evidence.sourceUrl) &&
         candidate.evidenceRefs.includes("docs/sangfor-korea-case-evidence.md"),
     )
-    if (!approved || evidence.verifiedAt > today) {
+    if (!approved) {
       throw new Error(`[external evidence:${evidence.evidenceId}] no active approval for the published claim`)
     }
   }

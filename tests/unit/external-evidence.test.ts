@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  createExternalEvidenceDigest,
   EXTERNAL_EVIDENCE_APPROVAL_REGISTRY,
   SANGFOR_KOREA_CASES,
   validateExternalEvidence,
@@ -64,5 +65,21 @@ describe("external evidence publication boundary", () => {
     }
 
     expect(() => validateExternalEvidence(SANGFOR_KOREA_CASES, malformedRegistry, approvalDate)).toThrow("no active approval")
+  })
+
+  it("rejects a digest-matched verification date that is not a real calendar date", () => {
+    const [firstEvidence, ...remainingEvidence] = SANGFOR_KOREA_CASES
+    if (!firstEvidence) throw new Error("expected a Sangfor evidence record")
+    const malformedFirstEvidence = { ...firstEvidence, verifiedAt: "2026-02-30" }
+    const malformedEvidence = [malformedFirstEvidence, ...remainingEvidence]
+    const malformedRegistry = {
+      approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) =>
+        approval.evidenceId === malformedFirstEvidence.evidenceId
+          ? { ...approval, contentSha256: createExternalEvidenceDigest(malformedFirstEvidence) }
+          : approval,
+      ),
+    }
+
+    expect(() => validateExternalEvidence(malformedEvidence, malformedRegistry, approvalDate)).toThrow("no active approval")
   })
 })
