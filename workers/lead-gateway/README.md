@@ -7,6 +7,7 @@
 - `POST /v1/inquiries`의 Origin, JSON, 최대 본문 크기, 스키마, honeypot 경계를 검증한다.
 - `POST /v1/lead-magnets/hci-readiness`는 개인정보 처리 동의와 선택 마케팅 동의를 분리해 보관하고, 15분 만료 다운로드 링크만 반환한다.
 - `POST /v1/analytics`는 측정 동의 후 전송된 허용 목록 이벤트만 받으며, 이름·이메일·문의 내용·IP·User-Agent·Referrer는 저장하지 않는다.
+- Queue 소비자가 보내는 `#blro-leads` 알림은 접수 ID·유형·주제·랜딩·CTA만 포함하며 개인정보와 문의 본문을 포함하지 않는다. 상세 개인정보는 암호화된 D1 payload에만 남긴다.
 - 체크리스트 파일은 R2의 `hci-readiness-checklist.pdf`로 비공개 보관하며, `GET /v1/lead-magnets/hci-readiness/download`는 서명과 만료 시각을 검증한다.
 - preview 설정은 `INQUIRY_INTAKE_ENABLED=false`이므로 어떤 문의도 저장·전달하지 않는다.
 - 로그에는 문의 본문, 이메일, 전화번호, 이름, 회사명을 기록하지 않는다.

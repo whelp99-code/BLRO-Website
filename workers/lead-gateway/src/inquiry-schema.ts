@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { PRIVACY_NOTICE_VERSION } from "../../../lib/privacy-notice"
 
-export const inquiryTopics = ["vmware-hci", "vdi", "security", "sase", "dr", "general"] as const
+export const inquiryTopics = ["vmware-hci", "vdi", "security", "sase", "dr", "customer-project", "partner-collaboration", "vendor-korea-entry", "general"] as const
 
 const inquirySchema = z.object({
   company: z.string().trim().min(2).max(100),

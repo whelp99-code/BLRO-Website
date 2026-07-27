@@ -10,6 +10,10 @@ const validEvent = {
 describe("analytics event boundary", () => {
   it("accepts only allowlisted non-PII fields", () => {
     expect(parseAnalyticsEvent(validEvent)).toEqual(validEvent)
+    expect(parseAnalyticsEvent({
+      ...validEvent,
+      properties: { ctaId: "evidence-public-insights", placement: "evidence", landingPath: "/" },
+    })).toBeDefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, email: "person@example.com" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/contact?email=person" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/person@example.com" } })).toBeUndefined()
@@ -29,6 +33,11 @@ describe("analytics event boundary", () => {
       ...validEvent,
       name: "form_validation_failed",
       properties: { field: "consent", landingPath: "/contact", placement: "contact-form", topic: "general" },
+    })).toBeDefined()
+    expect(parseAnalyticsEvent({
+      ...validEvent,
+      name: "inquiry_accepted",
+      properties: { ctaId: "contact-partner-collaboration", landingPath: "/contact", placement: "contact-form", topic: "partner-collaboration" },
     })).toBeDefined()
     expect(parseAnalyticsEvent({
       ...validEvent,

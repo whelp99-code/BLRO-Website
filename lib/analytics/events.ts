@@ -33,8 +33,8 @@ export const ANALYTICS_LANDING_PATHS = [
   "/solutions/vdi-digital-workspace",
   "/terms",
 ] as const
-export const ANALYTICS_PLACEMENTS = ["hero", "conversion-panel", "audience-path", "solution-detail", "insight-detail", "strategic-page", "contact-form", "diagnostic-sample"] as const
-export const ANALYTICS_TOPICS = ["vmware-hci", "vdi", "security", "sase", "dr", "general"] as const
+export const ANALYTICS_PLACEMENTS = ["hero", "conversion-panel", "audience-path", "evidence", "solution-detail", "insight-detail", "strategic-page", "contact-form", "diagnostic-sample"] as const
+export const ANALYTICS_TOPICS = ["vmware-hci", "vdi", "security", "sase", "dr", "customer-project", "partner-collaboration", "vendor-korea-entry", "general"] as const
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[number]
 

@@ -1,6 +1,6 @@
 import { createClientUuid } from "@/lib/client-id"
 
-export type InquiryTopic = "vmware-hci" | "vdi" | "security" | "sase" | "dr" | "general"
+export type InquiryTopic = "vmware-hci" | "vdi" | "security" | "sase" | "dr" | "customer-project" | "partner-collaboration" | "vendor-korea-entry" | "general"
 
 export type InquiryInput = Readonly<{
   attribution: { ctaId: string; landingPath: string; utm: Record<string, string> }

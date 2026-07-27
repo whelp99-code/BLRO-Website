@@ -16,7 +16,7 @@ function value(formData: FormData, name: string): string {
 }
 
 function topicFromType(type: string | null): InquiryTopic {
-  if (type === "customer-project" || type === "partner-collaboration" || type === "vendor-korea-entry") return "general"
+  if (type === "customer-project" || type === "partner-collaboration" || type === "vendor-korea-entry") return type
   return "general"
 }
 
@@ -44,7 +44,8 @@ export function InquiryForm() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!ready) return
-    const formData = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const formData = new FormData(form)
     if (formData.get("privacyConsent") !== "on") {
       emitAnalyticsEvent("form_validation_failed", { field: "consent", placement: "contact-form", topic })
       setStatus("error")
@@ -68,12 +69,12 @@ export function InquiryForm() {
         topic,
         ...(message ? { message } : {}),
         consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: false },
-        attribution: { ctaId: "contact-form", landingPath: window.location.pathname, utm: {} },
+        attribution: { ctaId: analyticsCtaId, landingPath: window.location.pathname, utm: {} },
         turnstileToken,
       })
       emitAnalyticsEvent("inquiry_accepted", { ctaId: analyticsCtaId, placement: "contact-form", topic })
       setStatus("success")
-      event.currentTarget.reset()
+      form.reset()
     } catch {
       setStatus("error")
     }

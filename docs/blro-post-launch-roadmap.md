@@ -10,10 +10,10 @@
 | 운영 웹 | 완료 | `https://blro.co.kr`, `https://www.blro.co.kr` HTTPS 200 확인 |
 | 운영 API | 완료 | `https://api.blro.co.kr` Worker 연결 및 CORS OPTIONS 204 확인 |
 | 운영 빌드 | 완료 | 공개 도메인·API·Turnstile 공개키를 포함한 Pages 배포 완료 |
-| 실제 문의 발송 | 미검증 | Turnstile 통과 → D1 저장 → Queue → 비공개 Slack 알림의 운영 canary 미실행 |
+| 실제 문의 발송 | 운영 경로 확인, post-patch canary 대기 | 2026-07-27 원격 D1 메타데이터 기준 5건이 `accepted`·`delivered`; Worker PII-free Slack 알림 배포 후 새 synthetic canary는 별도 승인 필요 |
 | 검색 등록 | 미착수 | Google Search Console, 네이버 서치어드바이저 소유권 인증·sitemap 제출 필요 |
-| 외부 분석 전송 | 보류 | 동의 UI와 이벤트 계약만 구현됨; 분석 제공자·보관기간 승인 전 |
-| 콘텐츠 승인 운영 | 미착수 | Slack 승인 채널 및 매일 2건 후보 발행 루프 필요 |
+| 외부 분석 전송 | 부분 운영 | 원격 `analytics_events` 6건 확인; provider·보관기간 운영 승인은 별도 기록 필요 |
+| 콘텐츠 승인 운영 | 운영 중 | 2026-07-27 자동화 5건 모두 1·2차 검토 및 45/45 검증 통과, public registry는 승인 전까지 변경하지 않음 |
 
 ## 우선순위
 
@@ -94,4 +94,3 @@ P1이 끝나기 전에는 외부 유료 광고를 시작하지 않는다. 먼저
 | 문의 대응 기준 | 업무시간 기준 1영업일 내 1차 회신 여부 | P3 문구 확정 전 |
 | 개인정보 보관 기간 | 최초에는 12개월, 법무·운영 판단에 따라 조정 | P3 개인정보 문구 확정 전 |
 | 분석 제공자 | Cloudflare Web Analytics 우선, 추가 외부 분석은 동의·보관정책 확정 후 | P3 시작 시 |
-

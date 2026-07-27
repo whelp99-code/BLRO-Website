@@ -154,4 +154,49 @@ describe("lead gateway intake boundary", () => {
     expect(preflight.headers.get("access-control-allow-origin")).toBe("https://preview.blro-website.pages.dev")
     expect(rejected.status).toBe(403)
   })
+
+  it("keeps PII and inquiry text out of Slack delivery alerts", async () => {
+    const slackFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("ok", { status: 200 }))
+    const storedPayload = {
+      company: "Secret Company",
+      name: "Secret Person",
+      workEmail: "secret@example.com",
+      phone: "010-1234-5678",
+      message: "Do not send this to Slack",
+      topic: "vmware-hci",
+      attribution: { landingPath: "/contact", ctaId: "customer-project", utm: {} },
+    }
+    const encryptedPayload = await (async () => {
+      const { encryptPayload } = await import("@/workers/lead-gateway/src/payload-crypto")
+      return encryptPayload(storedPayload, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "v1")
+    })()
+    const first = vi.fn().mockResolvedValue({ encrypted_payload: JSON.stringify(encryptedPayload), payload_key_version: "v1" })
+    const run = vi.fn().mockResolvedValue({ meta: { changes: 1 } })
+    const bind = vi.fn().mockReturnValue({ first, run })
+    const prepare = vi.fn().mockReturnValue({ bind })
+    const database = { batch: vi.fn(), prepare } satisfies LeadDatabase
+    const queue = { send: vi.fn(), sendBatch: vi.fn(), metrics: vi.fn() } as unknown as NonNullable<LeadGatewayEnvironment["LEAD_QUEUE"]>
+    const worker = await import("@/workers/lead-gateway/src/index")
+
+    await worker.default.queue({ messages: [{ body: { leadId: "lead-123" }, ack: vi.fn(), retry: vi.fn() }] } as never, {
+      ...environment,
+      ENVIRONMENT: "production",
+      INQUIRY_INTAKE_ENABLED: "true",
+      DB: database,
+      LEAD_QUEUE: queue,
+      PII_ENCRYPTION_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      SLACK_WEBHOOK_URL: "https://hooks.slack.test",
+      TURNSTILE_SECRET_KEY: "test-turnstile",
+    })
+
+    const body = String(slackFetch.mock.calls[0]?.[1]?.body ?? "")
+    expect(body).toContain("lead-123")
+    expect(body).toContain("PII 미포함")
+    expect(body).not.toContain("Secret Company")
+    expect(body).not.toContain("Secret Person")
+    expect(body).not.toContain("secret@example.com")
+    expect(body).not.toContain("Do not send this to Slack")
+    expect(body).not.toContain("010-1234-5678")
+    slackFetch.mockRestore()
+  })
 })

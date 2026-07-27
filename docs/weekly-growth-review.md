@@ -12,6 +12,18 @@
 | 문의·체크리스트 접수 | 0 | 운영 canary 외 고객 접수 미확인 | P1 검증과 구분 |
 | 승인 공개 콘텐츠 | 기존 승인본만 | public approvals registry | 신규 2건은 review 상태 |
 
+## 운영 갱신 · 2026-07-27
+
+| 지표 | 현재값 | 근거 | 해석 |
+| --- | ---: | --- | --- |
+| 운영 웹/API | 200 / 204 | `blro.co.kr` 주요 경로와 `api.blro.co.kr` CORS preflight | 공개 표면과 API 연결 정상 |
+| 운영 lead 상태 | 5건 accepted, 5건 delivered | 원격 D1 집계 조회 | 이전 canary/테스트 리드가 실제 전달까지 도달 |
+| 비식별 분석 이벤트 | 6건 | 원격 `analytics_events` 집계 조회 | 이벤트 수신은 작동하지만 장기 퍼널 기준선은 부족 |
+| 일일 콘텐츠 후보 | 5건 final-review-ready | 2026-07-27 검토 기록 | 승인 전에는 public registry·sitemap 미변경 |
+| 최신 Worker | `003eed29-05b4-4863-85f2-15cec7f417df` | Wrangler production deploy | Slack PII-free 알림과 typed intent 배포 |
+
+운영 리드의 실제 고객성·유효 미팅 여부는 암호화 payload를 임의로 열람하지 않고, 영업 담당자가 별도 분류할 때까지 판단하지 않는다.
+
 ## 매주 기록할 항목
 
 ### 1. 유입과 검색

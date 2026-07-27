@@ -178,26 +178,18 @@ async function verifyTurnstile(token: string, request: Request, bindings: Intake
 }
 
 function leadMessage(leadId: string, payload: Record<string, unknown>): Record<string, unknown> {
-  if (payload["leadType"] === "hci-readiness") {
-    const lines = [
-      "새 BLRO HCI 사전진단 체크리스트 요청",
-      `접수 ID: ${leadId}`,
-      `회사: ${String(payload["company"])}`,
-      `담당자: ${String(payload["name"])}`,
-      `이메일: ${String(payload["workEmail"])}`,
-      `마케팅 수신 동의: ${payload["marketingConsent"] === true ? "동의" : "미동의"}`,
-    ]
-    return { text: lines.join("\n") }
-  }
+  const attribution = typeof payload["attribution"] === "object" && payload["attribution"] !== null
+    ? payload["attribution"] as Record<string, unknown>
+    : {}
+  const leadType = payload["leadType"] === "hci-readiness" ? "hci-readiness" : "inquiry"
   const lines = [
-    "새 BLRO 상담 요청",
+    "새 BLRO 리드 알림 (PII 미포함)",
     `접수 ID: ${leadId}`,
-    `회사: ${String(payload["company"])}`,
-    `담당자: ${String(payload["name"])}`,
-    `이메일: ${String(payload["workEmail"])}`,
-    `연락처: ${String(payload["phone"] ?? "미입력")}`,
-    `주제: ${String(payload["topic"])}`,
-    `문의: ${String(payload["message"] ?? "미입력")}`,
+    `유형: ${leadType}`,
+    `주제: ${String(payload["topic"] ?? "general")}`,
+    `랜딩: ${String(attribution["landingPath"] ?? "미상")}`,
+    `CTA: ${String(attribution["ctaId"] ?? "미상")}`,
+    "상세 개인정보와 문의 본문은 Slack으로 전송하지 않음",
   ]
   return { text: lines.join("\n") }
 }
