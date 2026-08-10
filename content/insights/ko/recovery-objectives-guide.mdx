@@ -6,7 +6,7 @@ slug: recovery-objectives-guide
 locale: ko
 status: approved
 publishedAt: 2026-07-02
-updatedAt: 2026-07-12
+updatedAt: 2026-08-01
 audience: [customer, partner]
 tags: [rpo, rto, disaster-recovery]
 evidenceRefs: ["05_CONTENT_STRATEGY.md:133-148"]
@@ -14,6 +14,21 @@ claimIds: [claim-insight-recovery-objectives]
 approvalRefs: [approval-insight-recovery-objectives]
 relatedContent: ["service:backup-disaster-recovery"]
 ---
+
+## 핵심 주장
+
+RPO와 RTO는 기술팀이 단독으로 정하지 않고, 업무 영향·데이터 재입력 가능 범위·복구 우선순위를 근거로 합의합니다.
+
+근거와 결정: 승인된 콘텐츠 전략의 복구 목표 기준을 근거로, 업무 소유자와 기술팀이 보호 방식과 비용을 비교한 뒤 시스템별 목표와 최소 기능을 결정합니다.
+
+## 주장과 근거
+
+| 주장 또는 결정 | 근거 | 운영 조치 |
+| --- | --- | --- |
+| RPO는 허용 가능한 데이터 손실 시점으로 정의한다 | 승인된 콘텐츠 전략의 복구 목표 기준 | 데이터 재입력 가능 범위와 조건을 확인 |
+| RTO는 서비스를 다시 사용할 때까지의 목표 시간으로 정의한다 | 승인된 콘텐츠 전략의 복구 목표 기준 | 복구 우선순위와 최소 기능을 시스템별로 기록 |
+
+## 용어와 적용 원칙
 
 RPO는 허용 가능한 데이터 손실 시점, RTO는 서비스를 다시 사용할 때까지의 목표 시간입니다. 두 값은 기술팀 단독으로 정하기보다 업무 영향과 함께 합의해야 합니다.
 

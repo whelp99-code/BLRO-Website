@@ -1,0 +1,86 @@
+---
+contentId: insight-backup-dr-decision-checklist
+title: "백업과 재해복구를 결정하기 전에 확인할 질문"
+summary: "백업 보유 여부를 넘어 업무 우선순위, 복구 목표, 절차와 검증 기록으로 복구 체계를 판단하는 안내서"
+slug: backup-dr-decision-checklist
+locale: ko
+status: review
+publishedAt: 2026-08-01
+updatedAt: 2026-08-01
+audience: [customer, partner]
+tags: [backup, disaster-recovery, business-continuity, rpo, rto]
+evidenceRefs: ["NIST SP 800-34 Rev. 1", "CISA #StopRansomware Guide", "AWS Disaster Recovery of Workloads on AWS", "Microsoft Learn Backup and Recovery"]
+claimIds: [claim-insight-backup-dr-decision-checklist]
+approvalRefs: []
+relatedContent: ["service:backup-disaster-recovery", "insight:recovery-objectives-guide"]
+---
+
+## 한눈에 보기
+
+백업과 재해복구의 결정은 제품을 먼저 고르는 일이 아닙니다. 중단되면 멈추는 업무, 허용 가능한 데이터 손실과 복구 시간, 복구 순서, 그리고 실제로 검증할 방법을 먼저 합의하는 일입니다.
+
+백업 작업의 성공 기록만으로 복구 가능성이 확인되지는 않습니다. 복구 대상에 데이터뿐 아니라 구성, 애플리케이션 코드, 접근 권한과 운영 절차가 포함되는지 확인해야 합니다.
+
+## 문제 상황
+
+백업은 있으나 누가 어떤 순서로 복구하는지, 업무 사용자가 무엇을 확인하는지 기록되지 않은 경우가 있습니다. 이 상태에서는 장애가 발생했을 때 복구 우선순위와 책임이 흔들릴 수 있습니다.
+
+복제, 고가용성, 백업 복구는 같은 말이 아닙니다. 각 방식이 대응하는 중단 범위와 허용하는 데이터 손실·복구 시간은 업무 요구에 맞춰 별도로 확인해야 합니다.
+
+랜섬웨어와 계정 침해를 고려하면 백업 사본의 접근 경로, 삭제·변경 권한, 복구 절차의 검증도 의사결정 대상입니다.
+
+## 지금 결정할 것
+
+- 중단 시 가장 먼저 복구해야 할 업무와 그 업무의 최소 기능
+- 시스템별 RPO와 RTO, 그리고 해당 목표의 업무상 근거
+- 데이터, 구성, 코드, 접근 정보, 문서 중 복구 대상에 포함할 항목
+- 백업 복구, 복제, 대체 운영 절차 중 각 업무에 적용할 방식
+- 장애 선언, 복구 실행, 업무 검증, 사용자 공지를 맡을 역할
+- 훈련 범위와 주기, 기록할 실제 복구 시간과 발견 사항
+
+## 의사결정 기준
+
+업무 영향 분석에서 업무 중단의 영향과 의존 관계를 먼저 확인합니다. NIST는 영향 분석, 예방 통제, 복구 전략, 계획, 시험·훈련·연습, 유지관리를 연속된 계획 과정으로 제시합니다.
+
+복구 목표는 목표 수치만 적는 것으로 끝나지 않습니다. 백업 간격과 데이터 손실 허용 범위가 맞는지, 실제 복원에 걸리는 시간과 절차가 복구 시간 목표 안에 들어오는지 훈련으로 확인합니다.
+
+백업 사본의 위치와 접근 통제를 확인합니다. CISA는 중요 데이터의 오프라인·암호화 백업과 재해복구 시나리오에서의 가용성·무결성 시험을 권고합니다. 이 권고는 특정 구성의 보안 또는 복구 성공을 보장하지 않습니다.
+
+복구 전략은 애플리케이션과 운영 의존성을 포함해 평가합니다. AWS와 Microsoft의 공식 지침은 데이터 외에 구성과 인프라, 복구 절차, 정기 시험이 복구 목표 검증에 필요하다고 설명합니다.
+
+## 실무 체크리스트
+
+- 업무 소유자와 기술 책임자가 복구 우선순위와 최소 기능에 합의했는지 확인합니다.
+- 데이터 유형별 백업 범위, 보존, 복원 지점과 제외 데이터를 기록합니다.
+- 구성, 코드, 키·계정 복구에 필요한 접근 절차와 책임자를 확인합니다.
+- 백업 사본의 위치, 분리 수준, 삭제·변경 권한과 비상 접근 절차를 검토합니다.
+- 데이터베이스, 파일, 애플리케이션, 연계 시스템을 포함한 복구 순서를 문서화합니다.
+- 격리된 환경 또는 승인된 범위에서 복원 시험을 수행할 조건을 정합니다.
+- 복원 후 데이터 무결성, 핵심 업무 기능, 연계, 사용자 접근을 확인할 기준을 정합니다.
+- 실제 복구 시간, 데이터 시점, 실패 단계와 개선 조치를 훈련 기록으로 남깁니다.
+- 환경, 업무 우선순위, 담당자가 바뀌면 계획과 연락처를 갱신합니다.
+
+## 제외 범위
+
+이 글은 특정 제품, 공급자, 저장 방식, 계약 조건의 우열을 판단하지 않습니다.
+
+비용, 성능, 호환성, 무중단, 보안 수준, 규제 적합성 또는 복구 성공을 사전에 보장하지 않습니다. 이러한 판단은 현재 환경, 데이터 분류, 계약·법무 조건, 실제 시험 결과를 별도로 확인해야 합니다.
+
+## 이 이슈를 BLRO가 다루는 방식
+
+BLRO는 진단 범위에서 업무 우선순위, 의존 관계, 현재 백업·복구 절차, 역할과 검증 기록을 함께 확인합니다.
+
+의사결정 산출물로는 시스템별 복구 우선순위, 확인이 필요한 RPO·RTO 가정, 복구 대상 목록, 책임 경계, 시험 시나리오와 보완 과제를 정리합니다.
+
+운영 검증에서는 승인된 범위의 복원·복구 절차와 업무 확인 기준, 기록 방법을 점검합니다. 실제 복구 시간, 데이터 손실, 서비스 연속성 또는 보안 결과는 사전 보장하지 않으며 시험과 운영 기록으로 확인합니다.
+
+## 단일 CTA
+
+업무 우선순위와 현재 복구 절차를 기준으로, 확인이 필요한 가정과 검증 항목을 정리하는 상담을 요청하세요.
+
+## 출처와 확인 날짜
+
+- NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems, 2010-11-11. 확인일 2026-08-01. https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final
+- CISA, #StopRansomware Guide, 2023-09. 확인일 2026-08-01. https://www.cisa.gov/stopransomware/ransomware-guide
+- AWS, Disaster Recovery of Workloads on AWS: Recovery in the Cloud, 최초 발행 2021-02-12, 문서 이력 최종 표시 2022-04-01. 확인일 2026-08-01. https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-workloads-on-aws.html
+- Microsoft Learn, Microsoft cloud security benchmark v2 - Backup and Recovery, 페이지 최종 업데이트 2026-05-04. 확인일 2026-08-01. https://learn.microsoft.com/en-us/security/benchmark/azure/mcsb-v2-backup-recovery

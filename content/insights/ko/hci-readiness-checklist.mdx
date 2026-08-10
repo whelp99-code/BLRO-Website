@@ -6,7 +6,7 @@ slug: hci-readiness-checklist
 locale: ko
 status: approved
 publishedAt: 2026-07-02
-updatedAt: 2026-07-12
+updatedAt: 2026-08-01
 audience: [customer, partner]
 tags: [hci, checklist, operations]
 evidenceRefs: ["05_CONTENT_STRATEGY.md:133-148"]
@@ -14,6 +14,21 @@ claimIds: [claim-insight-hci-checklist]
 approvalRefs: [approval-insight-hci-checklist]
 relatedContent: ["service:hci-private-cloud"]
 ---
+
+## 핵심 주장
+
+HCI 도입 판단은 노드 수가 아니라 워크로드 자원, 장애 범위, 데이터 보호와 운영 역할을 확인한 뒤 내립니다.
+
+근거와 결정: 승인된 콘텐츠 전략의 HCI 검토 기준을 근거로, 측정 자료 또는 PoC가 각 자원·복구·운영 가정을 확인할 때만 다음 설계 단계로 진행합니다.
+
+## 주장과 근거
+
+| 주장 또는 결정 | 근거 | 운영 조치 |
+| --- | --- | --- |
+| 용량은 워크로드 사용량과 성장률로 검토한다 | 승인된 콘텐츠 전략의 HCI 검토 기준 | CPU·메모리·저장공간 측정 자료를 기록 |
+| 장애와 복구는 별도 책임으로 확인한다 | 승인된 콘텐츠 전략의 데이터 보호·운영 기준 | 백업·복제·재해복구 담당자와 롤백 기준을 지정 |
+
+## 판단 기준
 
 HCI 검토는 노드 수보다 워크로드와 운영 조건에서 시작합니다.
 

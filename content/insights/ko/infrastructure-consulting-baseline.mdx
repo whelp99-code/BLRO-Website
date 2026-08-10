@@ -6,7 +6,7 @@ slug: infrastructure-consulting-baseline
 locale: ko
 status: approved
 publishedAt: 2026-07-14
-updatedAt: 2026-07-14
+updatedAt: 2026-08-01
 audience: [customer, partner]
 tags: [infrastructure, consulting, cloud]
 evidenceRefs: ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:49-63"]
@@ -15,9 +15,22 @@ approvalRefs: [approval-insight-infrastructure-consulting-baseline]
 relatedContent: ["service:hci-private-cloud", "service:backup-disaster-recovery", "insight:hci-readiness-checklist"]
 ---
 
-## 이 자료의 목적
+## 핵심 주장
 
-인프라 컨설팅은 장비 수량을 산정하는 작업보다 먼저, 어떤 업무를 어떤 복구 목표와 운영 방식으로 지원할지를 정리해야 합니다. 이 자료는 현황 분석부터 목표 구조와 검증 계획까지의 공통 기준을 제시합니다. 공개 전 검토와 승인이 필요합니다.
+인프라 설계는 장비 수량보다 업무 우선순위, 복구 목표, 용량 가정과 운영 역할을 설계 입력으로 확정한 뒤 진행합니다.
+
+근거와 결정: 승인된 블루프린트와 콘텐츠 전략을 근거로, 현황·의존성·운영 제약을 기록하고 이를 충족하는 목표 구조와 검증 계획을 결정합니다.
+
+## 주장과 근거
+
+| 주장 또는 결정 | 근거 | 운영 조치 |
+| --- | --- | --- |
+| 용량과 성능은 피크 부하·성장률·예약 자원까지 확인한다 | 승인된 인프라 컨설팅 기준 | 측정 기간과 용량 가정을 산정표에 기록 |
+| 복원력은 업무 영향과 복구 목표로 판단한다 | 승인된 블루프린트의 업무·복구 기준 | 장애 범위와 백업·복제 책임을 분리 |
+
+## 목적
+
+인프라 컨설팅은 장비 수량 산정보다 업무, 복구 목표, 운영 방식을 먼저 정의합니다. 문서는 현황 분석, 목표 구조, 검증 계획의 공통 기준을 제시합니다. 공개 전 검토와 승인이 필요합니다.
 
 ## 진단 입력
 

@@ -6,7 +6,7 @@ slug: avd-rdp-multipath-readiness
 locale: ko
 status: approved
 publishedAt: 2026-07-18
-updatedAt: 2026-07-18
+updatedAt: 2026-08-01
 audience: [customer, partner]
 tags: [azure-virtual-desktop, vdi, rdp-multipath, network, operations]
 evidenceRefs:
@@ -18,6 +18,19 @@ claimIds: [claim-insight-avd-rdp-multipath-readiness]
 approvalRefs: [approval-insight-avd-rdp-multipath-readiness]
 relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
 ---
+
+## 핵심 주장
+
+RDP Multipath 적용 여부는 기능 활성화가 아니라 지원 클라이언트, UDP·TCP 경로, 포트 용량과 세션 관측 결과로 결정합니다.
+
+근거와 결정: Microsoft Learn의 Multipath·Shortpath·필수 조건 문서를 기준으로 대상 단말과 네트워크 경로를 확인한 뒤 정상·저하·복구 시험을 승인 조건으로 둡니다.
+
+## 주장과 근거
+
+| 주장 또는 결정 | 근거 | 운영 조치 |
+| --- | --- | --- |
+| 지원되는 Windows App과 로컬 Windows 단말을 적용 범위로 정한다 | Microsoft Learn의 RDP Multipath 필수 조건 | 대상 단말과 앱 버전을 목록화 |
+| 자동 전환은 세션 정보와 AVD Insights에서 확인한다 | Microsoft Learn의 Multipath 관측 안내 | 정상·저하·복구 시험표를 실행 |
 
 ## 한눈에 보기
 
@@ -69,7 +82,7 @@ UDP 기반 RDP Shortpath를 사용할 수 있으면 선호 전송으로 동작�
 9. 주 경로 저하, UDP 제한, 네트워크 복구 시의 세션 영향과 자동 전환을 시험합니다.
 10. Multipath로 해결되지 않는 단말, 인증, 애플리케이션, 전체 회선 장애를 별도 장애 분류로 유지합니다.
 
-## 이 이슈를 BLRO가 다루는 방식
+## BLRO 적용 범위
 
 관련 서비스는 VDI와 디지털 워크스페이스, VDI 용량 계획입니다.
 
