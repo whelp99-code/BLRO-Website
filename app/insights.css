@@ -1,4 +1,10 @@
 .insight-page { overflow: clip; }
+.insight-index__filters { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-8); }
+.insight-index__filter { padding: var(--space-2) var(--space-4); border: 1px solid var(--color-line); border-radius: 999px; background: var(--color-canvas); color: var(--color-ink-muted); font: var(--type-eyebrow); letter-spacing: .06em; cursor: pointer; transition: color .15s ease, border-color .15s ease, background .15s ease; }
+.insight-index__filter:hover { color: var(--color-ink); border-color: var(--color-brand-strong); }
+.insight-index__filter:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.insight-index__filter--active { color: var(--color-canvas); background: var(--color-ink); border-color: var(--color-ink); }
+.insight-index__empty { margin: 0; padding: var(--space-8) 0; color: var(--color-ink-muted); }
 .insight-hero, .insight-detail__hero { border-bottom: 1px solid var(--color-line); background: var(--color-canvas); }
 .insight-hero__title, .insight-detail__title { max-width: 17ch; margin-top: var(--space-6); }
 .insight-hero__lead, .insight-detail__summary { max-width: 48rem; margin-top: var(--space-6); color: var(--color-ink-muted); }

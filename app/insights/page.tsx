@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { InsightIndex } from "@/components/insights/insight-index"
+import { InsightIndex, type InsightIndexItem } from "@/components/insights/insight-index"
 import { getPublicContent } from "@/lib/content"
 import { canonicalMetadata } from "@/lib/site"
 
@@ -10,5 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default async function InsightsPage() {
-  return <InsightIndex insights={await getPublicContent("insight", "ko", new Date())} />
+  const insights = (await getPublicContent("insight", "ko", new Date())) as readonly InsightIndexItem[]
+  return <InsightIndex insights={insights} />
 }
