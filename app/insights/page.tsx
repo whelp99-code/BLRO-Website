@@ -10,6 +10,16 @@ export const metadata: Metadata = {
 }
 
 export default async function InsightsPage() {
-  const insights = (await getPublicContent("insight", "ko", new Date())) as readonly InsightIndexItem[]
+  const insights = (await getPublicContent("insight", "ko", new Date())).map((insight) => ({
+    meta: {
+      contentId: insight.meta.contentId,
+      title: insight.meta.title,
+      summary: insight.meta.summary,
+      slug: insight.meta.slug,
+      publishedAt: insight.meta.publishedAt ?? "",
+      tags: insight.meta.tags,
+    },
+  })) satisfies readonly InsightIndexItem[]
+
   return <InsightIndex insights={insights} />
 }

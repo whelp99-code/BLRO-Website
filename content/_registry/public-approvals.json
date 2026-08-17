@@ -221,6 +221,34 @@
       "contentSha256": "6b1f5520c92f6712737dc84958498a37912ccdec53d718be90aa90c6c1590c33",
       "reviewAt": "2026-10-18",
       "expiresAt": "2027-07-18"
+    },
+    {
+      "approvalId": "approval-insight-faq-transition-consulting-20260817",
+      "contentId": "insight-faq-transition-consulting",
+      "claimId": "claim-insight-faq-transition-consulting-editorial",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-17-kst",
+      "approvedAt": "2026-08-17",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": ["internal-editorial:faq-transition-consulting:2026-08-16", "user-explicit-publication-approval:2026-08-17-kst"],
+      "contentSha256": "4ee7e2e819ee322766c8625c55d73a3be58d6cdf34e208cf6ea13c14ecf3fc18",
+      "reviewAt": "2026-11-17",
+      "expiresAt": "2027-08-17"
+    },
+    {
+      "approvalId": "approval-insight-consulting-methodology-20260817",
+      "contentId": "insight-consulting-methodology",
+      "claimId": "claim-insight-consulting-methodology-operating-methodology",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-17-kst",
+      "approvedAt": "2026-08-17",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": ["internal-operating-methodology:consulting-methodology-six-stage:2026-08-16", "user-explicit-publication-approval:2026-08-17-kst"],
+      "contentSha256": "8b2286811c474dc3e92d072e9e39b16f660345c579f01736130e306d1885b4a7",
+      "reviewAt": "2026-11-17",
+      "expiresAt": "2027-08-17"
     }
   ]
 }

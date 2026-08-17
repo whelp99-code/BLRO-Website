@@ -67,7 +67,7 @@ describe("BLRO basic homepage", () => {
     render(await Home())
 
     const evidence = screen.getByRole("region", { name: "공개된 실무 인사이트" })
-    expect(within(evidence).getAllByRole("article")).toHaveLength(10)
+    expect(within(evidence).getAllByRole("article")).toHaveLength(12)
     expect(within(evidence).getByText("HCI 도입 전 확인할 운영 기준")).toBeVisible()
     expect(within(evidence).getByText("Azure Local 2606 업데이트: 설치보다 준비 상태를 먼저 검증할 것")).toBeVisible()
     expect(within(evidence).getByText("Azure Virtual Desktop RDP Multipath: 활성화보다 경로 검증이 먼저")).toBeVisible()
