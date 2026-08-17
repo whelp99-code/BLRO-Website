@@ -1,5 +1,6 @@
 import { join } from "node:path"
 import { createContentIndex, type ContentRecord } from "@/lib/content"
+export { formatSolutionCopy, PROTECTED_INSIGHT_TITLE_PHRASES } from "@/lib/text-format"
 
 export const SOLUTION_SLUGS = [
   "hci-private-cloud",
@@ -11,28 +12,9 @@ export const SOLUTION_SLUGS = [
 
 export type SolutionSlug = (typeof SOLUTION_SLUGS)[number]
 
-export const PROTECTED_INSIGHT_TITLE_PHRASES = [
-  "업무 기준으로",
-  "적용 기준",
-  "SASE와 SD-WAN의",
-] as const
-
 export type SolutionCatalog = {
   readonly insights: readonly ContentRecord[]
   readonly solutions: readonly ContentRecord[]
-}
-
-export function formatSolutionCopy(
-  value: string,
-  protectedPhrases: readonly string[] = [],
-): string {
-  const normalizedValue = value.replaceAll("-", "\u2011")
-  const protectedValue = protectedPhrases.reduce((copy, phrase) => {
-    const normalizedPhrase = phrase.replaceAll("-", "\u2011")
-    return copy.replaceAll(normalizedPhrase, normalizedPhrase.replaceAll(" ", "\u00a0"))
-  }, normalizedValue)
-
-  return protectedValue.replace(/ (?=\S+$)/u, "\u00a0")
 }
 
 export function isSolutionSlug(value: string): value is SolutionSlug {
