@@ -1,0 +1,13 @@
+2026-08-19T00:00:00+09:00 start run=2026-08-19 lands 2026-08-18 research after CloudAgent GitHub rate limit
+2026-08-19T00:00:01+09:00 check content/insights/ko slugs absent: cisco-asa-ftd-cve-2026-20349-kev vmware-vmsa-2026-0006-vcenter-esx azure-local-2607-iscsi-san-ga avd-web-screen-capture-raw-print prisma-sdwan-ion-681-pqc
+2026-08-19T00:00:02+09:00 skip-rule none of the five slugs exist; write review-only MDX
+2026-08-19T00:00:03+09:00 source-recheck pass cisco-asa-ftd-cve-2026-20349-kev KEV added 2026-08-11 due 2026-08-14 Cisco v1.0 2026-08-11 FMC not affected BOD 26-04 FCEB only
+2026-08-19T00:00:04+09:00 source-recheck pass vmware-vmsa-2026-0006-vcenter-esx VMSA-2026-0006.1 issued 2026-07-29 updated 2026-08-03 U2f express added workaround none not in KEV U3k to 9.1.0 unsupported
+2026-08-19T00:00:05+09:00 source-recheck pass azure-local-2607-iscsi-san-ga iSCSI GA in whats-new 2607 build 12.2607.1003.73 available 2026-08-07 san-requirements updated 2026-06-03 still FC only
+2026-08-19T00:00:06+09:00 source-recheck pass avd-web-screen-capture-raw-print August 2026 web SCP RAW print preview printer redirection default off SCP is not DRM exclude Multipath
+2026-08-19T00:00:07+09:00 source-recheck pass prisma-sdwan-ion-681-pqc ION 6.8.1 dated 2026-07-21 Standard VPN ML-KEM FIPS cannot be simultaneous NIST FIPS 203 is not product certification
+2026-08-19T00:00:08+09:00 write MDX status=review updatedAt=2026-08-19 count=5
+2026-08-19T00:00:09+09:00 write research notes count=5
+2026-08-19T00:00:10+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
+2026-08-19T00:00:11+09:00 improvement next run 2026-08-20 must rotate to AI, cloud, infra, backup/DR; do not repeat today's 5 areas
+2026-08-19T00:00:12+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched no merge no deploy
