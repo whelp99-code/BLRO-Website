@@ -11,3 +11,8 @@
 2026-08-19T00:00:10+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
 2026-08-19T00:00:11+09:00 improvement next run 2026-08-20 must rotate to AI, cloud, infra, backup/DR; do not repeat today's 5 areas
 2026-08-19T00:00:12+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched no merge no deploy
+2026-08-19T00:00:13+09:00 validate pnpm content:validate PASS 4 files 45 tests
+2026-08-19T00:00:14+09:00 validate pnpm build PASS public insight routes remain 12
+2026-08-19T00:00:15+09:00 confirm review slugs absent from sitemap.xml and generateStaticParams
+2026-08-19T00:00:16+09:00 verdict final_review_ready
+2026-08-19T00:00:17+09:00 improvement next run 2026-08-20 must rotate to AI, cloud, infra, backup/DR; do not repeat today's 5 areas
