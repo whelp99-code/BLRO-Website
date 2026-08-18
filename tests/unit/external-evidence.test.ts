@@ -2,21 +2,38 @@ import { describe, expect, it } from "vitest"
 import {
   createExternalEvidenceDigest,
   EXTERNAL_EVIDENCE_APPROVAL_REGISTRY,
+  isOfficialSangforStoryUrl,
   SANGFOR_KOREA_CASES,
+  SANGFOR_KOREA_FEATURED_CASES,
+  SANGFOR_KOREA_INDEX_CASES,
   validateExternalEvidence,
 } from "@/lib/external-evidence"
 
-const approvalDate = new Date("2026-07-17T00:00:00.000Z")
+const approvalDate = new Date("2026-08-18T00:00:00.000Z")
 
 describe("external evidence publication boundary", () => {
-  it("publishes the three active Sangfor Korea source records", () => {
-    expect(SANGFOR_KOREA_CASES).toHaveLength(3)
-    expect(SANGFOR_KOREA_CASES.every((item) => item.sourceUrl.startsWith("https://www.sangfor.com/kr/success-stories/"))).toBe(true)
+  it("publishes featured Korea cases plus the remaining official index", () => {
+    expect(SANGFOR_KOREA_FEATURED_CASES.map((item) => item.customer)).toEqual(["시큐아이", "롯데건설", "LG생활건강"])
+    expect(SANGFOR_KOREA_CASES).toHaveLength(20)
+    expect(SANGFOR_KOREA_INDEX_CASES).toHaveLength(17)
+    expect(SANGFOR_KOREA_CASES.every((item) => isOfficialSangforStoryUrl(item.sourceUrl))).toBe(true)
+    expect(SANGFOR_KOREA_CASES.some((item) => item.customer.includes("삼성전자"))).toBe(false)
+    expect(SANGFOR_KOREA_CASES.filter((item) => item.customer === "한신대")).toHaveLength(1)
+    expect(SANGFOR_KOREA_CASES.filter((item) => item.customer === "시큐아이")).toHaveLength(1)
+  })
+
+  it("publishes only percentage figures that appear in official source pages", () => {
+    const factsWithPercent = SANGFOR_KOREA_CASES.filter((item) => item.fact.includes("%"))
+    expect(factsWithPercent.map((item) => [item.customer, item.fact])).toEqual([
+      ["조선일보", "물리 서버 9대를 HCI로 전환. 원문 기준 구매비용 40% 절감"],
+      ["대상", "본사·베트남·태국 법인 생산관리 정보를 동기화. 원문 기준 비용 65% 절감"],
+      ["LS산전", "본사·베트남·중국 등 해외 법인 ERP 전송. 원문 기준 회선 비용 50% 절감"],
+    ])
   })
 
   it("rejects a public claim changed after its approval digest", () => {
     const changed = SANGFOR_KOREA_CASES.map((item, index) =>
-      index === 0 ? { ...item, decisionLesson: "승인 뒤 바뀐 공개 문구" } : item,
+      index === 0 ? { ...item, fact: "승인 뒤 바뀐 공개 문구" } : item,
     )
 
     expect(() => validateExternalEvidence(changed, EXTERNAL_EVIDENCE_APPROVAL_REGISTRY, approvalDate)).toThrow("no active approval")
@@ -26,7 +43,7 @@ describe("external evidence publication boundary", () => {
     const overdueRegistry = {
       approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) => ({
         ...approval,
-        reviewAt: "2026-07-16",
+        reviewAt: "2026-08-17",
       })),
     }
 
@@ -37,7 +54,7 @@ describe("external evidence publication boundary", () => {
     const expiredRegistry = {
       approvals: EXTERNAL_EVIDENCE_APPROVAL_REGISTRY.approvals.map((approval) => ({
         ...approval,
-        expiresAt: "2026-07-16",
+        expiresAt: "2026-08-17",
       })),
     }
 

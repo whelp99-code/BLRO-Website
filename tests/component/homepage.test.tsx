@@ -77,18 +77,23 @@ describe("BLRO basic homepage", () => {
     expect(screen.queryByText(/제조업 HCI와 DR 전환/iu)).not.toBeInTheDocument()
   })
 
-  it("separates Sangfor-published Korea cases from BLRO delivery evidence", async () => {
+  it("attributes Korea Sangfor cases to Park Jaemin's Sangfor Korea delivery", async () => {
     render(await Home())
 
-    expect(screen.getByRole("heading", { name: "Sangfor 국내 공식 사례" })).toBeVisible()
-    const deliveryDisclaimer = screen.getByText("BLRO 수행 실적")
-    expect(deliveryDisclaimer).toHaveClass("blro-nowrap")
-    expect(deliveryDisclaimer.parentElement).toHaveTextContent("BLRO 수행 실적 또는 성과 보증이 아닙니다.")
-    expect(screen.getByText("성과 보증")).toHaveClass("blro-nowrap")
-    expect(screen.getAllByRole("link", { name: /Sangfor 공식 원문 확인/u })).toHaveLength(3)
-    expect(screen.getByRole("heading", { level: 3, name: "SECUI" })).toBeVisible()
+    expect(screen.getByRole("heading", { name: "상포코리아 시절 국내 구축" })).toBeVisible()
+    expect(screen.getByText("국내 구축 사례")).toBeVisible()
+    expect(screen.getByText(/박재민이 상포코리아 지사장 시절 수행한 국내 구축/u)).toBeVisible()
+    expect(screen.getByText("당시 상포코리아에서 수행")).toHaveClass("blro-nowrap")
+    expect(screen.queryByText(/BLRO 수행 실적/u)).not.toBeInTheDocument()
+    expect(screen.queryByText(/성과 보증/u)).not.toBeInTheDocument()
+    expect(screen.queryByText(/BLRO 수행 아님/u)).not.toBeInTheDocument()
+    expect(screen.getAllByRole("link", { name: /공식 원문/u }).length).toBeGreaterThanOrEqual(20)
+    expect(screen.getByRole("heading", { level: 3, name: "시큐아이" })).toBeVisible()
     expect(screen.getByRole("heading", { level: 3, name: "롯데건설" })).toBeVisible()
     expect(screen.getByRole("heading", { level: 3, name: "LG생활건강" })).toBeVisible()
+    expect(screen.getByRole("heading", { level: 3, name: "한신대" })).toBeVisible()
+    expect(screen.getByRole("heading", { level: 3, name: "조선일보" })).toBeVisible()
+    expect(screen.queryByText(/삼성전자 인도네시아/u)).not.toBeInTheDocument()
   })
 
   it("preserves approved final copy and unbroken Korean and technical phrases", async () => {

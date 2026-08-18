@@ -157,8 +157,8 @@
 .inquiry-form textarea { padding: var(--space-3); resize: vertical; }
 .inquiry-form__consent { grid-template-columns: var(--target-min) 1fr; align-items: start; padding: var(--space-4); border: 1px solid var(--color-line); background: var(--color-surface); }
 .inquiry-form__consent input { width: var(--target-min); height: var(--target-min); margin: 0; }
-.inquiry-form__notice, .inquiry-form__error, .inquiry-form__success { margin: 0; font: var(--type-small); }
-.inquiry-form__notice { color: var(--color-ink-muted); }
+.inquiry-form__notice, .inquiry-form__error, .inquiry-form__success, .inquiry-form__fallback { margin: 0; font: var(--type-small); }
+.inquiry-form__notice, .inquiry-form__fallback { color: var(--color-ink-muted); }
 .inquiry-form__error { color: var(--color-danger); }
 .inquiry-form__success { color: var(--color-success); }
 

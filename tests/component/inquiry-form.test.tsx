@@ -58,6 +58,7 @@ describe("InquiryForm", () => {
       expect(screen.getByRole("textbox", { name: "담당자명" })).toHaveValue("")
       expect(screen.getByRole("textbox", { name: "업무용 이메일" })).toHaveValue("")
       expect(screen.getByRole("textbox", { name: "현재 상황과 검토 목적" })).toHaveValue("")
+      expect(screen.getByRole("link", { name: "jm.park@blro.co.kr" })).toHaveAttribute("href", "mailto:jm.park@blro.co.kr")
     } finally {
       vi.unstubAllEnvs()
     }
@@ -85,6 +86,7 @@ describe("InquiryForm", () => {
     render(<InquiryForm />)
 
     expect(screen.getByText("안전한 접수 서비스 연결을 준비 중입니다.")).toBeVisible()
+    expect(screen.getByRole("link", { name: "jm.park@blro.co.kr" })).toHaveAttribute("href", "mailto:jm.park@blro.co.kr")
     expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toBeDisabled()
   })
 

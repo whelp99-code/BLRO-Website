@@ -96,7 +96,10 @@ export function InquiryForm() {
         <input name="privacyConsent" required type="checkbox" />
         <span><a href="/privacy" target="_blank">개인정보 처리 안내</a>를 확인했으며, 상담 요청 처리와 BLRO 전달을 위한 개인정보 수집·이용에 동의합니다.</span>
       </label>
-      {!ready ? <p className="inquiry-form__notice">안전한 접수 서비스 연결을 준비 중입니다.</p> : null}
+      {!ready ? <p className="inquiry-form__notice">안전한 접수 서비스 연결을 준비 중입니다. 아래 메일로 바로 문의할 수 있습니다.</p> : null}
+      <p className="inquiry-form__fallback">
+        폼 제출이 어렵다면 <a className="blro-link" href="mailto:jm.park@blro.co.kr">jm.park@blro.co.kr</a>로 메일을 보내 주세요.
+      </p>
       {status === "success" ? <p className="inquiry-form__success" role="status">상담 요청을 접수했습니다. 확인 후 연락드리겠습니다.</p> : null}
       {status === "error" ? <p className="inquiry-form__error" role="alert">접수에 실패했습니다. 정보를 확인한 뒤 다시 시도해 주세요.</p> : null}
       <button className="blro-button blro-button--primary" disabled={!ready || status === "submitting"} type="submit">

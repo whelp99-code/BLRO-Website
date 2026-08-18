@@ -21,10 +21,11 @@ describe("contact page", () => {
       process.env.NEXT_PUBLIC_SITE_URL,
     )
     expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toHaveProperty("disabled", !intakeConfigured)
+    expect(screen.getByRole("link", { name: "jm.park@blro.co.kr" })).toHaveAttribute("href", "mailto:jm.park@blro.co.kr")
     if (intakeConfigured) {
-      expect(screen.queryByText("안전한 접수 서비스 연결을 준비 중입니다.")).not.toBeInTheDocument()
+      expect(screen.queryByText(/안전한 접수 서비스 연결을 준비 중입니다/u)).not.toBeInTheDocument()
     } else {
-      expect(screen.getByText("안전한 접수 서비스 연결을 준비 중입니다.")).toBeVisible()
+      expect(screen.getByText(/안전한 접수 서비스 연결을 준비 중입니다/u)).toBeVisible()
     }
     expect(metadata.robots).toBeUndefined()
   })
