@@ -80,9 +80,9 @@ describe("BLRO basic homepage", () => {
   it("attributes Korea Sangfor cases to Park Jaemin's Sangfor Korea delivery", async () => {
     render(await Home())
 
-    expect(screen.getByRole("heading", { name: "상포코리아 시절 국내 구축" })).toBeVisible()
-    expect(screen.getByText("국내 구축 사례")).toBeVisible()
-    expect(screen.getByText(/박재민이 상포코리아 지사장 시절 수행한 국내 구축/u)).toBeVisible()
+    expect(screen.getByRole("heading", { name: "상포코리아 시절 국내 구축 경험" })).toBeVisible()
+    expect(screen.getByText("국내 구축 경험")).toBeVisible()
+    expect(screen.getByText(/박재민이 상포코리아 지사장 시절 수행한 국내 구축 경험/u)).toBeVisible()
     expect(screen.getByText("당시 상포코리아에서 수행")).toHaveClass("blro-nowrap")
     expect(screen.queryByText(/BLRO 수행 실적/u)).not.toBeInTheDocument()
     expect(screen.queryByText(/성과 보증/u)).not.toBeInTheDocument()

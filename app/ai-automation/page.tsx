@@ -16,7 +16,7 @@ export default function AiAutomationPage() {
       ctaLabel="자동화 검토 상담"
       eyebrow="AI & AUTOMATION · CONTROLLED OPERATIONS"
       heading={<>AI 자동화는 <span className="blro-nowrap">통제 가능한 흐름에서</span> 시작합니다.</>}
-      intro="BLRO는 AI를 별도의 유행어로 다루지 않습니다. 인프라·보안 운영에서 반복되고 지연되기 쉬운 업무를 찾고, 사람의 승인과 기록이 필요한 지점을 포함한 자동화 흐름으로 설계합니다."
+      intro="BLRO는 AI를 일시적 이슈로 보지 않습니다. 인프라·보안 운영에서 반복되고 지연되기 쉬운 업무를 찾고, 사람의 승인과 기록이 필요한 지점을 포함한 자동화 흐름으로 설계합니다."
       supportingCopy="자동화 후보의 수보다 중요한 것은 권한, 데이터, 예외 처리, 사람이 최종 판단해야 할 경계를 명확히 하는 일입니다."
       sections={[
         { number: "01", heading: "반복 업무와 병목을 먼저 찾습니다.", summary: "문서·티켓·점검·변경 요청처럼 반복되는 업무를 업무 흐름 단위로 확인합니다.", items: ["반복 빈도와 업무 지연이 발생하는 지점", "입력 데이터의 출처와 민감도", "자동화가 가능한 부분과 사람이 유지할 판단"] },

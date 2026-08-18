@@ -15,11 +15,11 @@ export function SangforKoreaCases() {
     <section aria-labelledby="sangfor-cases-heading" className="external-cases">
       <div className="external-cases__heading">
         <div>
-          <p className="external-cases__label">국내 구축 사례</p>
-          <Heading id="sangfor-cases-heading" level={3}>상포코리아 시절 국내 구축</Heading>
+          <p className="external-cases__label">국내 구축 경험</p>
+          <Heading id="sangfor-cases-heading" level={3}>상포코리아 시절 국내 구축 경험</Heading>
         </div>
         <Text>
-          박재민이 상포코리아 지사장 시절 수행한 국내 구축입니다. 사실관계와 제품 설명은 Sangfor 공식 원문을 따릅니다. 현재 BLRO 법인의 수행 계약과 구분할 때는 <span className="blro-nowrap">당시 상포코리아에서 수행</span>한 구축으로 보시면 됩니다.
+          박재민이 상포코리아 지사장 시절 수행한 국내 구축 경험입니다. 사실관계와 제품 설명은 Sangfor 공식 원문을 따릅니다. 현재 BLRO 법인의 수행 계약과 구분할 때는 <span className="blro-nowrap">당시 상포코리아에서 수행</span>한 구축 경험으로 보시면 됩니다.
         </Text>
       </div>
       <ol className="external-cases__featured">

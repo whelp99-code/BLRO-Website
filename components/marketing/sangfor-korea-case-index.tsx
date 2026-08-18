@@ -22,7 +22,7 @@ export function SangforKoreaCaseIndex({ cases }: SangforKoreaCaseIndexProps) {
   return (
     <div className="external-cases__index">
       <div className="external-cases__index-heading">
-        <Heading level={3}>국내 공식 사례 목록</Heading>
+        <Heading level={3}>국내 구축 경험 목록</Heading>
         <div className="external-cases__filters" role="group" aria-label="제품군 필터">
           {SANGFOR_CASE_FILTERS.map((filter) => (
             <button

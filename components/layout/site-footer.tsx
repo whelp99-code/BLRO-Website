@@ -26,8 +26,8 @@ export function SiteFooter({ pathname }: SiteFooterProps) {
             <span className="blro-nowrap">실행 파트너</span>입니다.
           </p>
         </div>
-        <nav aria-label="Footer business routes">
-          <h2>Business</h2>
+        <nav aria-label="사업">
+          <h2>사업</h2>
           <ul>
             {footerBusinessRoutes.map((item) => (
               <li key={item.href}>
@@ -38,8 +38,8 @@ export function SiteFooter({ pathname }: SiteFooterProps) {
             ))}
           </ul>
         </nav>
-        <nav aria-label="Footer inquiries">
-          <h2>Start a conversation</h2>
+        <nav aria-label="상담">
+          <h2>상담 시작</h2>
           <ul>
             {footerInquiries.map((item) => (
               <li key={item.href}>
