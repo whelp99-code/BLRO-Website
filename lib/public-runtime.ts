@@ -25,18 +25,31 @@ export function resolvePublicSiteUrl(siteUrl: string | undefined, nodeEnv: strin
   return usable ?? (nodeEnv === "production" ? PRODUCTION_SITE_ORIGIN : "http://localhost:3000")
 }
 
-export function resolveLeadApiUrl(leadApiUrl: string | undefined, nodeEnv: string | undefined): string | undefined {
-  return configuredPublicValue(leadApiUrl) ?? (nodeEnv === "production" ? PRODUCTION_LEAD_API_ORIGIN : undefined)
+function usesLiveProductionIntakeDefaults(siteUrl: string | undefined, nodeEnv: string | undefined): boolean {
+  return nodeEnv === "production" && resolvePublicSiteUrl(siteUrl, nodeEnv) === PRODUCTION_SITE_ORIGIN
 }
 
-export function resolveTurnstileSiteKey(siteKey: string | undefined, nodeEnv: string | undefined): string | undefined {
-  return configuredPublicValue(siteKey) ?? (nodeEnv === "production" ? PRODUCTION_TURNSTILE_SITE_KEY : undefined)
+export function resolveLeadApiUrl(
+  leadApiUrl: string | undefined,
+  nodeEnv: string | undefined,
+  siteUrl?: string,
+): string | undefined {
+  return configuredPublicValue(leadApiUrl) ?? (usesLiveProductionIntakeDefaults(siteUrl, nodeEnv) ? PRODUCTION_LEAD_API_ORIGIN : undefined)
+}
+
+export function resolveTurnstileSiteKey(
+  siteKey: string | undefined,
+  nodeEnv: string | undefined,
+  siteUrl?: string,
+): string | undefined {
+  return configuredPublicValue(siteKey) ?? (usesLiveProductionIntakeDefaults(siteUrl, nodeEnv) ? PRODUCTION_TURNSTILE_SITE_KEY : undefined)
 }
 
 export function isSecureIntakeConfigured(
   leadApiUrl: string | undefined,
   siteKey: string | undefined,
   nodeEnv: string | undefined,
+  siteUrl?: string,
 ): boolean {
-  return resolveLeadApiUrl(leadApiUrl, nodeEnv) !== undefined && resolveTurnstileSiteKey(siteKey, nodeEnv) !== undefined
+  return resolveLeadApiUrl(leadApiUrl, nodeEnv, siteUrl) !== undefined && resolveTurnstileSiteKey(siteKey, nodeEnv, siteUrl) !== undefined
 }

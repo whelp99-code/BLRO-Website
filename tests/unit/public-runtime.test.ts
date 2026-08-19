@@ -37,5 +37,13 @@ describe("public runtime defaults", () => {
     expect(resolveLeadApiUrl("", "production")).toBe(PRODUCTION_LEAD_API_ORIGIN)
     expect(resolveTurnstileSiteKey(undefined, "production")).toBe(PRODUCTION_TURNSTILE_SITE_KEY)
     expect(isSecureIntakeConfigured("", "   ", "production")).toBe(true)
+    expect(resolveLeadApiUrl("", "production", PRODUCTION_SITE_ORIGIN)).toBe(PRODUCTION_LEAD_API_ORIGIN)
+  })
+
+  it("keeps intake locked on production builds of the preview origin", () => {
+    const previewOrigin = "https://preview.blro-website.pages.dev"
+    expect(resolveLeadApiUrl("", "production", previewOrigin)).toBeUndefined()
+    expect(resolveTurnstileSiteKey(undefined, "production", previewOrigin)).toBeUndefined()
+    expect(isSecureIntakeConfigured("", "   ", "production", previewOrigin)).toBe(false)
   })
 })

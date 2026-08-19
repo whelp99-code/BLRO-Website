@@ -18,6 +18,7 @@ describe("contact page", () => {
       process.env.NEXT_PUBLIC_LEAD_API_URL,
       process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
       process.env.NODE_ENV,
+      process.env.NEXT_PUBLIC_SITE_URL,
     )
     expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toHaveProperty("disabled", !intakeConfigured)
     if (intakeConfigured) {
