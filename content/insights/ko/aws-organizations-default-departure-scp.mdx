@@ -1,0 +1,98 @@
+---
+contentId: insight-aws-organizations-default-departure-scp
+title: "AWS Organizations 기본 이탈 SCP: 신규 조직과 기존 랜딩존을 가를 것"
+summary: "2026-07-10 이후 콘솔로 만든 조직에만 붙는 이탈·해지 거부 SCP를 기존 멀티계정 랜딩존에 수동으로 둘지 판단하는 리뷰 초안"
+slug: aws-organizations-default-departure-scp
+locale: ko
+status: review
+updatedAt: 2026-08-20
+audience: [customer, partner]
+tags: [cloud, aws-organizations, landing-zone, scp, account]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/07/aws-organizations-security-controls-new-orgs-console/"
+  - "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_security_default_controls.html"
+  - "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices_mgmt-acct.html"
+  - "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_account_close_policy.html"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+2026년 7월 10일 이후 AWS Organizations 콘솔로 새 조직을 만들면, 멤버 계정의 이탈과 자체 해지를 거부하는 서비스 제어 정책이 루트에 붙습니다. 기존 조직과 API, CLI, CloudFormation으로 만든 조직에는 자동 적용되지 않습니다.
+
+- 결정: 신규 콘솔 조직에 기본값을 둘지, 기존 랜딩존 루트에 같은 정책을 수동으로 붙일지
+- 전제: 이 정책은 관리 계정이 아니라 멤버 계정에만 적용된다
+- 문서 불일치: What's New는 일부 리전만 나열하고, 사용 설명서는 리전 제한 없이 콘솔 생성일만 가른다
+- 범위: 계정 이탈·해지 가드레일. 워크로드 배치나 제품 순위가 아니다
+
+## 문제 상황
+
+랜딩존을 이미 쓰는 조직은 콘솔 기본값이 생기기 전에 만들어져 있는 경우가 많습니다. 새로 만드는 샌드박스 조직만 콘솔 마법사를 쓰면, 같은 회사에서 이탈 차단이 있는 조직과 없는 조직이 같이 남습니다.
+
+What's New는 2026년 7월 10일 게시로, 콘솔에서 새 조직을 만들면 멤버가 조직을 떠나거나 스스로 닫지 못하게 하는 제어가 기본 적용된다고 적습니다. 사용 설명서의 기본 보안 제어 페이지는 같은 내용을 반복하면서, CLI, SDK, CloudFormation, CreateOrganization API, 그 날짜 이전 조직에는 영향이 없다고 못 박습니다. 관리 계정 모범 사례도 루트에 같은 거부를 붙이라고 하고, 자동 적용 대상은 콘솔과 그 날짜 이후라고 적습니다.
+
+멤버 계정 해지 보호 문서는 다른 층입니다. 그 페이지는 관리 계정 주체가 멤버를 닫지 못하게 하는 IAM 정책 예시를 다룹니다. 기본 SCP는 멤버가 스스로 떠나거나 닫는 것을 막습니다. 두 문서를 한 제어로 읽으면 누가 무엇을 못 하는지가 섞입니다.
+
+## 지금 결정할 것
+
+- 새 조직을 콘솔로 만들지, API나 Infrastructure as Code로 만들지
+- 기존 랜딩존 루트에 이탈·해지 거부 SCP를 수동으로 붙일지
+- 기본 SCP를 루트에 둘지, 특정 OU로 옮기거나 수정할지
+- 멤버 이탈 차단과 관리 계정의 멤버 해지 제한을 같은 승인으로 묶을지
+- 이탈이 필요한 계정에 대한 예외와 승인자를 어디에 둘지
+
+## 의사결정 기준
+
+### 생성 경로가 기본값 적용 여부를 가릅니다
+
+콘솔로 2026년 7월 10일 이후에 만든 조직만 자동 SCP를 받습니다. 랜딩존 가속기, Control Tower, CloudFormation, CLI로 조직을 만든 경우에는 같은 보호를 원하면 정책 유형을 켜고 루트에 직접 붙여야 합니다. 포털에 새 안내가 보인다고 기존 조직이 바뀌었다고 가정하지 않습니다.
+
+### 멤버 계정과 관리 계정을 나눕니다
+
+SCP는 멤버 계정에만 적용되고 관리 계정 사용자와 역할에는 적용되지 않습니다. 기본 거부는 멤버의 LeaveOrganization과 CloseAccount입니다. 관리 계정이 멤버를 닫는 행위를 막으려면 해지 보호 문서의 IAM 예시를 별도로 검토합니다. 한 문장으로 계정을 닫을 수 없다라고 쓰지 않습니다.
+
+### 루트 유지와 수정을 운영 결정으로 둡니다
+
+기본 제어 문서는 SCP를 수정하거나 다른 대상에 붙일 수 있고, 모든 멤버를 보호하려면 루트에 두는 것을 권고합니다. 이탈이 필요한 계정 이동 절차가 있으면 예외 OU, 일시 분리, 승인자를 먼저 적습니다. 기본값을 끈 뒤에는 누가 다시 켤지 기록합니다.
+
+### What's New의 리전 목록과 사용 설명서의 침묵을 숨기지 않습니다
+
+What's New는 이 기능이 미국 동부 버지니아, GovCloud 두 곳, 중국 두 곳에 있다고 적습니다. 기본 제어 사용 설명서는 리전 목록 없이 콘솔 생성일과 생성 경로만 가릅니다. 어느 문서를 운영 기준으로 삼을지 변경 기록에 남깁니다.
+
+## 실무 체크리스트
+
+1. 조직 생성일, 생성 경로, 관리 계정과 멤버 계정 목록을 적습니다.
+2. SCP 정책 유형이 켜져 있는지, 루트에 이탈·해지 거부가 있는지 확인합니다.
+3. 콘솔 신규 조직과 기존 랜딩존을 같은 가드레일 표에 나눕니다.
+4. 멤버 이탈 차단과 관리 계정의 멤버 해지 제한을 별도 행으로 적습니다.
+5. 계정 이동, 조직 해제, 해지가 필요한 예외와 승인자를 정합니다.
+6. What's New 리전 문구와 사용 설명서의 생성 경로 조건을 같은 요청서에 붙입니다.
+7. 관리 계정에는 워크로드를 두지 않는다는 모범 사례를 랜딩존 기준과 대조합니다.
+8. 기본 SCP를 수정하거나 끄면 재적용 책임자와 검토 주기를 정합니다.
+
+## 제외 범위
+
+- 특정 랜딩존 제품, Control Tower, 가속기 구현의 우열이나 가격 비교
+- 고객별 계정 구조, 청구 계정, 내부 조직명의 공개
+- API로 만든 조직에도 콘솔 기본값이 자동 적용된다는 가정
+- 관리 계정까지 SCP가 적용된다는 가정
+- 보안 수준, 컴플라이언스, 계정 보호의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 조직 생성 경로, 루트 SCP, 멤버 이탈·해지 가능 여부, 관리 계정 해지 권한을 현황화합니다.
+- 의사결정 산출물: 신규 콘솔 기본값 수용, 기존 랜딩존 수동 부착, 예외 OU, 문서 기준 충돌을 담은 판단표를 만듭니다.
+- 운영 검증: 테스트 멤버 계정에서 이탈과 해지 거부를 확인합니다. 특정 구성의 보안이나 규정 적합성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+신규 조직과 기존 랜딩존의 계정 이탈 가드레일을 가르려면 페이지 하단의 컨설팅 문의를 통해 클라우드 계정 구조 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, 2026-07-10. 콘솔로 만든 새 조직에 이탈·해지 보안 제어 기본 적용. 리전 목록은 버지니아, GovCloud, 중국. https://aws.amazon.com/about-aws/whats-new/2026/07/aws-organizations-security-controls-new-orgs-console/ (확인일: 2026-08-20)
+- AWS Organizations User Guide, Default security controls. 2026-07-10 이후 콘솔 생성에만 자동 적용, API와 기존 조직은 수동. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_security_default_controls.html (확인일: 2026-08-20)
+- AWS Organizations User Guide, Best practices for the management account. 루트 SCP 권고와 자동 적용 조건. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices_mgmt-acct.html (확인일: 2026-08-20)
+- AWS Organizations User Guide, Protecting member accounts from closure. 관리 계정 주체의 멤버 해지를 막는 IAM 예시. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_account_close_policy.html (확인일: 2026-08-20)
+
+위 출처는 AWS 공개 문서를 설명합니다. 고객별 랜딩존 적합성이나 보안 결과를 보증하지 않습니다.

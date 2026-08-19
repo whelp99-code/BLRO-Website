@@ -1,0 +1,96 @@
+---
+contentId: insight-arc-kubernetes-workload-identity-ga
+title: "Arc Kubernetes 워크로드 ID GA: 비밀 보관과 연합을 가를 것"
+summary: "Azure Arc Kubernetes 워크로드 ID 2026-02 GA와 개념 문서의 미리보기 잔존 안내를 대조해 시크릿 대신 OIDC 연합을 켤지 판단하는 리뷰 초안"
+slug: arc-kubernetes-workload-identity-ga
+locale: ko
+status: review
+updatedAt: 2026-08-20
+audience: [customer, partner]
+tags: [infrastructure, azure-arc, kubernetes, workload-identity, openshift]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/release-notes"
+  - "https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/workload-identity"
+  - "https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/conceptual-workload-identity"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+Azure Arc 사용 Kubernetes 에이전트 1.32.7 릴리스 노트는 2026년 2월에 워크로드 ID 연합이 일반 공급이라고 적습니다. 같은 기능의 개념 문서는 제목에 미리보기가 남아 있습니다.
+
+- 결정: 클러스터 워크로드가 Azure 자원을 호출할 때 시크릿을 둘지, OIDC 연합을 켤지
+- 전제: 배포 문서는 OIDC issuer와 워크로드 ID 플래그, 배포판별 API 서버 설정이 필요하다고 적는다
+- 빌드: 기능은 에이전트 1.21부터 지원, 일반 공급 표기는 1.32.7
+- 문서 불일치: 개념 페이지 제목은 preview, 릴리스 노트는 GA
+
+## 문제 상황
+
+하이브리드 클러스터가 Key Vault나 Storage를 호출할 때, 오래 쓰는 시크릿이나 인증서를 파드에 넣는 경우가 있습니다. 만료와 유출을 운영 사고로 다루는 동안에도, Arc 연결만 되어 있으면 워크로드 ID를 이미 쓸 수 있다고 가정하기 쉽습니다.
+
+릴리스 노트는 에이전트 1.32.7에서 워크로드 ID 연합과 Arc gateway가 일반 공급이라고 적습니다. 배포 문서는 새 연결 또는 기존 클러스터 업데이트에서 issuer와 워크로드 ID를 켜고, 사용자 할당 관리 ID와 서비스 계정을 연합한 뒤, 배포판마다 API 서버 issuer를 맞추라고 안내합니다.
+
+개념 문서는 제목에 preview를 유지하고, 에이전트 1.21부터 지원한다고만 적습니다. 페이지 날짜는 2024년 안내를 바탕으로 이후 갱신된 흔적이 있습니다. 운영 승인은 GA 문구만 복사하지 말고, 개념 문서의 미리보기 잔존과 배포판별 추가 작업을 같은 기록에 남겨야 합니다.
+
+## 지금 결정할 것
+
+- 대상 클러스터에서 시크릿 기반 호출을 유지할지, 워크로드 ID 연합으로 바꿀지
+- Arc 에이전트 버전이 지원 범위에 있는지, 자동 업그레이드를 켤지
+- K3s, OpenShift, Tanzu, AKS enabled by Arc 중 어느 배포판의 issuer 절차를 적용할지
+- 서비스 계정과 관리 ID를 1대1로 둘지, 여러 계정이 하나를 공유할지
+- 개념 문서의 preview 제목을 언제까지 잔여 불일치로 추적할지
+
+## 의사결정 기준
+
+### 연결됨과 연합됨을 같은 상태로 보지 않습니다
+
+Arc에 연결된 것만으로 워크로드가 Entra 토큰을 받는 것은 아닙니다. 배포 문서는 issuer URL 생성, 워크로드 ID 웹훅, 관리 ID, 서비스 계정 주석, 페더레이션 자격 증명, 파드 레이블을 순서대로 요구합니다. OpenShift는 클러스터 authentication의 issuer를 바꾸고 azure-arc와 arc-workload-identity 배포를 재시작하라고 적습니다. K3s는 API 서버 인자를 바꾼 뒤 서비스를 재시작합니다.
+
+### 에이전트 버전과 문서 상태를 함께 봅니다
+
+개념 문서는 1.21부터 지원한다고 하고, 릴리스 노트는 1.32.7에서 일반 공급이라고 합니다. 버전 지원 정책은 최신과 직전 두 버전입니다. 포털에 기능이 보여도 노드 에이전트 버전과 배포판별 issuer 설정을 생략하지 않습니다.
+
+### 미리보기 제목과 GA 릴리스 노트를 숨기지 않습니다
+
+개념 페이지 제목은 확인일 기준으로도 preview입니다. 배포 페이지 제목에는 preview가 없습니다. 릴리스 노트는 GA입니다. 어느 페이지를 변경 승인의 기준으로 삼을지 적습니다. 소셜 게시나 파트너 발표를 일반 공급 근거로 쓰지 않습니다.
+
+### 이 글은 인증서 자동화나 HCI 평가가 아닙니다
+
+OIDC issuer URL은 토큰 검증용 공개 키를 찾는 주소입니다. ACM 인증서 발급, ACME 클라이언트, VMware나 Nutanix 평가와 같은 결정으로 확장하지 않습니다. 워크로드가 Azure 자원에 시크릿 없이 접근할 수 있는지만 가릅니다.
+
+## 실무 체크리스트
+
+1. 클러스터 배포판, Arc 연결 상태, 에이전트 버전, 자동 업그레이드 여부를 기록합니다.
+2. 워크로드가 호출하는 Azure 자원과 지금 쓰는 시크릿·인증서 위치를 적습니다.
+3. issuer와 워크로드 ID를 켤지, 기존 연결을 업데이트할지 정합니다.
+4. 관리 ID, 서비스 계정, 페더레이션 자격 증명의 1대1 또는 공유 관계를 적습니다.
+5. OpenShift면 authentication issuer와 두 네임스페이스 재시작을 점검합니다.
+6. K3s면 API 서버 issuer 인자와 재시작을 점검합니다.
+7. 파드에 워크로드 ID 사용 레이블이 있는지, 웹훅이 토큰을 주입하는지 확인합니다.
+8. 릴리스 노트의 GA와 개념 문서 preview 제목을 같은 변경 요청서에 붙입니다.
+
+## 제외 범위
+
+- Kubernetes 배포판, OpenShift, Tanzu의 우열이나 성능 비교
+- ACM, ACME, 하이브리드 TLS 발급 절차의 재작성
+- VMware, Nutanix, HCI 제품 평가
+- 고객별 클러스터 구성, 시크릿 값, 내부 네임스페이스 공개
+- 무중단, 호환성, 토큰 발급 성공의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 에이전트 버전, 배포판, 시크릿 사용처, issuer와 연합 설정, 문서 불일치를 현황화합니다.
+- 의사결정 산출물: 시크릿 유지 또는 워크로드 ID 전환, 배포판별 작업, GA와 preview 잔존 기록을 담은 판단표를 만듭니다.
+- 운영 검증: 대상 클러스터에서 토큰 교환과 자원 호출 실패 지점을 확인합니다. 특정 배포판 호환성이나 완료 시간을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+하이브리드 클러스터의 시크릿과 워크로드 ID 연합을 가르려면 페이지 하단의 컨설팅 문의를 통해 인프라 신원 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, What's new with Azure Arc-enabled Kubernetes. 에이전트 1.32.7, 2026년 2월, 워크로드 ID 연합 일반 공급. https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/release-notes (확인일: 2026-08-20)
+- Microsoft Learn, Deploy and configure workload identity federation. OIDC issuer, OpenShift와 K3s 추가 절차. https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/workload-identity (확인일: 2026-08-20)
+- Microsoft Learn, Workload identity federation in Azure Arc-enabled Kubernetes. 제목에 preview 잔존, 에이전트 1.21부터 지원. https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/conceptual-workload-identity (확인일: 2026-08-20)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 클러스터 적합성이나 보안 결과를 보증하지 않습니다.

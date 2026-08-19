@@ -1,0 +1,100 @@
+---
+contentId: insight-aws-backup-eks-logically-airgapped-vault
+title: "AWS Backup EKS 논리 에어갭: 표준 볼트와 복구 계정을 가를 것"
+summary: "2026-03-12 EKS 논리 에어갭 볼트 지원과 복원 시험·리전 문서 불일치를 대조해 표준 볼트, 공유, 복구 계정을 가르는 리뷰 초안"
+slug: aws-backup-eks-logically-airgapped-vault
+locale: ko
+status: review
+updatedAt: 2026-08-20
+audience: [customer, partner]
+tags: [backup, disaster-recovery, aws-backup, eks, air-gap]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/03/aws-backup-logically-air-gapped-vault-amazon-eks/"
+  - "https://docs.aws.amazon.com/aws-backup/latest/devguide/logicallyairgappedvault.html"
+  - "https://docs.aws.amazon.com/aws-backup/latest/devguide/lag-vault-primary-backup.html"
+  - "https://docs.aws.amazon.com/aws-backup/latest/devguide/restoring-eks.html"
+  - "https://aws.amazon.com/about-aws/whats-new/2026/07/aws-backup-logically-air-gapped-vault-regions/"
+relatedContent: ["service:backup-disaster-recovery", "insight:backup-dr-decision-checklist"]
+---
+
+## 한눈에 보기
+
+AWS Backup은 2026년 3월 12일 What's New에서 Amazon EKS를 논리 에어갭 볼트에 넣을 수 있다고 적습니다. 이 볼트는 기본 잠금과 계정 밖 저장을 전제로, RAM 공유 또는 다자 승인으로 다른 계정에서 복원합니다.
+
+- 결정: EKS를 표준 백업 볼트에 둘지, 논리 에어갭 볼트를 기본 대상 또는 복사 대상으로 둘지
+- 전제: 기능 문서는 최소 보존 7일, 규정 모드 잠금, 서비스 소유 또는 고객 관리 키를 적는다
+- 문서 불일치: 2026-07-16 What's New는 여섯 리전 추가를 알리고, 기능 가이드는 같은 리전을 아직 미지원으로 남긴다
+- 범위: 볼트 유형과 복구 계정 경로. 일반 RPO 가이드나 백업 체크리스트의 재작성은 아니다
+
+## 문제 상황
+
+클러스터 백업이 프로덕션 계정 표준 볼트에만 있으면, 계정 침해와 백업 삭제를 같은 권한 경계에서 맞습니다. 반대로 에어갭 볼트만 만들고 복구 계정 공유와 복원 시험을 비워 두면, 잠긴 사본은 있어도 복구 경로는 없습니다.
+
+3월 What's New는 EKS를 논리 에어갭 볼트의 기본 대상 또는 복사 대상으로 지정하고, RAM 공유 또는 다자 승인 뒤에 그 계정에서 바로 복원 작업을 시작할 수 있다고 적습니다. 기능 가이드는 이 볼트가 규정 모드 잠금을 기본으로 갖고, 백업이 AWS Backup 서비스 소유 계정에 저장되며, CloudTrail에는 조직 밖 공유처럼 보인다고 적습니다.
+
+기본 백업을 에어갭 볼트로 보내는 문서는 복원 시험, 인덱싱, 맬웨어 검사가 DELETE_AFTER_COPY 임시 복구 지점을 무시하고, 인덱싱은 에어갭 볼트 복구 지점을 지원하지 않는다고 적습니다. 복원 시험 전용 페이지는 에어갭 볼트를 제외한다고 명시하지 않습니다. 기능 가이드는 RAM 공유를 데이터 손실 복구 또는 복원 시험에 쓸 수 있다고 적습니다. 자동 복원 시험 계획이 에어갭 사본을 고른다고 가정하지 말고, 시험이 어느 볼트를 보는지 적어야 합니다.
+
+## 지금 결정할 것
+
+- EKS 백업의 기본 대상을 표준 볼트로 둘지, 논리 에어갭 볼트로 둘지
+- 에어갭 사본을 같은 계정에 둘지, 다른 계정이나 리전으로 복사할지
+- 복구 경로를 RAM 공유로 열지, 다자 승인 복원 액세스 볼트로 열지
+- 복원 시험을 표준 볼트에서 할지, 공유된 에어갭 사본에서 수동으로 할지
+- 기능 가이드의 미지원 리전 목록과 7월 What's New의 리전 추가를 어느 기준으로 볼지
+
+## 의사결정 기준
+
+### 표준 볼트와 논리 에어갭 볼트를 먼저 가릅니다
+
+표준 볼트는 생성 계정이 복원하고, 잠금은 선택입니다. 논리 에어갭 볼트는 규정 모드 잠금이 기본이고, 공유된 다른 계정이 복원할 수 있습니다. EKS What's New는 기본 대상 또는 복사 대상 둘 다 허용합니다. 클러스터마다 다른 모델을 쓰더라도, 승인 단위에서는 기본 대상을 하나만 적습니다.
+
+### 복구 계정과 원본 계정을 나눕니다
+
+기능 가이드는 볼트 소유 계정이 닫혀도 폐쇄 후 기간 안에는 다자 승인으로 복원하거나 복사할 수 있다고 적습니다. RAM 공유는 다른 계정, 다른 조직 계정에도 가능합니다. 공유 없이 에어갭만 만들면 복구 시험 경로가 비어 있습니다. 복구 계정, 승인자, 공유 범위를 볼트 생성과 같은 결정으로 둡니다.
+
+### 복원 시험이 보는 볼트를 명시합니다
+
+EKS 복원 문서는 전체 클러스터 또는 최대 다섯 네임스페이스, 원본·기존·신규 클러스터를 고른다고 적습니다. 기본 백업 문서는 임시 복구 지점과 에어갭 인덱싱 제한을 말합니다. 자동 복원 시험 계획이 표준 볼트만 보는지, 공유 에어갭에서 수동 복원을 할지 분리합니다. 백업 작업 성공만으로 복구 가능성을 확인하지 않습니다.
+
+### 리전 문서 불일치를 숨기지 않습니다
+
+2026년 7월 16일 What's New는 타이베이, 말레이시아, 뉴질랜드, 태국, 멕시코 중부, 캘거리에서 논리 에어갭 볼트가 사용 가능하다고 적습니다. 확인일 기준 기능 가이드는 같은 리전을 아직 없다고 적습니다. 운영 리전이 이 목록에 있으면 어느 문서를 따르는지를 승인 조건으로 남깁니다.
+
+## 실무 체크리스트
+
+1. EKS 클러스터별 현재 백업 볼트 유형, 계정, 리전을 기록합니다.
+2. 목표 모델이 표준 볼트 유지, 에어갭 복사, 에어갭 기본 대상 중 어디인지 적습니다.
+3. 최소·최대 보존이 볼트 잠금 범위와 맞는지 확인합니다.
+4. 복구 계정, RAM 공유, 다자 승인 중 실제 복원 경로를 고릅니다.
+5. 복원 시험이 표준 볼트를 보는지, 공유 에어갭에서 수동인지 적습니다.
+6. 7월 What's New 리전 추가와 기능 가이드 미지원 목록을 같은 요청서에 붙입니다.
+7. EKS 복원 유형이 전체인지 네임스페이스인지, 대상이 신규 클러스터인지 정합니다.
+8. 볼트 소유 계정 폐쇄 시 다자 승인 경로와 책임자를 검토합니다.
+
+## 제외 범위
+
+- 특정 백업 제품, 저장 계층, 공급자의 우열이나 가격 비교
+- 일반 RPO·RTO 합의 절차나 백업 결정 체크리스트의 재작성
+- 고객별 클러스터 이름, 계정 번호, 복구 이력 공개
+- 자동 복원 시험이 에어갭 사본을 항상 고른다는 가정
+- 복구 시간, 데이터 손실, 랜섬웨어 대응의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: EKS 백업 대상, 볼트 유형, 복구 계정, 복원 시험 경로, 리전 문서 불일치를 현황화합니다.
+- 의사결정 산출물: 표준 볼트 또는 에어갭 선택, 공유·다자 승인, 시험 볼트, 문서 기준 충돌을 담은 판단표를 만듭니다.
+- 운영 검증: 승인된 범위에서 복원 작업과 시험 대상 볼트를 확인합니다. 복구 시간이나 보안 결과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+EKS 백업을 표준 볼트에 둘지 논리 에어갭으로 옮길지를 가르려면 페이지 하단의 컨설팅 문의를 통해 백업·복구 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, 2026-03-12. EKS를 논리 에어갭 볼트의 기본 대상 또는 복사 대상으로 지원, 24개 리전. https://aws.amazon.com/about-aws/whats-new/2026/03/aws-backup-logically-air-gapped-vault-amazon-eks/ (확인일: 2026-08-20)
+- AWS Backup Developer Guide, Logically air-gapped vault. 규정 모드 잠금, RAM 또는 다자 승인, 서비스 소유 계정 저장. https://docs.aws.amazon.com/aws-backup/latest/devguide/logicallyairgappedvault.html (확인일: 2026-08-20)
+- AWS Backup Developer Guide, Primary backups to logically air-gapped vaults. 복원 시험·인덱싱 제한, DELETE_AFTER_COPY 임시 지점. https://docs.aws.amazon.com/aws-backup/latest/devguide/lag-vault-primary-backup.html (확인일: 2026-08-20)
+- AWS Backup Developer Guide, Restore an Amazon EKS cluster. 전체 또는 네임스페이스 복원, 신규·기존 클러스터. https://docs.aws.amazon.com/aws-backup/latest/devguide/restoring-eks.html (확인일: 2026-08-20)
+- AWS What's New, 2026-07-16. 논리 에어갭 볼트 6개 리전 추가. 기능 가이드는 같은 리전을 미지원으로 잔존. https://aws.amazon.com/about-aws/whats-new/2026/07/aws-backup-logically-air-gapped-vault-regions/ (확인일: 2026-08-20)
+
+위 출처는 AWS 공개 문서를 설명합니다. 고객별 복구 성공, 보존 적합성, 공급자 우위를 보증하지 않습니다.
