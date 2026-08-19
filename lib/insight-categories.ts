@@ -20,10 +20,14 @@ const CATEGORY_TAGS: Readonly<Record<Exclude<InsightCategory, "전체">, readonl
   "운영 · 거버넌스": ["operations", "governance", "ai", "risk-management", "decision-making", "checklist", "consulting", "automation", "acm", "acme", "tls", "hybrid", "internal"],
 }
 
+function isNamedCategory(value: string): value is Exclude<InsightCategory, "전체"> {
+  return Object.hasOwn(CATEGORY_TAGS, value)
+}
+
 export function categoryOf(tags: readonly string[]): InsightCategory {
   for (const [category, categoryTags] of Object.entries(CATEGORY_TAGS)) {
-    if (tags.some((tag) => categoryTags.includes(tag))) {
-      return category as Exclude<InsightCategory, "전체">
+    if (isNamedCategory(category) && tags.some((tag) => categoryTags.includes(tag))) {
+      return category
     }
   }
   return "운영 · 거버넌스"

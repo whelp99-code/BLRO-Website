@@ -47,7 +47,7 @@ The two setup CLIs are interactive and mutate application wiring, so they are de
 
 ## Environment
 
-`NEXT_PUBLIC_SITE_URL` must be an absolute URL. The runtime boundary is parsed by Zod in `lib/env.ts`; the local default is `http://localhost:3000`.
+`NEXT_PUBLIC_SITE_URL` must be an absolute URL. The runtime boundary is parsed by Zod in `lib/env.ts`. Local and test builds default to `http://localhost:3000`. Production builds treat blank `NEXT_PUBLIC_*` values as unset and use `https://blro.co.kr`, `https://api.blro.co.kr`, and the public Turnstile site key so Cloudflare Pages can ship intake without copying empty dashboard variables. Worker secrets stay out of git.
 
 ## Planning package
 

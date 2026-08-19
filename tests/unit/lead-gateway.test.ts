@@ -175,10 +175,10 @@ describe("lead gateway intake boundary", () => {
     const bind = vi.fn().mockReturnValue({ first, run })
     const prepare = vi.fn().mockReturnValue({ bind })
     const database = { batch: vi.fn(), prepare } satisfies LeadDatabase
-    const queue = { send: vi.fn(), sendBatch: vi.fn(), metrics: vi.fn() } as unknown as NonNullable<LeadGatewayEnvironment["LEAD_QUEUE"]>
+    const queue = { send: vi.fn(async () => undefined) }
     const worker = await import("@/workers/lead-gateway/src/index")
 
-    await worker.default.queue({ messages: [{ body: { leadId: "lead-123" }, ack: vi.fn(), retry: vi.fn() }] } as never, {
+    await worker.processLeadQueue({ messages: [{ body: { leadId: "lead-123" }, ack: vi.fn(), retry: vi.fn() }] }, {
       ...environment,
       ENVIRONMENT: "production",
       INQUIRY_INTAKE_ENABLED: "true",

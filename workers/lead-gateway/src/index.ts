@@ -32,13 +32,25 @@ export type LeadGatewayEnvironment = {
   readonly INQUIRY_INTAKE_ENABLED: "true" | "false"
   readonly LEAD_MAGNET_DOWNLOAD_SECRET?: string
   readonly LEAD_MAGNETS?: R2Bucket
-  readonly LEAD_QUEUE?: Queue<LeadQueueMessage>
+  readonly LEAD_QUEUE?: LeadQueueProducer
   readonly PII_ENCRYPTION_KEY?: string
   readonly SLACK_WEBHOOK_URL?: string
   readonly TURNSTILE_SECRET_KEY?: string
 }
 
 type LeadQueueMessage = Readonly<{ leadId: string }>
+
+export type LeadQueueProducer = Readonly<{
+  send(message: LeadQueueMessage): Promise<void>
+}>
+
+export type LeadQueueBatch = Readonly<{
+  messages: readonly Readonly<{
+    ack(): void
+    body: LeadQueueMessage
+    retry(): void
+  }>[]
+}>
 
 type StoredLead = Readonly<{
   encrypted_payload: string
@@ -47,7 +59,7 @@ type StoredLead = Readonly<{
 
 type IntakeBindings = Readonly<{
   DB: LeadDatabase
-  LEAD_QUEUE: Queue<LeadQueueMessage>
+  LEAD_QUEUE: LeadQueueProducer
   PII_ENCRYPTION_KEY: string
   SLACK_WEBHOOK_URL: string
   TURNSTILE_SECRET_KEY: string
@@ -426,32 +438,36 @@ export async function handleRequest(request: Request, env: LeadGatewayEnvironmen
   return response(202, { status: "accepted" }, origin)
 }
 
+export async function processLeadQueue(batch: LeadQueueBatch, env: LeadGatewayEnvironment): Promise<void> {
+  const bindings = intakeBindings(env)
+  if (bindings === undefined) {
+    for (const message of batch.messages) message.retry()
+    return
+  }
+  for (const message of batch.messages) {
+    try {
+      const stored = await bindings.DB.prepare(
+        "SELECT encrypted_payload, payload_key_version FROM leads WHERE lead_id = ? AND expires_at > ?",
+      ).bind(message.body.leadId, new Date().toISOString()).first<StoredLead>()
+      if (stored === null) {
+        message.ack()
+        continue
+      }
+      await deliverToSlack(message.body.leadId, stored, bindings)
+      await bindings.DB.prepare("UPDATE leads SET delivery_state = ? WHERE lead_id = ?").bind("delivered", message.body.leadId).run()
+      message.ack()
+    } catch {
+      message.retry()
+    }
+  }
+}
+
 export default {
   fetch(request, env: LeadGatewayEnvironment) {
     return handleRequest(request, env)
   },
-  async queue(batch: MessageBatch<LeadQueueMessage>, env) {
-    const bindings = intakeBindings(env)
-    if (bindings === undefined) {
-      for (const message of batch.messages) message.retry()
-      return
-    }
-    for (const message of batch.messages) {
-      try {
-        const stored = await bindings.DB.prepare(
-          "SELECT encrypted_payload, payload_key_version FROM leads WHERE lead_id = ? AND expires_at > ?",
-        ).bind(message.body.leadId, new Date().toISOString()).first<StoredLead>()
-        if (stored === null) {
-          message.ack()
-          continue
-        }
-        await deliverToSlack(message.body.leadId, stored, bindings)
-        await bindings.DB.prepare("UPDATE leads SET delivery_state = ? WHERE lead_id = ?").bind("delivered", message.body.leadId).run()
-        message.ack()
-      } catch {
-        message.retry()
-      }
-    }
+  queue(batch: MessageBatch<LeadQueueMessage>, env: LeadGatewayEnvironment) {
+    return processLeadQueue(batch, env)
   },
   async scheduled(_, env) {
     if (env.DB !== undefined) {
