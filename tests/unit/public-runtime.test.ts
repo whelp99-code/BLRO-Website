@@ -21,7 +21,10 @@ describe("public runtime defaults", () => {
   it("keeps local defaults outside production and fills the live origin in production", () => {
     expect(resolvePublicSiteUrl(undefined, "test")).toBe("http://localhost:3000")
     expect(resolvePublicSiteUrl("", "development")).toBe("http://localhost:3000")
+    expect(resolvePublicSiteUrl("http://localhost:3000", "development")).toBe("http://localhost:3000")
     expect(resolvePublicSiteUrl("  ", "production")).toBe(PRODUCTION_SITE_ORIGIN)
+    expect(resolvePublicSiteUrl("http://localhost:3000", "production")).toBe(PRODUCTION_SITE_ORIGIN)
+    expect(resolvePublicSiteUrl("http://blro.co.kr", "production")).toBe(PRODUCTION_SITE_ORIGIN)
     expect(resolvePublicSiteUrl("https://preview.blro-website.pages.dev", "production")).toBe(
       "https://preview.blro-website.pages.dev",
     )
