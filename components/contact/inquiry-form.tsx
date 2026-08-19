@@ -6,9 +6,10 @@ import { useState } from "react"
 import { emitAnalyticsEvent } from "@/components/analytics/emit-analytics-event"
 import { submitInquiry, type InquiryTopic } from "@/lib/lead-api"
 import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
+import { resolveLeadApiUrl, resolveTurnstileSiteKey } from "@/lib/public-runtime"
 
-const endpoint = process.env["NEXT_PUBLIC_LEAD_API_URL"]
-const siteKey = process.env["NEXT_PUBLIC_TURNSTILE_SITE_KEY"]
+const endpoint = resolveLeadApiUrl(process.env["NEXT_PUBLIC_LEAD_API_URL"], process.env.NODE_ENV, process.env["NEXT_PUBLIC_SITE_URL"])
+const siteKey = resolveTurnstileSiteKey(process.env["NEXT_PUBLIC_TURNSTILE_SITE_KEY"], process.env.NODE_ENV, process.env["NEXT_PUBLIC_SITE_URL"])
 
 function value(formData: FormData, name: string): string {
   const result = formData.get(name)

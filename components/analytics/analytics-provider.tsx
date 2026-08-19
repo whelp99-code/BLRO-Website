@@ -4,9 +4,10 @@ import { useEffect, useSyncExternalStore } from "react"
 import { getAnalyticsConsent, subscribeToConsent } from "@/components/analytics/consent-manager"
 import type { AnalyticsEvent } from "@/lib/analytics/events"
 import { createClientUuid } from "@/lib/client-id"
+import { configuredPublicValue, resolveLeadApiUrl } from "@/lib/public-runtime"
 
-const ANALYTICS_ENDPOINT = process.env.NEXT_PUBLIC_LEAD_API_URL
-const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN
+const ANALYTICS_ENDPOINT = resolveLeadApiUrl(process.env.NEXT_PUBLIC_LEAD_API_URL, process.env.NODE_ENV, process.env.NEXT_PUBLIC_SITE_URL)
+const CLOUDFLARE_WEB_ANALYTICS_TOKEN = configuredPublicValue(process.env.NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN)
 const ANALYTICS_EVENT = "blro:analytics"
 
 function isAnalyticsDetail(value: unknown): value is AnalyticsEvent {

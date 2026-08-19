@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 import ContactPage, { metadata } from "@/app/contact/page"
+import { isSecureIntakeConfigured } from "@/lib/public-runtime"
 
 describe("contact page", () => {
   it("keeps the conversion context and requires explicit privacy consent before secure intake can be enabled", () => {
@@ -13,7 +14,12 @@ describe("contact page", () => {
     expect(screen.getByText("다음 검증")).toBeVisible()
     expect(screen.getAllByRole("textbox")).toHaveLength(5)
     expect(screen.getByRole("checkbox", { name: /개인정보 처리 안내/u })).toBeRequired()
-    const intakeConfigured = process.env.NEXT_PUBLIC_LEAD_API_URL !== undefined && process.env["NEXT_PUBLIC_TURNSTILE_SITE_KEY"] !== undefined
+    const intakeConfigured = isSecureIntakeConfigured(
+      process.env.NEXT_PUBLIC_LEAD_API_URL,
+      process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+      process.env.NODE_ENV,
+      process.env.NEXT_PUBLIC_SITE_URL,
+    )
     expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toHaveProperty("disabled", !intakeConfigured)
     if (intakeConfigured) {
       expect(screen.queryByText("안전한 접수 서비스 연결을 준비 중입니다.")).not.toBeInTheDocument()

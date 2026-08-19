@@ -12,7 +12,7 @@ describe("analytics event boundary", () => {
     expect(parseAnalyticsEvent(validEvent)).toEqual(validEvent)
     expect(parseAnalyticsEvent({
       ...validEvent,
-      properties: { ctaId: "evidence-public-insights", placement: "evidence", landingPath: "/" },
+      properties: { ctaId: "hero-diagnostic-sample", placement: "hero", landingPath: "/" },
     })).toBeDefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, email: "person@example.com" } })).toBeUndefined()
     expect(parseAnalyticsEvent({ ...validEvent, properties: { ...validEvent.properties, landingPath: "/contact?email=person" } })).toBeUndefined()

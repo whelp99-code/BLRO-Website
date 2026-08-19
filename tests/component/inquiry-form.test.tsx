@@ -63,6 +63,31 @@ describe("InquiryForm", () => {
     }
   })
 
+  it("enables submit when production public intake values are blank", async () => {
+    vi.stubEnv("NODE_ENV", "production")
+    vi.stubEnv("NEXT_PUBLIC_LEAD_API_URL", "")
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "   ")
+
+    const { InquiryForm } = await import("@/components/contact/inquiry-form")
+    render(<InquiryForm />)
+
+    expect(screen.queryByText("안전한 접수 서비스 연결을 준비 중입니다.")).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toBeEnabled()
+  })
+
+  it("keeps submit locked on preview production builds when intake values are blank", async () => {
+    vi.stubEnv("NODE_ENV", "production")
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://preview.blro-website.pages.dev")
+    vi.stubEnv("NEXT_PUBLIC_LEAD_API_URL", "")
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "   ")
+
+    const { InquiryForm } = await import("@/components/contact/inquiry-form")
+    render(<InquiryForm />)
+
+    expect(screen.getByText("안전한 접수 서비스 연결을 준비 중입니다.")).toBeVisible()
+    expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toBeDisabled()
+  })
+
   it("preserves partner intent in the inquiry payload", async () => {
     const user = userEvent.setup()
     searchParamsValue.current = "type=partner-collaboration"

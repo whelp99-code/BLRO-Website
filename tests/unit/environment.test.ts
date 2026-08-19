@@ -26,4 +26,19 @@ describe("parsePublicEnvironment", () => {
     // Then
     expect(parse).toThrow()
   })
+
+  it("uses the live origin when production builds omit or blank the site URL", () => {
+    expect(parsePublicEnvironment({ NODE_ENV: "production" }).NEXT_PUBLIC_SITE_URL).toBe("https://blro.co.kr")
+    expect(parsePublicEnvironment({
+      NODE_ENV: "production",
+      NEXT_PUBLIC_SITE_URL: "   ",
+    }).NEXT_PUBLIC_SITE_URL).toBe("https://blro.co.kr")
+  })
+
+  it("uses the live origin when production is given a localhost site URL", () => {
+    expect(parsePublicEnvironment({
+      NODE_ENV: "production",
+      NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
+    }).NEXT_PUBLIC_SITE_URL).toBe("https://blro.co.kr")
+  })
 })
