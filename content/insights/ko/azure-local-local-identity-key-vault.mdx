@@ -1,0 +1,98 @@
+---
+contentId: insight-azure-local-local-identity-key-vault
+title: "Azure Local 로컬 신원: AD 제거가 아니라 Key Vault 경계를 정할 것"
+summary: "Azure Local 2604 로컬 신원 일반 공급에서 AD 없는 클러스터와 Azure Key Vault 비밀 백업, 도구 호환을 가르는 리뷰 초안"
+slug: azure-local-local-identity-key-vault
+locale: ko
+status: review
+updatedAt: 2026-08-21
+audience: [customer, partner]
+tags: [azure-local, hci, identity, key-vault, operations]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2604"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/deploy/deployment-local-identity-with-key-vault-overview"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/deploy/deployment-local-identity-with-key-vault?view=azloc-2604"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/deploy/deploy-via-portal?view=azloc-2604"
+relatedContent: ["service:hci-private-cloud", "insight:hci-readiness-checklist"]
+---
+
+## 한눈에 보기
+
+Azure Local 2604부터 로컬 신원과 Azure Key Vault 조합이 일반 공급입니다. 클러스터는 Active Directory에 가입하지 않을 수 있지만, 비밀은 Azure의 Key Vault에 백업됩니다.
+
+- 결정: AD 기반 배포를 유지할지, 클러스터를 작업 그룹으로 두고 Key Vault에 비밀을 둘지
+- 전제: 노드마다 같은 로컬 관리 계정, 정적 IP, 자체 DNS 영역, 클러스터당 Key Vault 하나
+- 불일치: 개요는 Azure 클라우드 Key Vault를 전제로 하고, 커뮤니티 표현의 단절망 가정과 같지 않음
+- 범위: 2606 업데이트 준비나 2607 iSCSI SAN이 아니라 신원과 비밀 경계
+
+## 문제 상황
+
+도메인을 빼면 방화벽과 계정 운영이 단순해 보이지만, 비밀 위치와 관리 도구가 함께 바뀝니다.
+
+개요 문서는 이 모델을 예전 AD 없는 배포라고 부르며, 배포 과정에서 Azure 클라우드의 Key Vault를 만들어 BitLocker 키와 구성 비밀을 백업한다고 적습니다. 배포 문서는 내장 Administrator를 쓰지 말고, 모든 노드에 같은 로컬 관리 계정을 두라고 적습니다. 포털 배포 문서는 기존 Key Vault에 프라이빗 엔드포인트가 켜져 있으면 이 경로를 지원하지 않는다고 적습니다.
+
+Windows Admin Center는 이 신원 구성에서 지원되지 않습니다. Hyper-V 관리자와 장애 조치 클러스터 관리자는 시나리오마다 다를 수 있어 미리 시험하라고 적습니다. PowerShell, Azure Monitor, Azure 포털은 지원됩니다.
+
+## 지금 결정할 것
+
+- 새 클러스터를 AD 가입으로 둘지, 로컬 신원으로 둘지. 확인일 문서 기준 생성 후 전환 절차는 이 초안의 근거가 아님
+- Key Vault를 구독 어디에 두고, 노드 관리 ID에 어떤 역할을 줄지
+- Windows Admin Center나 SCVMM 없이 PowerShell과 포털만으로 운영할 수 있는지
+- 복구 계정 RecoveryAdmin과 BitLocker 키를 누가 Key Vault에서 꺼낼지
+- 단절된 현장처럼 Azure 끝점에 닿지 못하는 환경을 이 모델에 넣을지
+
+## 의사결정 기준
+
+### AD가 없다고 해서 Azure 의존이 사라진 것은 아닙니다
+
+배포 후 확인은 도메인이 WORKGROUP이고, 클러스터 이름 리소스의 ADAware 값이 2이면 로컬 신원입니다. 비밀은 Azure Key Vault에 백업됩니다. 노드가 Key Vault에 닿지 못하면 비밀 백업과 조회가 실패한다고 경고 문서가 적습니다. 온프레미스 AD만 제거한 구성을 클라우드와 분리된 구성으로 부르지 않습니다.
+
+### 도구 호환을 운영 전제로 적습니다
+
+지원 도구는 PowerShell, Azure Monitor, Azure 포털입니다. Windows Admin Center는 지원되지 않습니다. SCVMM은 제한되거나 없다고 적습니다. 랙 인식 클러스터와 Azure Virtual Desktop 워크로드는 이 신원 구성에서 지원된다고 개요가 적습니다. 지금 쓰는 콘솔이 빠져 있으면 모델 선택이 아닙니다.
+
+### Key Vault 하나는 클러스터 하나에 묶습니다
+
+배포 문서는 클러스터마다 Key Vault를 만들라고 적습니다. 포털 문서는 프라이빗 엔드포인트가 켜진 기존 자격 증명을 이 배포에 쓰지 말라고 적습니다. 자격 증명을 바꾼 뒤에는 옛 자격 증명이 자동 삭제되지 않습니다. 접근 역할과 방화벽, 확장 상태를 변경 기록에 남깁니다.
+
+### 로컬 관리 계정은 사람이 수명주기를 집니다
+
+내장 Administrator는 쓰지 않습니다. 모든 노드에 같은 계정이 있어야 노드 추가와 수리가 됩니다. 만료, 교체, 보관은 고객 운영 책임입니다. 복구 사용자는 RecoveryAdmin이며 암호는 Key Vault에서 꺼냅니다.
+
+## 실무 체크리스트
+
+1. 대상 클러스터가 신규인지, 이미 AD에 가입돼 있는지 기록합니다.
+2. 로컬 관리 계정 이름, 복잡도, 전 노드 동일 여부를 확인합니다.
+3. 정적 IP, DNS Host A, 영역 이름을 배포 문서 기준으로 점검합니다.
+4. Key Vault 위치, 프라이빗 엔드포인트 여부, 노드 관리 ID 역할을 적습니다.
+5. Windows Admin Center, SCVMM, MMC 사용 여부를 운영 범위에서 빼거나 시험합니다.
+6. RecoveryAdmin과 BitLocker 키 조회 담당을 지정합니다.
+7. 배포 후 WORKGROUP과 ADAware 값 2를 확인합니다.
+8. Key Vault 확장 경고와 비밀 백업 여부를 Azure Monitor에서 볼 책임을 정합니다.
+
+## 제외 범위
+
+- 특정 HCI 제품의 우열, 가격, 성능 비교
+- 2606 업데이트 준비 절차나 2607 iSCSI SAN 구성의 재작성
+- 고객별 도메인 설계, 비밀 값, 구독 식별자의 공개
+- 단절망에서 Key Vault 없이 동작한다는 보장
+- 기존 HCI 도입 준비도 체크리스트를 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 신원 모델, Key Vault 경계, 도구 호환, 복구 계정과 DNS를 현황화합니다.
+- 의사결정 산출물: AD 유지 또는 로컬 신원 선택, 비밀 책임, 제외 도구와 확인 항목을 담은 판단표를 만듭니다.
+- 운영 검증: 배포 후 작업 그룹 여부, 비밀 백업, 노드 추가·수리 전제를 시나리오로 확인합니다. 무중단, 규제 적합성, 비밀 보호 효과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+AD 없는 Azure Local의 비밀 경계를 정리하려면 페이지 하단의 전환 진단 범위 확인에서 HCI 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Azure Local 2604 what's new. 로컬 신원과 Key Vault 일반 공급. https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2604 (확인일: 2026-08-21)
+- Microsoft Learn, Overview of Azure Local deployment using local identity with Azure Key Vault. Azure 클라우드 Key Vault, 도구 호환, AVD 지원. https://learn.microsoft.com/en-us/azure/azure-local/deploy/deployment-local-identity-with-key-vault-overview (확인일: 2026-08-21)
+- Microsoft Learn, Deploy Azure Local using local identity with Azure Key Vault. 로컬 관리 계정, DNS, RecoveryAdmin, ADAware 값 2. https://learn.microsoft.com/en-us/azure/azure-local/deploy/deployment-local-identity-with-key-vault?view=azloc-2604 (확인일: 2026-08-21)
+- Microsoft Learn, Deploy via portal. 프라이빗 엔드포인트가 켜진 기존 Key Vault 미지원. https://learn.microsoft.com/en-us/azure/azure-local/deploy/deploy-via-portal?view=azloc-2604 (확인일: 2026-08-21)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 배포 결과, 라이선스, 운영 결과를 보증하지 않습니다.

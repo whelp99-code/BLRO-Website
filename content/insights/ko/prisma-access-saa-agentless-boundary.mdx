@@ -1,0 +1,100 @@
+---
+contentId: insight-prisma-access-saa-agentless-boundary
+title: "Prisma Access SAA: 에이전트 없이 줄 앱과 라이선스를 가를 것"
+summary: "2026-05-29 PRA에서 SAA로 바뀐 Prisma Access에서 사설 웹, RDP, SaaS 격리와 라이선스·버전 전제를 가르는 리뷰 초안"
+slug: prisma-access-saa-agentless-boundary
+locale: ko
+status: review
+updatedAt: 2026-08-21
+audience: [customer, partner]
+tags: [prisma-access, sase, saa, ztna, agentless]
+evidenceRefs:
+  - "https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access"
+  - "https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access/configure-secure-agentless-access-settings"
+  - "https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access/private-web-application-access-for-secure-agentless-access/configure-private-web-applications-for-secure-agentless-access"
+  - "https://docs.paloaltonetworks.com/prisma-access/release-notes/6-1/prisma-access-about/prisma-access-addressed-issues"
+  - "https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access/set-up-the-secure-agentless-access-portal"
+relatedContent: ["service:sase-global-connectivity", "insight:secure-access-selection"]
+---
+
+## 한눈에 보기
+
+Prisma Access 릴리스 노트 CYR-63001은 2026-05-29부터 Privileged Remote Access를 Secure Agentless Access로 바꿉니다. 사설 웹 앱이 추가되고, RDP와 SSH, VNC는 기존 추가 라이선스가 남습니다.
+
+- 결정: 비관리 단말에 에이전트 없이 줄 앱이 사설 웹인지, RDP·SSH·VNC인지, 공개 SaaS인지
+- 전제: Cloud Identity Engine의 SAML 2.0, Mobile User 구독, 사설 앱 연결 경로
+- 불일치: 개요는 Prisma Access 5.2.1과 데이터플레인 11.2.4, 사설 웹 구성은 6.1 Preferred와 11.2.7
+- 범위: Prisma SD-WAN ION 양자내성 암호가 아니라 에이전트 없는 접근 경계
+
+## 문제 상황
+
+협력사나 개인 단말에 에이전트를 심지 않고 내부 앱을 열면, 웹 게시와 원격 데스크톱과 SaaS 격리가 한 포털에 섞입니다.
+
+개요 문서는 SAA가 HTML5 브라우저로 사설 앱, 사설 웹, 공개 SaaS에 접근하게 한다고 적습니다. 사설 웹의 Remote Browser Isolation은 선택입니다. 공개 SaaS는 격리를 기본으로 켜고 끌 수 없다고 적습니다. 설정 문서는 SAA 인증이 Cloud Identity Engine의 SAML 2.0만 지원한다고 적습니다.
+
+해결된 문제 CYR-63001은 사설 웹이 Prisma Access 기본 라이선스 ZTNA와 Enterprise에 포함되고, RDP와 SSH, VNC는 기존 추가 라이선스가 필요하다고 적습니다. 사설 웹 구성 문서는 최소 버전을 6.1 Preferred와 데이터플레인 11.2.7로 올립니다. 개요와 설정 문서는 5.2.1과 11.2.4를 적습니다. 운영 승인은 어떤 앱 유형을 어떤 버전과 라이선스로 열지 같은 기록에 남깁니다.
+
+## 지금 결정할 것
+
+- 대상 사용자가 에이전트를 설치할 수 없는지, 기존 GlobalProtect 경로를 유지할지
+- 사설 웹만 기본 라이선스로 열지, RDP·SSH·VNC 추가 라이선스를 전제로 할지
+- 사설 앱 연결을 서비스 연결, ZTNA Connector, Colo-Connect 중 무엇으로 둘지
+- 사설 웹에 격리를 켤지. 공개 SaaS는 격리가 필수
+- 테넌트 버전과 데이터플레인이 개요 최소인지, 사설 웹 구성 최소인지
+
+## 의사결정 기준
+
+### 앱 유형과 라이선스를 한 줄로 합치지 않습니다
+
+사설 웹 HTTP와 HTTPS는 해결된 문제 기준으로 기본 라이선스에 들어갑니다. RDP, SSH, VNC는 추가 라이선스입니다. 공개 SaaS는 RBI 라이선스가 데이터 통제 전제입니다. SAA 프로필의 파일 전송과 복사 제한은 사설 웹이 아니라 RDP, SSH, VNC에 적용된다고 사설 웹 구성 문서가 적습니다. 웹 앱 파일 차단은 Prisma Access 보안 정책으로 따로 둡니다.
+
+### 인증은 SAML과 Cloud Identity Engine으로 고정합니다
+
+설정 문서는 Cloud Identity Engine 디렉터리와 SAML 2.0 인증 프로필이 필요하다고 적습니다. 다른 인증 방식을 SAA 포털에 붙인다는 가정을 승인 조건에 넣지 않습니다. Mobile User 연결 방법과 위치, 추가 라이선스 활성화 메일도 전제입니다.
+
+### 버전 표기가 페이지마다 다릅니다
+
+개요와 설정, 포털 문서는 Prisma Access 5.2.1과 데이터플레인 11.2.4를 적습니다. 사설 웹 구성은 6.1 Preferred와 11.2.7, 그리고 서비스 연결이나 ZTNA Connector나 Colo-Connect를 적습니다. 사설 웹을 열 계획이면 더 높은 최소 버전을 변경 범위로 봅니다. 와일드카드 대상 도메인은 지금 지원되지 않습니다.
+
+### 에이전트 없음이 네트워크 전체를 여는 것은 아닙니다
+
+개요는 사용자를 회사 네트워크에 올리지 않고 앱 단위로 접근한다고 적습니다. 접근 도메인은 항상 HTTPS이며, 내부 목적지는 HTTP일 수 있습니다. 공개 DNS에 CNAME을 올리기 전에 로컬 호스트 파일로 접속을 확인하라고 구성 문서가 적습니다. 포털 비활성 시간 초과 기본값은 3시간이며 3시간에서 24시간 사이입니다.
+
+## 실무 체크리스트
+
+1. 사용자를 에이전트 설치 가능, 비관리 단말, 공개 SaaS 필요로 나눕니다.
+2. 앱을 사설 웹, RDP·SSH·VNC, 공개 SaaS로 표시하고 라이선스 전제를 적습니다.
+3. Cloud Identity Engine 디렉터리와 SAML 프로필을 확인합니다.
+4. 테넌트 Prisma Access 버전과 데이터플레인을 개요 최소와 사설 웹 최소에 대조합니다.
+5. 사설 앱 연결 경로를 서비스 연결, ZTNA Connector, Colo-Connect 중 고릅니다.
+6. 사설 웹 격리와 공개 SaaS 필수 격리를 따로 적습니다.
+7. 접근 도메인 인증서, CNAME, 와일드카드 미지원을 변경 요청서에 남깁니다.
+8. 파일 차단이 웹 앱이면 SAA 프로필이 아니라 보안 정책 담당을 지정합니다.
+
+## 제외 범위
+
+- Prisma SD-WAN ION 양자내성 암호 구성의 재작성
+- SASE와 SD-WAN 역할 구분 글이나 보안 접근 선택 글의 재작성
+- 특정 SASE 제품의 우열, 가격, 성능 비교
+- 에이전트 없는 접근이 유출이나 침해를 막는다는 보장
+- 고객별 포털 URL, 인증서, 계정, 웹훅의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 앱 유형, 라이선스 전제, 인증, 버전, 사설 연결 경로를 현황화합니다.
+- 의사결정 산출물: 에이전트 없는 대상, 라이선스 경계, 버전 불일치와 격리 선택을 담은 판단표를 만듭니다.
+- 운영 검증: 포털 로그인과 앱 유형별 접속 실패 지점을 시나리오로 확인합니다. 보안 효과, 규제 적합성, 사용자 경험을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+에이전트 없이 열 앱과 라이선스 경계를 정리하려면 페이지 하단의 전환 진단 범위 확인에서 SASE 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Palo Alto Networks, Secure Agentless Access. 사설 앱·사설 웹·SaaS, SaaS 격리 필수, 최소 5.2.1과 데이터플레인 11.2.4. https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access (확인일: 2026-08-21)
+- Palo Alto Networks, Configure Secure Agentless Access Settings. CIE SAML 2.0만 지원, Mobile User와 추가 라이선스 활성화. https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access/configure-secure-agentless-access-settings (확인일: 2026-08-21)
+- Palo Alto Networks, Configure Private Web Application Access. 최소 6.1 Preferred와 데이터플레인 11.2.7, 와일드카드 미지원. https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access/private-web-application-access-for-secure-agentless-access/configure-private-web-applications-for-secure-agentless-access (확인일: 2026-08-21)
+- Palo Alto Networks, Prisma Access 6.1 addressed issues, CYR-63001, 2026-05-29. PRA를 SAA로 변경, 사설 웹은 기본 라이선스, RDP·SSH·VNC는 추가 라이선스. https://docs.paloaltonetworks.com/prisma-access/release-notes/6-1/prisma-access-about/prisma-access-addressed-issues (확인일: 2026-08-21)
+- Palo Alto Networks, Set Up the Secure Agentless Access Portal. 포털 URL, 세션 시간, 기본 도메인. https://docs.paloaltonetworks.com/prisma-access/administration/secure-agentless-access/set-up-the-secure-agentless-access-portal (확인일: 2026-08-21)
+
+위 출처는 Palo Alto Networks 공개 문서를 설명합니다. 고객별 라이선스, 적용, 운영 결과를 보증하지 않습니다.
