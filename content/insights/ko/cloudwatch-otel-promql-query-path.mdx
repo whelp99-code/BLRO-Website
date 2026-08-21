@@ -1,0 +1,98 @@
+---
+contentId: insight-cloudwatch-otel-promql-query-path
+title: "CloudWatch PromQL: OTLP와 벤디드 지표를 한 질의로 둘지"
+summary: "CloudWatch 네이티브 OpenTelemetry 지표와 PromQL에서 OTLP 수집, 벤디드 지표 보강, Grafana AMP 플러그인 경로를 가르는 리뷰 초안"
+slug: cloudwatch-otel-promql-query-path
+locale: ko
+status: review
+updatedAt: 2026-08-22
+audience: [customer, partner]
+tags: [observability, cloudwatch, opentelemetry, promql, grafana]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-cloudwatch-otel-metrics/"
+  - "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-PromQL-Querying.html"
+  - "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPEndpoint.html"
+  - "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTelEnrichment.html"
+relatedContent: ["insight:infrastructure-consulting-baseline", "service:network-security"]
+---
+
+## 한눈에 보기
+
+Amazon CloudWatch는 2026-06-16에 OpenTelemetry 지표를 네이티브로 받고 PromQL로 질의할 수 있다고 발표했습니다. Grafana에서 보려면 Amazon Managed Service for Prometheus 플러그인을 CloudWatch 모니터링 엔드포인트에 둡니다.
+
+- 결정: 앱 OTLP 지표만 CloudWatch에 둘지, 벤디드 지표 보강까지 켜서 한 PromQL로 볼지
+- 전제: 지표 엔드포인트는 HTTP이고 gRPC가 아니라고 운영 문서가 적는다
+- 불일치: What's New는 70개 이상 서비스의 벤디드 지표를 함께 질의한다고 적고, 보강 문서는 리소스 태그와 OTel enrichment를 따로 켜야 한다고 적는다
+- 범위: Azure Monitor Diagnostics OTLP 경로가 아니라 CloudWatch 지표 질의 경로
+
+## 문제 상황
+
+애플리케이션은 OTLP로 지표를 보내고, AWS 서비스 지표는 기존 CloudWatch 네임스페이스에 있습니다. 두 집합을 한 질의 언어로 보려면 수집 경로와 보강 스위치가 같아야 합니다.
+
+6월 16일 What's New는 OTLP로 보낸 지표를 PromQL로 질의하고, 상용 리전 중 중동 아랍에미리트, 바레인, 이스라엘 텔아비브를 뺀다고 적습니다. PromQL 문서는 OTLP 범위를 @resource, @instrumentation, @datapoint, @aws 접두사로 펼친다고 적습니다. 벤디드 지표를 PromQL로 보려면 계정과 리전에서 OTel enrichment를 켜야 하고, 그 전에 텔레메트리 리소스 태그를 켜야 한다고 적습니다. 원래 CloudWatch 지표는 그대로 남습니다.
+
+OTLP 엔드포인트 문서는 지표 URL이 monitoring 리전 엔드포인트의 /v1/metrics이며 HTTP만 지원한다고 적습니다. Grafana는 CloudWatch 플러그인이 아니라 Amazon Managed Service for Prometheus 플러그인을 https://monitoring.리전.amazonaws.com 에 두고 SigV4를 쓴다고 적습니다. 필요한 IAM은 cloudwatch:GetMetricData와 cloudwatch:ListMetrics입니다.
+
+## 지금 결정할 것
+
+- 앱 지표를 CloudWatch OTLP로 넣을지, 기존 Prometheus 호환 백엔드를 유지할지
+- 벤디드 지표 PromQL을 위해 enrichment와 리소스 태그를 켤지
+- Grafana 데이터 소스를 AMP 플러그인으로 CloudWatch 엔드포인트에 둘지
+- 수집을 SigV4로 둘지, 외부 워크로드용 전달자 토큰으로 둘지
+- 대상 리전이 제외 3개 리전에 해당하는지
+
+## 의사결정 기준
+
+### OTLP 수집과 벤디드 지표 보강을 한 스위치로 보지 않습니다
+
+OTLP 지표 엔드포인트에 보내면 앱 지표는 PromQL 대상이 됩니다. 벤디드 지표는 enrichment를 켜야 같은 질의에 들어갑니다. What's New의 통합 설명만 인용하고 보강을 켜지 않으면 서비스 지표가 PromQL에 보이지 않습니다. 계정마다, 리전마다 스위치를 기록합니다.
+
+### Grafana 경로와 콘솔 경로를 섞지 않습니다
+
+PromQL 문서는 Grafana에서 AMP 플러그인을 CloudWatch 모니터링 엔드포인트에 두라고 적습니다. 플러그인 이름과 실제 백엔드가 다릅니다. 콘솔 Query Studio와 Grafana 워크스페이스 IAM을 한 구성으로 보지 않습니다. 워크스페이스 역할에 GetMetricData와 ListMetrics가 있는지 확인합니다.
+
+### HTTP OTLP와 gRPC 수집을 같은 파이프로 두지 않습니다
+
+엔드포인트 문서는 HTTP만 지원하고 gRPC는 지원하지 않는다고 적습니다. 인증은 SigV4를 권하고, AWS 밖 워크로드는 전달자 토큰을 쓸 수 있습니다. 수집기가 gRPC만 쓰면 이 경로에 닿지 않습니다. 페이로드와 레이블 수 제한도 수집 설계에 넣습니다.
+
+### Azure Monitor Diagnostics 폐기 경로와 섞지 않습니다
+
+이 글은 CloudWatch 네이티브 지표와 PromQL입니다. Azure Monitor 진단 설정의 OTLP 이전과는 제품과 결정이 다릅니다. 멀티클라우드 관측을 한 문장으로 합치지 않습니다.
+
+## 실무 체크리스트
+
+1. 앱 지표, AWS 벤디드 지표, Grafana 대시보드를 누가 소유하는지 나눕니다.
+2. 수집기가 HTTP OTLP와 SigV4를 쓰는지 확인합니다.
+3. 대상 리전이 제외 목록에 있는지 확인합니다.
+4. 벤디드 지표를 PromQL로 볼지 정하고, 볼 경우 리소스 태그와 enrichment를 켭니다.
+5. Grafana 데이터 소스를 AMP 플러그인으로 모니터링 엔드포인트에 둡니다.
+6. 질의 IAM에 GetMetricData와 ListMetrics가 있는지 확인합니다.
+7. 레이블 접두사 @resource와 기존 Prometheus 언더스코어 변환을 쿼리 표준에 적습니다.
+8. 기존 CloudWatch 경보와 PromQL 질의를 어느 쪽을 운영 기준으로 둘지 정합니다.
+
+## 제외 범위
+
+- Azure Monitor Diagnostics OTLP 경로 글을 다시 쓰는 범위
+- 특정 관측 제품, Grafana 배포, 수집기 배포의 우열이나 가격 비교
+- 15개월 보존이나 통합 질의가 운영 품질을 보장한다는 주장
+- 고객별 규제 적용, 로그 개인정보, 성능 한도의 확정 판정
+- 웹훅, 계정 키, 내부 대시보드 URL의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 수집 프로토콜, 리전, enrichment, Grafana 데이터 소스, IAM을 현황화합니다.
+- 의사결정 산출물: OTLP 전용과 벤디드 지표 포함 경로, 질의 도구, 문서 불일치를 담은 판단표를 만듭니다.
+- 운영 검증: 앱 지표와 벤디드 지표가 PromQL에 보이는지 시나리오로 확인합니다. 질의 성능, 비용, 규제 적합성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+CloudWatch PromQL 수집과 질의 경계를 정리하려면 페이지 하단의 컨설팅 문의를 통해 관측 경로 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, Amazon CloudWatch introduces native OpenTelemetry metrics with PromQL querying and per-GB pricing, 2026-06-16. 상용 리전 중 3곳 제외. https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-cloudwatch-otel-metrics/ (확인일: 2026-08-22)
+- Amazon CloudWatch User Guide, PromQL querying. 레이블 접두사, Grafana는 AMP 플러그인을 모니터링 엔드포인트에 연결. https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-PromQL-Querying.html (확인일: 2026-08-22)
+- Amazon CloudWatch User Guide, OTLP Endpoints. 지표 HTTP 엔드포인트, gRPC 미지원, SigV4 또는 전달자 토큰. https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPEndpoint.html (확인일: 2026-08-22)
+- Amazon CloudWatch User Guide, AWS vended metrics in OpenTelemetry format. enrichment와 리소스 태그 선행. https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTelEnrichment.html (확인일: 2026-08-22)
+
+위 출처는 AWS 공개 공지와 운영 문서를 설명합니다. 고객별 적용, 질의 결과, 운영 품질을 보증하지 않습니다.

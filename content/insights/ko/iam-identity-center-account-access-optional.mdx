@@ -1,0 +1,100 @@
+---
+contentId: insight-iam-identity-center-account-access-optional
+title: "IAM Identity Center: 계정 권한을 켤지부터 정할 것"
+summary: "2026년 8월 IAM Identity Center 신규 조직 인스턴스에서 계정 권한 선택, 원클릭 다중 리전, 권한 세트 고정 여부를 가르는 리뷰 초안"
+slug: iam-identity-center-account-access-optional
+locale: ko
+status: review
+updatedAt: 2026-08-22
+audience: [customer, partner]
+tags: [cloud, iam, identity-center, organizations, control-plane]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/aws-identity-center-accounts-optional/"
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/aws-iam-identity-center-supports-one-click-multi-region-option-new-organization-instances/"
+  - "https://docs.aws.amazon.com/singlesignon/latest/userguide/enable-identity-center.html"
+  - "https://docs.aws.amazon.com/singlesignon/latest/userguide/organization-instances-identity-center.html"
+  - "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+relatedContent: ["insight:infrastructure-consulting-baseline", "service:network-security"]
+---
+
+## 한눈에 보기
+
+IAM Identity Center는 2026-08-05부터 신규 조직 인스턴스를 만들 때 AWS 계정 접근 관리를 켜지 않을 수 있습니다. 2026-08-07에는 단일 리전, 다중 리전, 사용자 지정 구성을 고를 수 있습니다.
+
+- 결정: 애플리케이션 인증만 둘지, 계정 권한 세트까지 켤지, 어느 리전에 복제할지
+- 전제: 이 선택은 신규 인스턴스 초기 구성에 해당하고 기존 인스턴스에는 적용되지 않는다고 공지가 적는다
+- 불일치: 공지는 계정 접근 관리, 사용 설명서는 다중 계정 권한, 인스턴스 문서는 권한 세트라고 적는다
+- 범위: Organizations 출발 SCP가 아니라 조직 인스턴스의 계정 권한 경계
+
+## 문제 상황
+
+인력 신원을 AWS 애플리케이션에 한 번 연결하려고 Identity Center를 켜면, 멤버 계정에 서비스 연결 역할이 생기고 권한 세트로 계정 로그인을 같이 맡기는 구성이 기본이었습니다.
+
+8월 5일 공지는 신규 조직 인스턴스에서 계정 접근 관리를 끄면 멤버 계정에 서비스 연결 역할을 만들지 않는다고 적습니다. 나중에 인스턴스 설정이나 UpdateInstance API로 켤 수 있습니다. 사용 설명서는 같은 스위치를 다중 계정 권한이라고 부릅니다. 끄면 콘솔의 AWS accounts 구역이 보이지 않습니다.
+
+8월 7일 공지는 기본 활성 상용 리전 17곳에서 단일 리전, 다중 리전, 사용자 지정을 고른다고 적습니다. 다중 리전은 고객 관리 다중 리전 KMS 키를 만들고 추가 리전에 복제합니다. 조직 인스턴스 문서는 단일 리전과 다중 리전에서 권한 세트가 기본으로 켜지고, 한 번 켜면 끌 수 없다고 적습니다. 원클릭 다중 리전을 고르면 계정 권한을 빼는 선택과 같이 쓰기 어렵습니다.
+
+## 지금 결정할 것
+
+- 새 조직 인스턴스가 애플리케이션 인증만 할 것인지, 계정 로그인까지 할 것인지
+- 단일 리전, 다중 리전 원클릭, 사용자 지정 중 무엇을 고를지
+- 권한 세트를 지금 켜면 끌 수 없다는 안내를 수용할지
+- 기존 인스턴스를 이 선택으로 바꿀 수 없다고 보고 새 인스턴스만 대상에 둘지
+- 계정 역할을 나중에 켤 승인자와 변경 창을 정할지
+
+## 의사결정 기준
+
+### 애플리케이션 인증과 계정 권한 세트를 같은 기본값으로 두지 않습니다
+
+공지는 계정 접근 관리를 끄면 멤버 계정 접근 면이 줄어든다고 적습니다. 권한 세트 문서는 조직 인스턴스에 다중 계정 권한이 켜져 있어야 권한 세트가 동작한다고 적습니다. 애플리케이션 SSO만 필요하면 초기 스위치부터 끕니다. 계정 로그인이 필요하면 권한 세트와 서비스 연결 역할이 생긴다는 점을 변경 요청서에 적습니다.
+
+### 원클릭 다중 리전과 계정 권한 끄기를 한 화면에서 섞지 않습니다
+
+조직 인스턴스 문서는 단일 리전과 다중 리전 옵션에서 권한 세트가 기본 켜짐이고 비활성화할 수 없다고 적습니다. 사용자 지정만 권한 세트 사용 여부를 고를 수 있습니다. 복원력만 보고 다중 리전을 고르면 계정 권한을 빼는 경로가 막힐 수 있습니다. 계정 권한을 끄려면 사용자 지정 구성을 먼저 검토합니다.
+
+### 용어가 다른 페이지를 한 정책 문장으로 합치지 않습니다
+
+What's New는 계정 접근 관리, 사용 설명서는 다중 계정 권한, 인스턴스 문서는 권한 세트라고 적습니다. 운영 기록에는 세 표현이 같은 스위치를 가리키는지 출처 페이지를 붙입니다. 기존 인스턴스에는 적용되지 않는다는 공지 문장을 전제로 둡니다.
+
+### 나중에 켜는 경로와 지금 끄는 경로를 나눕니다
+
+공지와 사용 설명서는 나중에 Settings의 Management 탭 또는 UpdateInstance로 켤 수 있다고 적습니다. 조직 인스턴스 문서는 한 번 켠 권한 세트는 끌 수 없다고 적습니다. 실험용으로 켜 두고 나중에 빼겠다는 가정은 문서와 맞지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상이 신규 조직 인스턴스인지, 이미 있는 인스턴스인지 나눕니다.
+2. 필요한 기능이 애플리케이션 인증인지 계정 로그인인지 적습니다.
+3. 단일 리전, 다중 리전, 사용자 지정 중 어떤 구성인지 고릅니다.
+4. 권한 세트를 켜면 끌 수 없다는 안내를 승인 기록에 남깁니다.
+5. 다중 리전을 쓰면 고객 관리 키가 생기는지와 키 권한을 확인합니다.
+6. 계정 권한을 끈 뒤 콘솔에서 AWS accounts가 숨겨지는지 운영자가 확인합니다.
+7. 나중에 켤 경우 UpdateInstance 또는 Settings 탭의 승인자를 정합니다.
+8. 멤버 계정의 계정 인스턴스 생성 통제는 별도 SCP 검토로 둡니다.
+
+## 제외 범위
+
+- Organizations 기본 출발 SCP 글을 다시 쓰는 범위
+- 특정 IdP, 디렉터리, SSO 제품의 우열이나 가격 비교
+- 기존 인스턴스를 이 선택으로 재구성할 수 있다는 가정
+- 다중 리전이 중단 없음을 보장한다는 주장
+- 고객별 규제 적용, 계약, 라이선스의 확정 판정
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 인스턴스 유형, 계정 권한 스위치, 리전 복제, 키, 기존 인스턴스 여부를 현황화합니다.
+- 의사결정 산출물: 애플리케이션 전용과 계정 권한 포함 경로, 구성 옵션, 문서 용어 차이를 담은 판단표를 만듭니다.
+- 운영 검증: 콘솔 구역 표시와 권한 세트 생성 가능 여부를 시나리오로 확인합니다. 복원력, 보안, 규제 적합성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+신규 Identity Center 인스턴스의 계정 권한 경계를 정리하려면 페이지 하단의 컨설팅 문의를 통해 클라우드 제어면 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, AWS IAM Identity Center makes management of AWS account access optional for new organization instances, 2026-08-05. 기존 인스턴스 비적용, 이후 설정 또는 UpdateInstance로 활성화. https://aws.amazon.com/about-aws/whats-new/2026/08/aws-identity-center-accounts-optional/ (확인일: 2026-08-22)
+- AWS What's New, AWS IAM Identity Center supports one-click multi-Region option for new organization instances, 2026-08-07. 단일·다중·사용자 지정, 기본 활성 상용 리전 17곳. https://aws.amazon.com/about-aws/whats-new/2026/08/aws-iam-identity-center-supports-one-click-multi-region-option-new-organization-instances/ (확인일: 2026-08-22)
+- AWS IAM Identity Center User Guide, Enable IAM Identity Center. 다중 계정 권한 토글, 이후 Settings Management 탭. https://docs.aws.amazon.com/singlesignon/latest/userguide/enable-identity-center.html (확인일: 2026-08-22)
+- AWS IAM Identity Center User Guide, Organization instances of IAM Identity Center. 단일·다중 리전은 권한 세트 기본 켜짐, 한 번 켜면 비활성화 불가. https://docs.aws.amazon.com/singlesignon/latest/userguide/organization-instances-identity-center.html (확인일: 2026-08-22)
+- AWS IAM Identity Center User Guide, Manage AWS accounts with permission sets. 다중 계정 권한이 있어야 권한 세트 동작. https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html (확인일: 2026-08-22)
+
+위 출처는 AWS 공개 공지와 사용 설명서를 설명합니다. 고객별 적용, 라이선스, 운영 결과를 보증하지 않습니다.
