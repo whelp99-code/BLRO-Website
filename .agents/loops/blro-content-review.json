@@ -136,11 +136,13 @@
     "deploy": false
   },
   "validation": {
-    "contentValidate": "PENDING",
-    "build": "PENDING",
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 45 tests",
+    "build": "PASS",
     "reviewSlugsOnPublicRoutes": false,
     "reviewSlugsOnSitemap": false,
-    "verdict": "pre_test"
+    "publicInsightRoutes": 12,
+    "verdict": "final_review_ready"
   },
   "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat 2026-08-20, 2026-08-21, or these five slugs. Do not fill leftover slots with Azure Local or HCI."
 }
