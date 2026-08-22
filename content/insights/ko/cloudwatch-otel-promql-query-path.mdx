@@ -1,7 +1,7 @@
 ---
 contentId: insight-cloudwatch-otel-promql-query-path
-title: "CloudWatch PromQL: OTLP와 벤디드 지표를 한 질의로 둘지"
-summary: "CloudWatch 네이티브 OpenTelemetry 지표와 PromQL에서 OTLP 수집, 벤디드 지표 보강, Grafana AMP 플러그인 경로를 가르는 리뷰 초안"
+title: "CloudWatch PromQL: OTLP와 벤더 제공(vended) 지표를 한 질의로 둘지"
+summary: "CloudWatch 네이티브 OpenTelemetry 지표와 PromQL에서 OTLP 수집, 벤더 제공(vended) 지표 보강, Grafana AMP 플러그인 경로를 가르는 리뷰 초안"
 slug: cloudwatch-otel-promql-query-path
 locale: ko
 status: review
@@ -13,39 +13,39 @@ evidenceRefs:
   - "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-PromQL-Querying.html"
   - "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPEndpoint.html"
   - "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTelEnrichment.html"
-relatedContent: ["insight:infrastructure-consulting-baseline", "service:network-security"]
+relatedContent: []
 ---
 
 ## 한눈에 보기
 
 Amazon CloudWatch는 2026-06-16에 OpenTelemetry 지표를 네이티브로 받고 PromQL로 질의할 수 있다고 발표했습니다. Grafana에서 보려면 Amazon Managed Service for Prometheus 플러그인을 CloudWatch 모니터링 엔드포인트에 둡니다.
 
-- 결정: 앱 OTLP 지표만 CloudWatch에 둘지, 벤디드 지표 보강까지 켜서 한 PromQL로 볼지
+- 결정: 앱 OTLP 지표만 CloudWatch에 둘지, 벤더 제공(vended) 지표 보강까지 켜서 한 PromQL로 볼지
 - 전제: 지표 엔드포인트는 HTTP이고 gRPC가 아니라고 운영 문서가 적는다
-- 불일치: What's New는 70개 이상 서비스의 벤디드 지표를 함께 질의한다고 적고, 보강 문서는 리소스 태그와 OTel enrichment를 따로 켜야 한다고 적는다
+- 불일치: What's New는 70개 이상 서비스의 벤더 제공(vended) 지표를 함께 질의한다고 적고, 보강 문서는 리소스 태그와 OTel enrichment를 따로 켜야 한다고 적는다
 - 범위: Azure Monitor Diagnostics OTLP 경로가 아니라 CloudWatch 지표 질의 경로
 
 ## 문제 상황
 
 애플리케이션은 OTLP로 지표를 보내고, AWS 서비스 지표는 기존 CloudWatch 네임스페이스에 있습니다. 두 집합을 한 질의 언어로 보려면 수집 경로와 보강 스위치가 같아야 합니다.
 
-6월 16일 What's New는 OTLP로 보낸 지표를 PromQL로 질의하고, 상용 리전 중 중동 아랍에미리트, 바레인, 이스라엘 텔아비브를 뺀다고 적습니다. PromQL 문서는 OTLP 범위를 @resource, @instrumentation, @datapoint, @aws 접두사로 펼친다고 적습니다. 벤디드 지표를 PromQL로 보려면 계정과 리전에서 OTel enrichment를 켜야 하고, 그 전에 텔레메트리 리소스 태그를 켜야 한다고 적습니다. 원래 CloudWatch 지표는 그대로 남습니다.
+6월 16일 What's New는 OTLP로 보낸 지표를 PromQL로 질의하고, 상용 리전 중 중동 아랍에미리트, 바레인, 이스라엘 텔아비브를 뺀다고 적습니다. PromQL 문서는 OTLP 범위를 @resource, @instrumentation, @datapoint, @aws 접두사로 펼친다고 적습니다. 벤더 제공(vended) 지표를 PromQL로 보려면 계정과 리전에서 OTel enrichment를 켜야 하고, 그 전에 텔레메트리 리소스 태그를 켜야 한다고 적습니다. 원래 CloudWatch 지표는 그대로 남습니다.
 
 OTLP 엔드포인트 문서는 지표 URL이 monitoring 리전 엔드포인트의 /v1/metrics이며 HTTP만 지원한다고 적습니다. Grafana는 CloudWatch 플러그인이 아니라 Amazon Managed Service for Prometheus 플러그인을 https://monitoring.리전.amazonaws.com 에 두고 SigV4를 쓴다고 적습니다. 필요한 IAM은 cloudwatch:GetMetricData와 cloudwatch:ListMetrics입니다.
 
 ## 지금 결정할 것
 
 - 앱 지표를 CloudWatch OTLP로 넣을지, 기존 Prometheus 호환 백엔드를 유지할지
-- 벤디드 지표 PromQL을 위해 enrichment와 리소스 태그를 켤지
+- 벤더 제공(vended) 지표 PromQL을 위해 enrichment와 리소스 태그를 켤지
 - Grafana 데이터 소스를 AMP 플러그인으로 CloudWatch 엔드포인트에 둘지
 - 수집을 SigV4로 둘지, 외부 워크로드용 전달자 토큰으로 둘지
 - 대상 리전이 제외 3개 리전에 해당하는지
 
 ## 의사결정 기준
 
-### OTLP 수집과 벤디드 지표 보강을 한 스위치로 보지 않습니다
+### OTLP 수집과 벤더 제공(vended) 지표 보강을 한 스위치로 보지 않습니다
 
-OTLP 지표 엔드포인트에 보내면 앱 지표는 PromQL 대상이 됩니다. 벤디드 지표는 enrichment를 켜야 같은 질의에 들어갑니다. What's New의 통합 설명만 인용하고 보강을 켜지 않으면 서비스 지표가 PromQL에 보이지 않습니다. 계정마다, 리전마다 스위치를 기록합니다.
+OTLP 지표 엔드포인트에 보내면 앱 지표는 PromQL 대상이 됩니다. 벤더 제공(vended) 지표는 enrichment를 켜야 같은 질의에 들어갑니다. What's New의 통합 설명만 인용하고 보강을 켜지 않으면 서비스 지표가 PromQL에 보이지 않습니다. 계정마다, 리전마다 스위치를 기록합니다.
 
 ### Grafana 경로와 콘솔 경로를 섞지 않습니다
 
@@ -61,10 +61,10 @@ PromQL 문서는 Grafana에서 AMP 플러그인을 CloudWatch 모니터링 엔�
 
 ## 실무 체크리스트
 
-1. 앱 지표, AWS 벤디드 지표, Grafana 대시보드를 누가 소유하는지 나눕니다.
+1. 앱 지표, AWS 벤더 제공(vended) 지표, Grafana 대시보드를 누가 소유하는지 나눕니다.
 2. 수집기가 HTTP OTLP와 SigV4를 쓰는지 확인합니다.
 3. 대상 리전이 제외 목록에 있는지 확인합니다.
-4. 벤디드 지표를 PromQL로 볼지 정하고, 볼 경우 리소스 태그와 enrichment를 켭니다.
+4. 벤더 제공(vended) 지표를 PromQL로 볼지 정하고, 볼 경우 리소스 태그와 enrichment를 켭니다.
 5. Grafana 데이터 소스를 AMP 플러그인으로 모니터링 엔드포인트에 둡니다.
 6. 질의 IAM에 GetMetricData와 ListMetrics가 있는지 확인합니다.
 7. 레이블 접두사 @resource와 기존 Prometheus 언더스코어 변환을 쿼리 표준에 적습니다.
@@ -81,12 +81,12 @@ PromQL 문서는 Grafana에서 AMP 플러그인을 CloudWatch 모니터링 엔�
 ## 이 이슈를 BLRO가 다루는 방식
 
 - 진단 범위: 수집 프로토콜, 리전, enrichment, Grafana 데이터 소스, IAM을 현황화합니다.
-- 의사결정 산출물: OTLP 전용과 벤디드 지표 포함 경로, 질의 도구, 문서 불일치를 담은 판단표를 만듭니다.
-- 운영 검증: 앱 지표와 벤디드 지표가 PromQL에 보이는지 시나리오로 확인합니다. 질의 성능, 비용, 규제 적합성을 사전 보장하지 않습니다.
+- 의사결정 산출물: OTLP 전용과 벤더 제공(vended) 지표 포함 경로, 질의 도구, 문서 불일치를 담은 판단표를 만듭니다.
+- 운영 검증: 앱 지표와 벤더 제공(vended) 지표가 PromQL에 보이는지 시나리오로 확인합니다. 질의 성능, 비용, 규제 적합성을 사전 보장하지 않습니다.
 
 ## 단일 CTA
 
-CloudWatch PromQL 수집과 질의 경계를 정리하려면 페이지 하단의 컨설팅 문의를 통해 관측 경로 진단 범위를 확인할 수 있습니다.
+CloudWatch PromQL 수집과 질의 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 관측 경로 진단 범위를 확인할 수 있습니다.
 
 ## 출처와 확인 날짜
 
