@@ -1,0 +1,101 @@
+---
+contentId: insight-aks-azure-files-identity-eit
+title: "AKS Azure Files: 키와 워크로드 신원, 전송 암호화를 가를 것"
+summary: "AKS 2026-08-07에서 Azure Files CSI의 SMB 워크로드 신원과 NFS 전송 암호화 일반 공급을 키 기반 마운트와 가르는 리뷰 초안"
+slug: aks-azure-files-identity-eit
+locale: ko
+status: approved
+publishedAt: 2026-08-22
+updatedAt: 2026-08-22
+audience: [customer, partner]
+tags: [infrastructure, aks, azure-files, workload-identity, encryption]
+evidenceRefs:
+  - "https://github.com/Azure/AKS/releases/tag/2026-08-07"
+  - "https://learn.microsoft.com/en-us/azure/aks/create-volume-azure-files"
+  - "https://learn.microsoft.com/en-us/azure/aks/create-volume-azure-files#use-workload-identity-to-access-azure-files-storage"
+  - "https://learn.microsoft.com/en-us/azure/storage/files/encryption-in-transit-for-nfs-shares"
+claimIds: [claim-insight-aks-azure-files-identity-eit]
+approvalRefs: [approval-insight-aks-azure-files-identity-eit-20260822]
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+AKS 2026-08-07 릴리스는 Azure Files CSI 드라이버에서 NFS 전송 암호화와 SMB 워크로드 신원을 일반 공급이라고 적습니다. 같은 Learn 페이지 상단은 SMB가 키 기반 인증만 허용한다고 적습니다.
+
+- 결정: SMB를 계정 키로 둘지 워크로드 신원으로 둘지, NFS에 전송 암호화를 강제할지
+- 전제: 워크로드 신원은 AKS 1.35.0 이상 Linux 노드라고 Learn이 적는다
+- 불일치: 같은 Learn 문서가 SMB를 키 전용이라고 하면서 후반에서 워크로드 신원 일반 공급을 안내한다
+- 범위: Arc Kubernetes 워크로드 신원 GA나 ACME TLS가 아니라 AKS 파일 공유 마운트 경계
+
+## 문제 상황
+
+여러 파드가 Azure Files를 쓰면 계정 키를 클러스터 시크릿에 두는 구성이 남습니다. NFS는 가상 네트워크 안에서 평문으로 오갈 수 있습니다.
+
+AKS 공식 릴리스 노트 2026-08-07은 Encryption in Transit와 Azure Files 스토리지 접근용 워크로드 신원이 Azure File CSI에서 일반 공급이라고 적습니다. Learn의 AKS 볼륨 문서는 워크로드 신원이 SMB 접근용이며, Storage File Data SMB MI Admin 역할을 주면 계정 키 없이 마운트한다고 적습니다. 같은 문서 상단 주는 SMB가 NTLM v2 키 기반만 허용되고 최대 보안 프로필을 지원하지 않는다고 적습니다. 운영 승인은 상단 제한과 후반 GA 안내를 한 기록에 남깁니다.
+
+NFS 전송 암호화는 StorageClass 또는 PersistentVolume의 encryptInTransit 기본값이 false입니다. Azure Files 전송 암호화 문서는 저장소 계정에 Require Encryption in Transit for NFS를 둘 수 있고, 신규 포털 계정은 기본 켜짐, CLI나 API로 만든 계정은 호환을 위해 선택되지 않음이라고 적습니다. AKS 경로와 저장소 계정 강제가 어긋나면 마운트가 실패할 수 있습니다.
+
+## 지금 결정할 것
+
+- SMB 공유를 계정 키로 둘지, 파드 워크로드 신원으로 둘지
+- NFS 공유에 encryptInTransit을 켤지, 저장소 계정에서 NFS 전송 암호화를 강제할지
+- 대상 클러스터가 AKS 1.35 이상 Linux인지
+- 상단의 키 전용 안내와 후반 워크로드 신원 안내 중 어떤 페이지를 운영 기준으로 다시 열지
+- 키 기반 시크릿을 남길 공유와 제거할 공유를 나눌지
+
+## 의사결정 기준
+
+### SMB 인증과 NFS 전송 암호화를 한 스위치로 보지 않습니다
+
+워크로드 신원은 SMB 접근이라고 Learn이 적습니다. 전송 암호화 파라미터는 NFS 전용입니다. SMB를 신원으로 바꿨다고 NFS 평문 전송이 사라진 것은 아닙니다. 프로토콜별로 인증 방식과 전송 보호를 따로 적습니다.
+
+### 같은 문서의 상단 제한과 후반 GA를 덮지 않습니다
+
+상단 주는 SMB가 키 기반만 허용된다고 적습니다. 후반과 AKS 릴리스는 워크로드 신원이 일반 공급이라고 적습니다. 클러스터 버전이 1.35 미만이거나 Windows 노드면 후반 경로를 쓸 수 없습니다. 적용 전에 드라이버 버전, 노드 OS, 역할 할당을 다시 엽니다.
+
+### AKS 파라미터와 저장소 계정 강제를 맞춥니다
+
+AKS는 encryptInTransit을 볼륨 파라미터로 켭니다. 저장소 문서는 계정 단위 NFS 전송 암호화 요구와 AZNFS 마운트 헬퍼를 설명합니다. 계정에서 암호화를 강제했는데 클러스터가 파라미터를 false로 두면 마운트가 거절될 수 있습니다. 기존 계정은 값이 선택되지 않음이면 이전 Secure transfer required 동작이 남는다고 적습니다.
+
+### Arc 워크로드 신원과 AKS 파일 마운트 신원을 섞지 않습니다
+
+이 글의 신원은 Azure Files SMB 마운트에 쓰는 파드 신원입니다. Arc Kubernetes 워크로드 신원 일반 공급과는 대상이 다릅니다. 파일 공유 키 제거와 클러스터 페더레이션 자격 증명을 한 과제로 묶지 않습니다.
+
+## 실무 체크리스트
+
+1. 공유를 SMB와 NFS로 나누고 지금 쓰는 인증 방식을 적습니다.
+2. 클러스터 Kubernetes 버전, 노드 OS, Azure File CSI 버전을 기록합니다.
+3. SMB 중 키를 제거할 대상에 사용자 할당 관리 ID와 Storage File Data SMB MI Admin을 검토합니다.
+4. NFS 중 전송 암호화가 필요한 볼륨에 encryptInTransit을 표시합니다.
+5. 저장소 계정의 Require Encryption in Transit for NFS 값과 AKS 파라미터를 대조합니다.
+6. Learn 상단의 키 전용 안내와 후반 워크로드 신원 안내를 같은 변경 요청서에 붙입니다.
+7. 키 시크릿을 남길 공유와 회수할 공유의 소유자를 정합니다.
+8. 마운트 실패 시 볼륨, 노드, 저장소 계정 중 어디서 볼지 책임을 나눕니다.
+
+## 제외 범위
+
+- Arc Kubernetes 워크로드 신원 GA 글을 다시 쓰는 범위
+- ACM ACME TLS 자동화 글을 다시 쓰는 범위
+- 특정 CSI 드라이버, 파일 프로토콜, 스토리지 상품의 우열이나 성능 비교
+- 고객별 규제 적용, 암호화 적합성, 무중단의 사전 보장
+- Azure Local 또는 HCI 주제로 채우는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 프로토콜, 인증 방식, 클러스터 버전, 저장소 계정 강제, 문서 불일치를 현황화합니다.
+- 의사결정 산출물: SMB 신원 전환 대상, NFS 전송 암호화 대상, 키 회수 범위를 담은 판단표를 만듭니다.
+- 운영 검증: 마운트 성공과 키 없는 접근 실패를 시나리오로 확인합니다. 처리량, 호환성, 보안 효과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+AKS 파일 공유의 인증과 전송 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 인프라 스토리지 신원 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Azure/AKS release 2026-08-07, published 2026-08-11. Azure File CSI에서 Encryption in Transit과 워크로드 신원 일반 공급. https://github.com/Azure/AKS/releases/tag/2026-08-07 (확인일: 2026-08-22)
+- Microsoft Learn, Create and Manage Persistent Volumes with Azure Files in AKS. 상단 SMB 키 전용 안내와 후반 워크로드 신원, encryptInTransit. 페이지 날짜 2026-08-20. https://learn.microsoft.com/en-us/azure/aks/create-volume-azure-files (확인일: 2026-08-22)
+- Microsoft Learn, How to Encrypt Data in Transit for NFS shares. NFS 전송 암호화 일반 공급, 계정 설정과 AZNFS. 페이지 날짜 2026-07-20. https://learn.microsoft.com/en-us/azure/storage/files/encryption-in-transit-for-nfs-shares (확인일: 2026-08-22)
+- 운영 기준: AKS 1.35.0 이상 Linux에서 SMB 워크로드 신원을 검토할 때는 Learn 후반 절을 연다. 같은 페이지 상단의 키 전용 안내는 미갱신 제한으로만 기록한다. https://learn.microsoft.com/en-us/azure/aks/create-volume-azure-files#use-workload-identity-to-access-azure-files-storage (확인일: 2026-08-22)
+
+위 출처는 Azure 공식 릴리스와 Learn 문서를 설명합니다. 고객별 적용, 호환성, 운영 결과를 보증하지 않습니다.

@@ -1,0 +1,101 @@
+---
+contentId: insight-bedrock-web-search-external-access
+title: "Bedrock Web Search: 외부 웹 접근을 켜기 전에 경계를 정할 것"
+summary: "Amazon Bedrock Web Search GA에서 인-AWS 인덱스와 실시간 외부 웹 접근, IAM, bedrock-mantle 경로를 가르는 리뷰 초안"
+slug: bedrock-web-search-external-access
+locale: ko
+status: approved
+publishedAt: 2026-08-22
+updatedAt: 2026-08-22
+audience: [customer, partner]
+tags: [ai, bedrock, web-search, grounding, iam]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-bedrock-web/"
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-bedrock-web-access-web-search/"
+  - "https://docs.aws.amazon.com/bedrock/latest/userguide/web-search.html"
+  - "https://docs.aws.amazon.com/bedrock/latest/userguide/security-web-search.html"
+claimIds: [claim-insight-bedrock-web-search-external-access]
+approvalRefs: [approval-insight-bedrock-web-search-external-access-20260822]
+relatedContent: ["insight:ai-governance-decision-operating-model"]
+---
+
+## 한눈에 보기
+
+Amazon Bedrock Web Search는 2026-08-04에 일반 공급입니다. OpenAI GPT 모델이 웹 근거를 붙일 때 쓰는 서버 측 도구입니다. 2026-08-19에 실시간 외부 웹 접근이 추가되었습니다.
+
+- 결정: 검색을 인-AWS 인덱스에만 둘지, 실시간 외부 웹까지 열지
+- 전제: 도구는 bedrock-mantle의 Responses API에서만 동작하고 bedrock-runtime에서는 쓸 수 없다고 운영 문서가 적는다
+- 불일치: 8월 4일 공지는 데이터 외부 반출이 없다고 적고, 8월 19일 공지와 운영 문서는 권한이 있으면 요청이 AWS 경계를 나갈 수 있다고 적는다
+- 범위: AI 운영 거버넌스 프레임워크가 아니라 웹 그라운딩의 송신 경계
+
+## 문제 상황
+
+웹 그라운딩을 켜면 모델이 최신 문서를 인용할 수 있습니다. 그 호출이 Amazon이 운영하는 인덱스에만 머무는지, 공개 웹으로 나가는지는 같은 도구 이름 안에 섞여 있습니다.
+
+8월 4일 What's New는 검색이 AWS 안에서 이뤄지고 데이터 외부 반출이 없다고 적습니다. 8월 19일 What's New는 external_web_access를 켜면 공개 웹에서 직접 가져올 수 있다고 적습니다. 운영 문서는 파라미터 기본값이 true이고, AmazonBedrockFullAccess는 bedrock-websearch:ExternalWebAccess를 주지 않는다고 적습니다. 기본값 true에 권한이 없으면 Fetch는 거부되고 Search 결과로만 답한다고 안내합니다.
+
+지원 모델은 openai.gpt-5.4, openai.gpt-5.5와 GPT-5.6의 sol, terra, luna입니다. 리전은 미국 동부 버지니아, 오하이오, 미국 서부 오레곤입니다. 검색은 리전 안에서만 처리되며 다른 리전으로 넘기지 않는다고 적습니다.
+
+## 지금 결정할 것
+
+- 대상 과제가 인-AWS 인덱스만으로 충분한지, 실시간 공개 웹이 필요한지
+- 요청 주체에 ExternalWebAccess를 줄지, 파라미터를 false로 고정할지
+- 호출 경로를 bedrock-mantle로 둘지, bedrock-runtime에 남겨 둘지
+- Search와 Fetch 권한을 같이 줄지, 검색만 허용할지
+- 한국 업무 데이터를 미국 3개 리전 검색 경로에 넣을지
+
+## 의사결정 기준
+
+### 인-AWS 검색과 실시간 외부 웹을 같은 승인으로 묶지 않습니다
+
+운영 문서는 Search가 인덱스와 지식 그래프에서 제목, URL, 조각을 돌려주고, Fetch가 캐시된 페이지를 읽는다고 적습니다. ExternalWebAccess가 있으면 두 작업 모두 외부 웹에 닿을 수 있습니다. 민감 입력이 있는 과제는 파라미터를 false로 두고, 실시간 시세나 방금 공개된 문서가 필요한 과제만 권한을 별도로 줍니다.
+
+### 파라미터 기본값과 관리형 정책을 한 줄로 읽지 않습니다
+
+8월 19일 공지는 권한을 주고 기본값 true를 그대로 두라고 적습니다. 운영 문서는 기본값이 OpenAI Responses API와 맞추려고 true이며, 일반 Bedrock 관리형 정책은 외부 접근을 주지 않는다고 적습니다. 권한 없이 true를 두면 Fetch가 거부됩니다. 운영 승인은 파라미터와 IAM을 같은 기록에 남깁니다.
+
+### bedrock-mantle과 bedrock-runtime을 같은 호출로 보지 않습니다
+
+운영 문서는 Web Search가 서버 측 도구라 bedrock-runtime의 Responses API에서는 쓸 수 없다고 적습니다. 같은 Responses API라도 엔드포인트가 다르면 도구가 없습니다. Codex는 지원 모델에서 텍스트만 검색하고 external_web_access를 false로 둔다고 적습니다. 코딩 에이전트 경로와 업무 질의 경로를 한 승인으로 묶지 않습니다.
+
+### 조직 거부와 과제별 허용을 나눕니다
+
+IAM 문서는 조직 SCP, 계정 IAM, 리전 조건으로 bedrock-websearch 작업을 막을 수 있다고 적습니다. InvokeSearch만 주고 InvokeFetch를 빼면 모델은 조각을 근거로 답하지만 페이지 본문을 읽지 못합니다. Fetch만 주면 모델이 만들어 낸 URL도 캐시에서 읽으려 할 수 있습니다. 검색 제한만으로 출처를 고정했다고 보지 않습니다.
+
+## 실무 체크리스트
+
+1. 과제별로 인-AWS 인덱스, 실시간 외부 웹, 웹 검색 없음을 나눕니다.
+2. 호출이 bedrock-mantle인지 bedrock-runtime인지 기록합니다.
+3. 모델이 지원 목록의 GPT 계열인지 확인합니다.
+4. 리전이 미국 동부 두 곳 또는 미국 서부 오레곤인지 확인합니다.
+5. 요청 주체의 InvokeSearch, InvokeFetch, ExternalWebAccess를 분리해 적습니다.
+6. 민감 입력이 있으면 external_web_access를 false로 고정합니다.
+7. 조직에서 웹 검색을 막을지, 특정 리전만 허용할지 정합니다.
+8. 응답의 인용 URL을 사용자에게 그대로 보여야 하는지 운영 문서의 이용 조건을 확인합니다.
+
+## 제외 범위
+
+- 특정 모델, 검색 공급자, 오케스트레이션 제품의 우열이나 성능 비교
+- 고객별 규제 적용, 라이선스, 계약 해석의 확정 판정
+- 웹 검색을 켜면 최신성, 정확성, 보안이 보장된다는 주장
+- 기존 AI 운영 거버넌스 의사결정 흐름 글을 다시 쓰는 범위
+- Foundry 에이전트 게시 신원 글을 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 호출 엔드포인트, 모델, 리전, 파라미터, IAM, 입력 데이터 등급을 현황화합니다.
+- 의사결정 산출물: 과제별 송신 경계, 권한 분리, 문서 불일치 기록을 담은 판단표를 만듭니다.
+- 운영 검증: 인-AWS 검색과 외부 접근 거부 시나리오를 확인합니다. 검색 품질, 규제 적합성, 데이터 비반출을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+웹 그라운딩의 송신 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 AI 검색 경계 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, Amazon Bedrock launches Web Search for OpenAI GPT models, 2026-08-04. 미국 3개 리전, 서버 측 도구, 데이터 외부 반출 없음으로 안내. https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-bedrock-web/ (확인일: 2026-08-22)
+- AWS What's New, Launching External Web Access for Web Search on Amazon Bedrock, 2026-08-19. external_web_access와 bedrock-websearch:ExternalWebAccess. https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-bedrock-web-access-web-search/ (확인일: 2026-08-22)
+- Amazon Bedrock User Guide, Web Search. bedrock-mantle 전용, 파라미터 기본값 true, 리전 내부 처리. https://docs.aws.amazon.com/bedrock/latest/userguide/web-search.html (확인일: 2026-08-22)
+- Amazon Bedrock User Guide, Identity and access management for Web Search. Search, Fetch, ExternalWebAccess와 관리형 정책 범위. https://docs.aws.amazon.com/bedrock/latest/userguide/security-web-search.html (확인일: 2026-08-22)
+
+위 출처는 AWS 공개 공지와 운영 문서를 설명합니다. 고객별 적용, 라이선스, 운영 결과를 보증하지 않습니다.

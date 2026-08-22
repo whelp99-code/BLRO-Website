@@ -1,0 +1,148 @@
+{
+  "historyNote": "2026-08-20 lived on PR #5 (cursor/ko-review-insights-2026-08-20-3502). 2026-08-21 lived on PR #6 (cursor/ko-review-insights-2026-08-21-c0ac). Both are copied here so this file does not wipe that history.",
+  "priorRunsPreserved": [
+    {
+      "run": "2026-08-20",
+      "timezone": "KST",
+      "note": "Copied from PR #5. New branch from then-current main. Did not stack onto PR #3.",
+      "rotation": {
+        "todayAreas": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
+        "priorRun": "2026-08-19",
+        "priorRunAreasNotRepeated": ["security", "server-virtualization", "hci", "vdi", "sase"]
+      },
+      "slugs": [
+        "foundry-agent-identity-publish-boundary",
+        "aws-organizations-default-departure-scp",
+        "arc-kubernetes-workload-identity-ga",
+        "aws-backup-eks-logically-airgapped-vault",
+        "azure-monitor-diagnostics-otlp-path"
+      ]
+    },
+    {
+      "run": "2026-08-21",
+      "timezone": "KST",
+      "note": "Copied from PR #6. New branch from then-current main. Did not stack onto PR #3 or PR #5.",
+      "rotation": {
+        "todayAreas": ["security", "server-virtualization", "hci", "vdi", "sase"],
+        "priorRun": "2026-08-20",
+        "priorRunAreasNotRepeated": ["ai", "cloud", "infrastructure", "backup/DR", "observability"]
+      },
+      "slugs": [
+        "windows-ike-cve-2026-33824-kev",
+        "azure-local-gpu-dda-partition-boundary",
+        "azure-local-local-identity-key-vault",
+        "avd-session-host-configuration-update",
+        "prisma-access-saa-agentless-boundary"
+      ]
+    }
+  ],
+  "run": "2026-08-22",
+  "timezone": "KST",
+  "note": "New branch from current main. Does not stack onto PR #3 (cursor/ko-review-insights-8aab), PR #5 (cursor/ko-review-insights-2026-08-20-3502), or PR #6 (cursor/ko-review-insights-2026-08-21-c0ac). Five Korean status: review insight drafts only.",
+  "rotation": {
+    "todayAreas": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
+    "priorRun": "2026-08-21",
+    "priorRunAreasNotRepeated": ["security", "server-virtualization", "hci", "vdi", "sase"],
+    "skippedOpenPrSlugs": [
+      "windows-ike-cve-2026-33824-kev",
+      "azure-local-gpu-dda-partition-boundary",
+      "azure-local-local-identity-key-vault",
+      "avd-session-host-configuration-update",
+      "prisma-access-saa-agentless-boundary",
+      "foundry-agent-identity-publish-boundary",
+      "aws-organizations-default-departure-scp",
+      "arc-kubernetes-workload-identity-ga",
+      "aws-backup-eks-logically-airgapped-vault",
+      "azure-monitor-diagnostics-otlp-path",
+      "cisco-asa-ftd-cve-2026-20349-kev",
+      "vmware-vmsa-2026-0006-vcenter-esx",
+      "azure-local-2607-iscsi-san-ga",
+      "avd-web-screen-capture-raw-print",
+      "prisma-sdwan-ion-681-pqc"
+    ]
+  },
+  "counts": {
+    "candidatesRequested": 5,
+    "alreadyExistedSkipped": 0,
+    "writtenReview": 5,
+    "approvedTouched": 0,
+    "publicApprovalsEdited": 0,
+    "inventedExtraTopics": 0
+  },
+  "slugs": [
+    "bedrock-web-search-external-access",
+    "iam-identity-center-account-access-optional",
+    "aks-azure-files-identity-eit",
+    "gcp-backup-vault-project-lien",
+    "cloudwatch-otel-promql-query-path"
+  ],
+  "skipped": [],
+  "perSlug": {
+    "bedrock-web-search-external-access": {
+      "area": "ai",
+      "status": "review",
+      "path": "content/insights/ko/bedrock-web-search-external-access.mdx",
+      "research": ".agents/results/blro-content/2026-08-22-bedrock-web-search-external-access-research.md",
+      "firstPass": "pass",
+      "secondPass": "pass",
+      "sourcesRecheckedAt": "2026-08-22"
+    },
+    "iam-identity-center-account-access-optional": {
+      "area": "cloud",
+      "status": "review",
+      "path": "content/insights/ko/iam-identity-center-account-access-optional.mdx",
+      "research": ".agents/results/blro-content/2026-08-22-iam-identity-center-account-access-optional-research.md",
+      "firstPass": "pass",
+      "secondPass": "pass",
+      "sourcesRecheckedAt": "2026-08-22"
+    },
+    "aks-azure-files-identity-eit": {
+      "area": "infrastructure",
+      "status": "review",
+      "path": "content/insights/ko/aks-azure-files-identity-eit.mdx",
+      "research": ".agents/results/blro-content/2026-08-22-aks-azure-files-identity-eit-research.md",
+      "firstPass": "pass",
+      "secondPass": "pass",
+      "sourcesRecheckedAt": "2026-08-22"
+    },
+    "gcp-backup-vault-project-lien": {
+      "area": "backup/DR",
+      "status": "review",
+      "path": "content/insights/ko/gcp-backup-vault-project-lien.mdx",
+      "research": ".agents/results/blro-content/2026-08-22-gcp-backup-vault-project-lien-research.md",
+      "firstPass": "pass",
+      "secondPass": "pass",
+      "sourcesRecheckedAt": "2026-08-22"
+    },
+    "cloudwatch-otel-promql-query-path": {
+      "area": "observability",
+      "status": "review",
+      "path": "content/insights/ko/cloudwatch-otel-promql-query-path.mdx",
+      "research": ".agents/results/blro-content/2026-08-22-cloudwatch-otel-promql-query-path-research.md",
+      "firstPass": "pass",
+      "secondPass": "pass",
+      "sourcesRecheckedAt": "2026-08-22"
+    }
+  },
+  "publicationGate": {
+    "publicApprovalsJson": "untouched",
+    "existingApprovedMdx": "untouched",
+    "homepageOrSangforFiles": "untouched",
+    "pr2Branch": "not used",
+    "pr3Branch": "not used",
+    "pr5Branch": "not used",
+    "pr6Branch": "not used",
+    "merge": false,
+    "deploy": false
+  },
+  "validation": {
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 45 tests",
+    "build": "PASS",
+    "reviewSlugsOnPublicRoutes": false,
+    "reviewSlugsOnSitemap": false,
+    "publicInsightRoutes": 12,
+    "verdict": "final_review_ready"
+  },
+  "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat 2026-08-20, 2026-08-21, or these five slugs. Do not fill leftover slots with Azure Local or HCI."
+}
