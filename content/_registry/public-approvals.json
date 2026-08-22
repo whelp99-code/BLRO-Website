@@ -249,6 +249,102 @@
       "contentSha256": "8b2286811c474dc3e92d072e9e39b16f660345c579f01736130e306d1885b4a7",
       "reviewAt": "2026-11-17",
       "expiresAt": "2027-08-17"
+    },
+    {
+      "approvalId": "approval-insight-bedrock-web-search-external-access-20260822",
+      "contentId": "insight-bedrock-web-search-external-access",
+      "claimId": "claim-insight-bedrock-web-search-external-access",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-22-kst",
+      "approvedAt": "2026-08-22",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-bedrock-web/",
+        "https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-bedrock-web-access-web-search/",
+        "https://docs.aws.amazon.com/bedrock/latest/userguide/web-search.html",
+        "https://docs.aws.amazon.com/bedrock/latest/userguide/security-web-search.html"
+      ],
+      "contentSha256": "c345d82cbce97853bed140ab23facf2aea11186c053d0bb0c68d671dbaa931c5",
+      "reviewAt": "2026-11-22",
+      "expiresAt": "2027-08-22"
+    },
+    {
+      "approvalId": "approval-insight-iam-identity-center-account-access-optional-20260822",
+      "contentId": "insight-iam-identity-center-account-access-optional",
+      "claimId": "claim-insight-iam-identity-center-account-access-optional",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-22-kst",
+      "approvedAt": "2026-08-22",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://aws.amazon.com/about-aws/whats-new/2026/08/aws-identity-center-accounts-optional/",
+        "https://aws.amazon.com/about-aws/whats-new/2026/08/aws-iam-identity-center-supports-one-click-multi-region-option-new-organization-instances/",
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/enable-identity-center.html",
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/organization-instances-identity-center.html",
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+      ],
+      "contentSha256": "cb73cddea5badda33fed114fe70a53c1af6102b83c54a23fa324cdd74dbe2794",
+      "reviewAt": "2026-11-22",
+      "expiresAt": "2027-08-22"
+    },
+    {
+      "approvalId": "approval-insight-aks-azure-files-identity-eit-20260822",
+      "contentId": "insight-aks-azure-files-identity-eit",
+      "claimId": "claim-insight-aks-azure-files-identity-eit",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-22-kst",
+      "approvedAt": "2026-08-22",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://github.com/Azure/AKS/releases/tag/2026-08-07",
+        "https://learn.microsoft.com/en-us/azure/aks/create-volume-azure-files",
+        "https://learn.microsoft.com/en-us/azure/aks/create-volume-azure-files#use-workload-identity-to-access-azure-files-storage",
+        "https://learn.microsoft.com/en-us/azure/storage/files/encryption-in-transit-for-nfs-shares"
+      ],
+      "contentSha256": "32197a1a95a6d6d7d1ad3892998c1fee4c42b1b3a035e4dd156ee0701693ae1e",
+      "reviewAt": "2026-11-22",
+      "expiresAt": "2027-08-22"
+    },
+    {
+      "approvalId": "approval-insight-gcp-backup-vault-project-lien-20260822",
+      "contentId": "insight-gcp-backup-vault-project-lien",
+      "claimId": "claim-insight-gcp-backup-vault-project-lien",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-22-kst",
+      "approvedAt": "2026-08-22",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://docs.cloud.google.com/backup-disaster-recovery/docs/release-notes",
+        "https://docs.cloud.google.com/backup-disaster-recovery/docs/concepts/best-practices-cyber-resilience",
+        "https://docs.cloud.google.com/backup-disaster-recovery/docs/cloud-console/backup-vault-create",
+        "https://docs.cloud.google.com/resource-manager/docs/project-liens"
+      ],
+      "contentSha256": "a2659e4685f3c3dcefc795b1d5774c6fe9c8f7a8ea020d95361eb5f7241c6080",
+      "reviewAt": "2026-11-22",
+      "expiresAt": "2027-08-22"
+    },
+    {
+      "approvalId": "approval-insight-cloudwatch-otel-promql-query-path-20260822",
+      "contentId": "insight-cloudwatch-otel-promql-query-path",
+      "claimId": "claim-insight-cloudwatch-otel-promql-query-path",
+      "locale": "ko",
+      "approverRole": "publication-approver",
+      "source": "user-explicit-publication-approval-2026-08-22-kst",
+      "approvedAt": "2026-08-22",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-cloudwatch-otel-metrics/",
+        "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-PromQL-Querying.html",
+        "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPEndpoint.html",
+        "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTelEnrichment.html"
+      ],
+      "contentSha256": "03acc34a25745c2a1eff4070f32a95b2aa452f40cc503150112b3ced030ab38d",
+      "reviewAt": "2026-11-22",
+      "expiresAt": "2027-08-22"
     }
   ]
 }
