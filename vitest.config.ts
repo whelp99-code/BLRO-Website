@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     exclude: [...configDefaults.exclude, "tests/e2e/**"],
     environment: "jsdom",
+    fileParallelism: false,
     globals: true,
     setupFiles: ["./tests/setup.ts"],
     coverage: {
