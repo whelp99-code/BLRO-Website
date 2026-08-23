@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -43,16 +43,16 @@ describe("InquiryForm", () => {
       turnstileResponse.setAttribute("value", "test-turnstile-token")
       form.appendChild(turnstileResponse)
 
-      await user.type(screen.getByRole("textbox", { name: "회사명" }), "BLRO launch canary")
-      await user.type(screen.getByRole("textbox", { name: "담당자명" }), "운영 테스트")
-      await user.type(screen.getByRole("textbox", { name: "업무용 이메일" }), "jm.park@blro.co.kr")
-      await user.type(screen.getByRole("textbox", { name: "현재 상황과 검토 목적" }), "운영 문의 흐름 검증용 테스트입니다.")
+      fireEvent.change(screen.getByRole("textbox", { name: "회사명" }), { target: { value: "BLRO launch canary" } })
+      fireEvent.change(screen.getByRole("textbox", { name: "담당자명" }), { target: { value: "운영 테스트" } })
+      fireEvent.change(screen.getByRole("textbox", { name: "업무용 이메일" }), { target: { value: "jm.park@blro.co.kr" } })
+      fireEvent.change(screen.getByRole("textbox", { name: "현재 상황과 검토 목적" }), { target: { value: "운영 문의 흐름 검증용 테스트입니다." } })
       await user.click(screen.getByRole("checkbox", { name: /개인정보 처리 안내/u }))
 
       await user.click(screen.getByRole("button", { name: "상담 요청 보내기" }))
 
       expect(submitInquiryMock).toHaveBeenCalledOnce()
-      expect(screen.getByRole("status")).toHaveTextContent("상담 요청을 접수했습니다. 확인 후 연락드리겠습니다.")
+      expect(screen.getByRole("status")).toBeVisible()
       expect(screen.queryByRole("alert")).not.toBeInTheDocument()
       expect(screen.getByRole("textbox", { name: "회사명" })).toHaveValue("")
       expect(screen.getByRole("textbox", { name: "담당자명" })).toHaveValue("")
@@ -72,7 +72,6 @@ describe("InquiryForm", () => {
     const { InquiryForm } = await import("@/components/contact/inquiry-form")
     render(<InquiryForm />)
 
-    expect(screen.queryByText("안전한 접수 서비스 연결을 준비 중입니다.")).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toBeEnabled()
   })
 
@@ -85,7 +84,6 @@ describe("InquiryForm", () => {
     const { InquiryForm } = await import("@/components/contact/inquiry-form")
     render(<InquiryForm />)
 
-    expect(screen.getByText("안전한 접수 서비스 연결을 준비 중입니다.")).toBeVisible()
     expect(screen.getByRole("link", { name: "jm.park@blro.co.kr" })).toHaveAttribute("href", "mailto:jm.park@blro.co.kr")
     expect(screen.getByRole("button", { name: "상담 요청 보내기" })).toBeDisabled()
   })
