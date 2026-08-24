@@ -153,11 +153,13 @@
     "deploy": false
   },
   "validation": {
-    "contentValidate": "pending",
-    "build": "pending",
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 46 tests",
+    "build": "PASS",
     "reviewSlugsOnPublicRoutes": false,
     "reviewSlugsOnSitemap": false,
-    "verdict": "pre_test_commit"
+    "publicInsightRoutes": 17,
+    "verdict": "final_review_ready"
   },
   "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat these five slugs or the 2026-08-22 published set. 2026-08-23 and 2026-08-24 produced no PR."
 }

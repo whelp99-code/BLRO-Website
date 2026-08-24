@@ -23,3 +23,7 @@
 2026-08-25T08:00:04+09:00 slugs oracle-http-weblogic-proxy-kev vcf-91-forward-only-upgrade nutanix-nci-76-external-storage citrix-entra-sso-vda-2607 fortisase-mature-feature-upgrade
 2026-08-25T08:00:05+09:00 skipped-slots none
 2026-08-25T08:00:06+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage/Sangfor untouched no merge no deploy
+2026-08-25T08:20:00+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-25T08:20:01+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-25T08:20:02+09:00 confirm review slugs absent from out/sitemap.xml and generateStaticParams
+2026-08-25T08:20:03+09:00 verdict final_review_ready
