@@ -1,0 +1,100 @@
+---
+contentId: insight-azure-local-gpu-dda-partition-boundary
+title: "Azure Local GPU: DDA와 분할을 같은 카드에 얹지 말 것"
+summary: "Azure Local 2604 GPU 가속에서 DDA와 GPU-P를 가르고, 미리보기 잔존 문구와 호스트 준비 조건을 확인하는 리뷰 초안"
+slug: azure-local-gpu-dda-partition-boundary
+locale: ko
+status: review
+updatedAt: 2026-08-21
+audience: [customer, partner]
+tags: [azure-local, gpu, hyper-v, virtualization, dda]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2604"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/manage/gpu-preparation?view=azloc-2604"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/manage/gpu-manage-via-device?view=azloc-2604"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/manage/gpu-manage-via-partitioning?view=azloc-2604"
+  - "https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda"
+relatedContent: ["service:hci-private-cloud", "insight:virtualization-hci-migration-guide"]
+---
+
+## 한눈에 보기
+
+Azure Local 2604 새 기능 문서는 Azure Local 가상 머신의 GPU 가속이 일반 공급이라고 적습니다. 같은 릴리스 묶음의 관리 문서는 제목에 미리보기를 남겨 둡니다.
+
+- 결정: 물리 GPU를 DDA로 한 가상 머신에 줄지, GPU-P로 나눌지
+- 전제: 호스트마다 같은 제조사와 모델의 균질 구성, 카탈로그에 있는 GPU
+- 불일치: 2604 새 기능은 일반 공급, DDA와 GPU-P 관리 문서는 제목에 미리보기
+- 범위: VMware 권고나 Nutanix 비교가 아니라 호스트 GPU 할당 방식
+
+## 문제 상황
+
+GPU가 보이면 워크로드에 바로 붙이는 방식으로 가면, 한 장을 전용으로 써야 하는 작업과 여러 가상 머신이 나눠 써야 하는 작업이 같은 카드에 겹칩니다.
+
+2604 새 기능 문서는 전체 GPU인 DDA와 분할인 GPU-P를 가상 머신 생성 때나 이후 작업으로 붙이거나 뗄 수 있다고 적습니다. 준비 문서는 DDA가 장치 하나와 가상 머신 하나, GPU-P가 한 장치를 여러 작업에 나눈다고 적습니다. 분할 문서는 같은 물리 GPU를 DDA와 GPU-P로 동시에 쓰지 말라고 적습니다.
+
+확인일 기준 DDA 관리 문서 제목은 미리보기입니다. 문서 날짜는 2025-08-27이고 갱신은 2026-04-22입니다. 운영 승인은 새 기능 페이지의 일반 공급 한 줄만 인용하지 말고, 관리 문서의 미리보기 잔존과 호스트 준비 상태를 같은 기록에 남깁니다.
+
+## 지금 결정할 것
+
+- 대상 워크로드가 장치 전용이 필요한지, 분할로 밀도를 높일지
+- 클러스터 모든 노드에 같은 모델 GPU를 둘 수 있는지
+- DDA용 완화 드라이버와 GPU-P용 호스트 vGPU 드라이버 중 무엇을 심을지
+- 생성 시 할당과 운영 중 탈부착을 허용할지. 탈부착은 가상 머신 재시작을 전제로 함
+- AKS 노드 풀에 GPU를 줄지. 준비 문서는 AKS Arc가 분할을 지원하지 않는다고 적음
+
+## 의사결정 기준
+
+### 같은 물리 GPU에 두 할당 방식을 섞지 않습니다
+
+DDA는 게스트가 벤더 드라이버로 장치 기능에 가깝게 접근합니다. GPU-P는 유효한 분할 수 안에서 메모리를 나눕니다. 한 장을 전용으로 준 뒤 나머지를 분할로 쓴다는 식으로 같은 장치를 두 방식에 올리지 않습니다. NVIDIA T4는 준비 문서 기준으로 GPU-P가 아닙니다.
+
+### 호스트 준비가 워크로드 승인보다 앞섭니다
+
+DDA는 호스트 드라이버를 제거하고 장치를 분리한 뒤 완화 드라이버를 설치합니다. GPU-P는 호스트 vGPU 드라이버와 BIOS의 가상화, SR-IOV가 필요합니다. 준비 문서는 모든 노드에 같은 제조사와 모델을 두라고 적습니다. 카드만 꽂힌 상태를 할당 가능으로 보지 않습니다.
+
+### 일반 공급 문구와 미리보기 제목을 한 승인으로 합치지 않습니다
+
+2604 새 기능은 일반 공급입니다. DDA와 GPU-P 관리 문서는 제목에 미리보기를 유지합니다. 운영 범위에는 어떤 페이지를 승인 근거로 썼는지 적습니다. 라이브 마이그레이션은 GPU-P와 특정 OS 빌드, NVIDIA 가상 GPU 소프트웨어 버전에 묶입니다. 이 조건을 DDA 전용 구성에 옮기지 않습니다.
+
+### 운영 중 탈부착은 재시작 창입니다
+
+DDA 관리 문서는 포털에서 기존 가상 머신에 GPU를 붙이거나 떼면 Azure Local이 가상 머신을 끄고 다시 켠다고 적습니다. 무중단 장착을 전제하지 않습니다. Windows Server Hyper-V DDA 문서는 장치 할당의 호스트 측 전제를 설명하며, Azure Local 준비 문서가 이 경로를 가리킵니다.
+
+## 실무 체크리스트
+
+1. 카탈로그와 준비 문서의 모델표를 기준으로 호스트 GPU 목록을 만듭니다.
+2. 워크로드를 DDA 전용, GPU-P 분할, GPU 불필요로 나눕니다.
+3. 모든 노드의 GPU 모델이 같은지 확인하고, 다른 모델이 있으면 할당 범위를 줄입니다.
+4. DDA면 호스트 드라이버 제거와 완화 드라이버, GPU-P면 호스트 vGPU 드라이버와 분할 수를 기록합니다.
+5. 같은 물리 GPU를 두 방식에 올리지 않도록 장치별 할당표를 만듭니다.
+6. AKS Arc 사용 시 분할 미지원을 운영 범위에서 뺍니다.
+7. 생성 시 할당과 운영 중 탈부착의 재시작 영향을 변경 창에 적습니다.
+8. 승인 근거가 2604 일반 공급인지, 관리 문서의 미리보기 제목인지를 남깁니다.
+
+## 제외 범위
+
+- VMware와 Nutanix의 기능, 가격, 성능 비교
+- 특정 GPU 모델의 우열이나 처리량 순위
+- 고객별 카탈로그 적합성, 드라이버 호환성, 무중단 이전의 확정
+- 미리보기 관리 문서를 일반 공급과 같은 보증으로 쓰는 가정
+- 기존 가상화 HCI 마이그레이션 안내를 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 호스트 GPU 모델, DDA와 GPU-P 선택, 드라이버 준비, 재시작 창을 현황화합니다.
+- 의사결정 산출물: 장치별 할당 방식, 워크로드 분류, 문서 불일치 기록과 변경 창을 담은 판단표를 만듭니다.
+- 운영 검증: 할당, 탈착, 재시작 후 게스트 인식 여부를 시나리오로 확인합니다. 성능, 밀도, 호환성 또는 완료 시간을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+호스트 GPU 할당 방식을 정하려면 페이지 하단의 전환 진단 범위 확인에서 서버 가상화 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Azure Local 2604 what's new. GPU 가속 일반 공급, DDA와 GPU-P. https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2604 (확인일: 2026-08-21)
+- Microsoft Learn, Prepare GPUs for Azure Local. DDA와 GPU-P 차이, 균질 구성, 모델표, AKS Arc 분할 미지원. https://learn.microsoft.com/en-us/azure/azure-local/manage/gpu-preparation?view=azloc-2604 (확인일: 2026-08-21)
+- Microsoft Learn, Manage GPUs via Discrete Device Assignment. 제목에 미리보기, 탈부착 시 가상 머신 재시작. https://learn.microsoft.com/en-us/azure/azure-local/manage/gpu-manage-via-device?view=azloc-2604 (확인일: 2026-08-21)
+- Microsoft Learn, Manage GPUs using partitioning. 같은 물리 GPU를 DDA와 GPU-P로 동시 사용하지 않음. https://learn.microsoft.com/en-us/azure/azure-local/manage/gpu-manage-via-partitioning?view=azloc-2604 (확인일: 2026-08-21)
+- Microsoft Learn, Deploying graphics devices using Discrete Device Assignment. Hyper-V DDA 호스트 전제. https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda (확인일: 2026-08-21)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 하드웨어 적합성, 성능, 운영 결과를 보증하지 않습니다.

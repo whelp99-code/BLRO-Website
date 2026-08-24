@@ -1,0 +1,98 @@
+---
+contentId: insight-avd-session-host-configuration-update
+title: "AVD 세션 호스트 구성: 생성 전에 관리 방식을 고정할 것"
+summary: "2026년 6월 AVD 자동 호스트 풀에서 표준 관리와 세션 호스트 구성을 가르고, 이미지 교체가 가상 머신 재생성임을 확인하는 리뷰 초안"
+slug: avd-session-host-configuration-update
+locale: ko
+status: review
+updatedAt: 2026-08-21
+audience: [customer, partner]
+tags: [azure-virtual-desktop, vdi, session-host, host-pool, operations]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/host-pool-management-approaches"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/session-host-update"
+  - "https://learn.microsoft.com/en-us/rest/api/desktopvirtualization/session-host-configurations?view=rest-desktopvirtualization-2026-01-01-preview"
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Azure Virtual Desktop 2026년 6월 새 소식은 자동 호스트 풀과 세션 호스트 구성이 이제 제공된다고 적습니다. 관리 방식은 호스트 풀을 만들 때 고정되며 나중에 바꿀 수 없습니다.
+
+- 결정: 새 풀링 호스트 풀을 세션 호스트 구성으로 만들지, 기존 표준 관리 도구를 유지할지
+- 전제: 이 방식은 풀링 호스트 풀만. 개인 데스크톱 풀에는 해당하지 않음
+- 불일치: 제품 새 소식은 사용 가능, REST와 Bicep 설명은 미리보기 API 버전을 유지
+- 범위: 웹 화면 캡처나 RDP Multipath가 아니라 호스트 수명주기 관리
+
+## 문제 상황
+
+이미지를 호스트마다 손으로 맞추다 보면 구성이 어긋납니다. 반대로 서비스가 호스트를 대신 만들게 하면, 기존 파이프라인과 등록 토큰 방식이 더 이상 통하지 않습니다.
+
+관리 방식 문서는 세션 호스트 구성이 이미지, 크기, 디스크, 도메인 가입, 네트워크, 관리자 자격 증명을 저장한다고 적습니다. 이 방식의 호스트 풀에서는 Azure Virtual Desktop 바깥 도구로 호스트를 만들거나 확장할 수 없습니다. 등록 토큰을 받아 외부에서 만든 가상 머신을 붙이는 표준 관리와 섞지 않습니다.
+
+세션 호스트 업데이트는 기존 가상 머신을 할당 해제하거나 삭제한 뒤 새 가상 머신을 만듭니다. 게스트에 손으로 넣은 파일, 레지스트리, 인증서는 이미지에 없으면 사라집니다. 업데이트 중 자동 스케일을 켜 두면 런타임 오류로 실패할 수 있다고 적습니다.
+
+## 지금 결정할 것
+
+- 신규 풀링 호스트 풀만 이 방식으로 만들지, 기존 표준 관리 풀을 유지할지
+- 이미지와 구성 변경을 호스트 업데이트로 재생성할지, 기존 파이프라인을 유지할지
+- 배치 크기, 로그오프 대기, 사용자 안내 문구를 누가 승인할지
+- 업데이트 창에 자동 스케일을 끌 수 있는지
+- Insights 에이전트를 정책으로 다시 심을 책임을 어디에 둘지
+
+## 의사결정 기준
+
+### 관리 방식은 생성 시 한 번만 고릅니다
+
+문서는 호스트 풀을 만들 때 방식이 고정되며, 구성 없이 만든 풀에 나중에 구성을 넣을 수 없다고 적습니다. 기존 표준 관리 풀을 자동 호스트 풀로 바꾼다는 가정을 승인 조건에 넣지 않습니다.
+
+### 업데이트는 패치가 아니라 재생성입니다
+
+세션 호스트 업데이트는 이름을 기준으로 호스트를 고르고, 사용자를 뺀 뒤 기존 가상 머신을 제거합니다. 새 가상 머신은 같은 호스트 이름을 이어받지만 Azure 리소스 이름에는 시각이 붙습니다. Active Directory 컴퓨터 개체는 삭제하지 않고 새 가상 머신이 상속합니다. 이미지 밖 변경은 Intune, 그룹 정책 또는 구성 스크립트에 넣지 않으면 남기지 않습니다.
+
+### 제품 페이지와 API 미리보기 표기를 한 근거로 합치지 않습니다
+
+2026년 6월 새 소식은 자동 호스트 풀이 이제 제공된다고 적습니다. Desktop Virtualization REST의 세션 호스트 구성 설명은 2026-01-01-preview를 유지하고, 업데이트 작업은 2026-04-01-preview를 씁니다. 자동화 파이프라인은 미리보기 API 계약을 전제로 하는지를 따로 적습니다. 이 기능은 전역 Azure에만 있고 미국 정부 클라우드와 21Vianet에는 없다고 업데이트 문서가 적습니다.
+
+### 용량과 사용자 세션을 같은 창에 둡니다
+
+배치는 동시에 빠지는 호스트 수입니다. 처음 한 대를 시험한 뒤 나머지를 나눕니다. 사용자가 있는 호스트는 안내 후 강제 로그오프됩니다. 자동 스케일은 업데이트 전에 끄고 끝날 때까지 꺼 둡니다. 구독 할당량도 재생성이 한도를 넘지 않는지 확인합니다.
+
+## 실무 체크리스트
+
+1. 대상이 신규 풀링 호스트 풀인지, 기존 표준 관리 풀인지 나눕니다.
+2. 세션 호스트 구성으로 만들 풀과 기존 도구를 유지할 풀을 목록화합니다.
+3. 이미지, 크기, 디스크, 도메인 가입, 네트워크 값을 구성 초안으로 적습니다.
+4. 업데이트 배치 크기, 로그오프 대기, 안내 문구, 시간대를 정합니다.
+5. 업데이트 창에 자동 스케일 중지와 재개 담당을 지정합니다.
+6. 이미지에 없는 사용자 설정과 에이전트를 정책으로 다시 심을지 적습니다.
+7. Insights 또는 Azure Monitor 에이전트가 재생성 후 빠지는 조건을 확인합니다.
+8. REST나 Bicep을 쓸 경우 미리보기 API 버전을 변경 요청서에 남깁니다.
+
+## 제외 범위
+
+- 웹 화면 캡처 보호, RAW 인쇄, RDP Multipath 구성의 재작성
+- 특정 VDI 제품의 우열, 가격, 사용자 밀도 비교
+- 기존 호스트 풀을 이 방식으로 전환할 수 있다는 보장
+- 재생성 중 무중단, 세션 보존, 완료 시간 보장
+- 기존 VDI 용량 계획 글을 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 호스트 풀 관리 방식, 이미지 재생성 경로, 자동 스케일, 사용자 로그오프 창을 현황화합니다.
+- 의사결정 산출물: 신규 풀 방식 선택, 업데이트 배치, 제외 도구와 API 미리보기 기록을 담은 판단표를 만듭니다.
+- 운영 검증: 시험 풀에서 한 대 업데이트 후 접속과 구성 일치를 시나리오로 확인합니다. 사용자 경험, 성능, 무중단을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+호스트 풀 관리 방식을 생성 전에 정하려면 페이지 하단의 전환 진단 범위 확인에서 VDI 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Azure Virtual Desktop what's new. 2026년 6월 Automated Host Pools가 이제 제공됨. https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new (확인일: 2026-08-21)
+- Microsoft Learn, Host pool management approaches. 생성 시 고정, 풀링 전용, 외부 도구 불가. https://learn.microsoft.com/en-us/azure/virtual-desktop/host-pool-management-approaches (확인일: 2026-08-21)
+- Microsoft Learn, Session host update. 가상 머신 삭제 후 재생성, 자동 스케일 중지, Insights 에이전트 미설치. https://learn.microsoft.com/en-us/azure/virtual-desktop/session-host-update (확인일: 2026-08-21)
+- Microsoft Learn, Session Host Configurations REST. API 버전 2026-01-01-preview. https://learn.microsoft.com/en-us/rest/api/desktopvirtualization/session-host-configurations?view=rest-desktopvirtualization-2026-01-01-preview (확인일: 2026-08-21)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 적용, 라이선스, 운영 결과를 보증하지 않습니다.
