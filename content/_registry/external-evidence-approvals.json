@@ -5,45 +5,300 @@
       "evidenceId": "sangfor-korea-secui-hci",
       "approverRole": "site-owner",
       "source": "user-directed-official-source-review",
-      "approvedAt": "2026-07-17",
+      "approvedAt": "2026-08-18",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": [
         "docs/sangfor-korea-case-evidence.md",
         "https://www.sangfor.com/kr/success-stories/hci-gogaeg-salye-secui"
       ],
-      "contentSha256": "a6990d4e7b5277b9bd949d2ee9775d023f9fe4a32ce0cd469056f0315b26d004",
-      "reviewAt": "2026-10-17",
-      "expiresAt": "2027-07-17"
+      "contentSha256": "55b97144d4b267985747a715cafa562ec07f42af4dc5dcdf3de7a63bcee0e12f",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
     },
     {
       "approvalId": "approval-external-sangfor-lotte-vdi",
       "evidenceId": "sangfor-korea-lotte-vdi",
       "approverRole": "site-owner",
       "source": "user-directed-official-source-review",
-      "approvedAt": "2026-07-17",
+      "approvedAt": "2026-08-18",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": [
         "docs/sangfor-korea-case-evidence.md",
         "https://www.sangfor.com/kr/success-stories/vdi-losdegeonseol"
       ],
-      "contentSha256": "d9cc2581fdcdc392a37cecf781d8b41fc09eee7146ab1f8bed7d6da38ede4504",
-      "reviewAt": "2026-10-17",
-      "expiresAt": "2027-07-17"
+      "contentSha256": "dc875418f2a393efaf77afd3f5148ebd1f8eaea464bfe4ae3c55c69e6fca974e",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
     },
     {
       "approvalId": "approval-external-sangfor-lg-hh-sdwan",
       "evidenceId": "sangfor-korea-lg-hh-sdwan",
       "approverRole": "site-owner",
       "source": "user-directed-official-source-review",
-      "approvedAt": "2026-07-17",
+      "approvedAt": "2026-08-18",
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": [
         "docs/sangfor-korea-case-evidence.md",
         "https://www.sangfor.com/kr/success-stories/sd-wan-lgsaenghwalgeongang-guchug"
       ],
-      "contentSha256": "488bb42940b4bf79d4515438cde25bab7040772e21c00a49ad4d23b7d0538163",
-      "reviewAt": "2026-10-17",
-      "expiresAt": "2027-07-17"
+      "contentSha256": "ed7d9c72b24369df0859bd51964b89fea25af39591ffbc6b9a967f0148f4c741",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-chosun-hci",
+      "evidenceId": "sangfor-korea-chosun-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hci-seobeo-tonghab-gasanghwa-gogaeg-salye-joseonilbo"
+      ],
+      "contentSha256": "3c2c67cd46c8115fa7270884c6aa358cb2bf27258ec05d41bc166a0ad8187248",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-gamechosun-hci",
+      "evidenceId": "sangfor-korea-gamechosun-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hci-seobeo-tonghab-gasanghwa-gogaeg-salye-geimjoseon"
+      ],
+      "contentSha256": "5149841eae72e843369473bb6ad4e692bece9e9a94db26c05ff191705ce1e3bd",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-medici-hci",
+      "evidenceId": "sangfor-korea-medici-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hci-gogaegsalye"
+      ],
+      "contentSha256": "9a6f83e6b8ff558138925e40fa057181f1e52b872e798546eccb4344f69b1e69",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-kv-materials-hci",
+      "evidenceId": "sangfor-korea-kv-materials-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hci-seobeo-tonghab-gasanghwa-gogaeg-salye-kv-materialsgu-samseongkoning"
+      ],
+      "contentSha256": "477209a7d82a6746553516c18c80f959271d9a07fabbfa45498d096868e96e3e",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-annotation-hci",
+      "evidenceId": "sangfor-korea-annotation-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hci-gogaeg-salye-ai-aepeullikeisyeon-seobeo-gasanghwa-tonghab-unyeong-gwanli"
+      ],
+      "contentSha256": "888cec1f021616bd5852349c25fb585a74f7741bbebfc1ec3b26f877dfad7628",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-hanshin-hci",
+      "evidenceId": "sangfor-korea-hanshin-hci",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/hanshin-university"
+      ],
+      "contentSha256": "49d31d7a35dc38fb2917d616c05001adbe900546d00c4e64f5b934ba7f4a1022",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-gs-vdi",
+      "evidenceId": "sangfor-korea-gs-vdi",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/vdi-gogaeg-salye-gsgeonseol"
+      ],
+      "contentSha256": "cb1fc6b2d9778b2d6f09c70c2c5c74b90e4cd6b4c760f82a6c6146031797082c",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-cj-vdi",
+      "evidenceId": "sangfor-korea-cj-vdi",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/success-stories/cj-logistics"
+      ],
+      "contentSha256": "61d44eca4c1c7d0c4dd4bbaf0693db5556f567686e04dd460693ea0f00dc5a5a",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-kensington-xddr",
+      "evidenceId": "sangfor-korea-kensington-xddr",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/ngaf-case-study-kensington-hotels-resorts"
+      ],
+      "contentSha256": "6d4868d880e93e43a7b82ec2af0a3a94ca03e560910d8ba8356eb583333125a8",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-unid-iam",
+      "evidenceId": "sangfor-korea-unid-iam",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/iam-gogaeg-salye-yunideu"
+      ],
+      "contentSha256": "b1f7357b8e4ef287bcefb7d16ee1503288371f29f1874440109ea675850f1a72",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-sk-iam",
+      "evidenceId": "sangfor-korea-sk-iam",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/iam-inteonesjeobgeunjeeo-skgeonseol"
+      ],
+      "contentSha256": "dcf74368d8c9a461f359ee8a7ad55cc42b9540e07c1b0dac4548112f347007f0",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-locknlock-ngaf",
+      "evidenceId": "sangfor-korea-locknlock-ngaf",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/ngaf-gogaeg-salye-rakaenrak"
+      ],
+      "contentSha256": "830d9cd69bf74d4d531459881dd6c75fc4fbd1cc82475ca35b4a46fc65858c71",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-zwcad-ngaf",
+      "evidenceId": "sangfor-korea-zwcad-ngaf",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/ngaf-gogaeg-salye-zwcad"
+      ],
+      "contentSha256": "fd29fa640195216a26d4685a474b6a59ce32821a2bf31b374e2699c934425797",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-geumgang-ngaf",
+      "evidenceId": "sangfor-korea-geumgang-ngaf",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/ngaf-gogaeg-salye-geumgangjonghabgeonseol"
+      ],
+      "contentSha256": "4f50e977b4ac98721d0f0ebe78be95060b732bf4840688e899121c743849c8d0",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-daesang-wano",
+      "evidenceId": "sangfor-korea-daesang-wano",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/wano-gogaeg-salye-daesang"
+      ],
+      "contentSha256": "3484d0de8300fa98f83d74b57c216e89012392c719b8a7f21c4d6bd4bb52045c",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-lsmetal-wano",
+      "evidenceId": "sangfor-korea-lsmetal-wano",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/wano-gogaeg-salye-lsmetal"
+      ],
+      "contentSha256": "21589954664174b9eebbb23112cc627dcd5c7849d04ead224d0fd20be06bb233",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
+    },
+    {
+      "approvalId": "approval-external-sangfor-lsis-wano",
+      "evidenceId": "sangfor-korea-lsis-wano",
+      "approverRole": "site-owner",
+      "source": "user-directed-official-source-review",
+      "approvedAt": "2026-08-18",
+      "publicScopes": ["website:public:ko"],
+      "evidenceRefs": [
+        "docs/sangfor-korea-case-evidence.md",
+        "https://www.sangfor.com/kr/success-stories/wano-gogaeg-salye-lssanjeon"
+      ],
+      "contentSha256": "9a5b471efc38b74f5e2c8d10910abd987cf2401a64270442716d77812cc34174",
+      "reviewAt": "2026-11-18",
+      "expiresAt": "2027-08-18"
     }
   ]
 }

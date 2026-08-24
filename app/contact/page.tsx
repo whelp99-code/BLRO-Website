@@ -31,7 +31,7 @@ export default function ContactPage() {
               제품보다 먼저, <span className="blro-nowrap">전환의 기준</span>을 정리합니다.
             </Heading>
             <Text variant="lead">
-              무엇을 도입할지보다 현재 운영에서 무엇을 지켜야 하는지를 먼저 확인합니다. 그 기준을 바탕으로 검증 범위와 다음 결정을 함께 설계합니다.
+              도입할 제품보다, 현재 운영에서 지켜야 할 조건을 먼저 확인합니다. 그 기준을 바탕으로 검증 범위와 다음 결정을 함께 설계합니다.
             </Text>
           </div>
           <Suspense fallback={<div className="contact-path-guide" aria-hidden="true" />}>

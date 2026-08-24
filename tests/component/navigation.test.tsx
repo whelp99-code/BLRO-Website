@@ -233,6 +233,10 @@ describe("route-derived shell components", () => {
     const footer = screen.getByRole("contentinfo")
 
     // Then
+    expect(within(footer).getByRole("heading", { name: "사업" })).toBeVisible()
+    expect(within(footer).getByRole("heading", { name: "상담 시작" })).toBeVisible()
+    expect(within(footer).queryByRole("heading", { name: "Business" })).not.toBeInTheDocument()
+    expect(within(footer).queryByRole("heading", { name: "Start a conversation" })).not.toBeInTheDocument()
     expect(within(footer).getAllByRole("link", { name: /문의|상담/u })).toHaveLength(3)
     expect(within(footer).getByRole("link", { name: "개인정보 처리방침" })).toHaveAttribute(
       "href",
