@@ -1,0 +1,96 @@
+---
+contentId: insight-avd-web-screen-capture-raw-print
+title: "브라우저로 들어오는 AVD, 화면캡처 보호가 켜졌다"
+summary: "브라우저 AVD의 화면캡처 보호와 기본 꺼진 프린터 재연결, RAW 인쇄 미리보기·라벨 프린터 허용 여부를 가르는 리뷰 초안"
+slug: avd-web-screen-capture-raw-print
+locale: ko
+status: review
+updatedAt: 2026-08-19
+audience: [customer, partner]
+tags: [azure-virtual-desktop, vdi, workspace]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/screen-capture-protection?tabs=intune"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/redirection-configure-printers?tabs=intune&pivots=azure-virtual-desktop"
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+2026년 8월 Azure Virtual Desktop what’s-new는 지원 웹 브라우저로 세션 호스트에 접속할 때 Screen Capture Protection을 쓸 수 있다고 적습니다. 같은 달 RAW 인쇄는 공개 미리보기입니다.
+
+- 웹 보호: Microsoft Edge for Business, Intune 앱 보호 정책, 조건부 액세스가 함께 있어야 브라우저에서 화면캡처 보호가 적용된다
+- 한계: 화면캡처 보호는 DRM이 아니다
+- 인쇄: 새로 만든 호스트 풀에서 프린터 재연결은 기본으로 꺼져 있다. RAW 인쇄를 쓰려면 재연결을 다시 켜야 한다
+- 이 글의 범위: 화면캡처 보호와 프린터 재연결·RAW 인쇄만 다룬다
+
+## 문제 상황
+
+브라우저로 AVD에 들어오는 사용자와 라벨 프린터를 써야 하는 현장이 같은 호스트 풀에 있으면, 화면 유출을 줄이는 설정과 인쇄를 열어 주는 설정이 서로 반대 방향으로 움직입니다.
+
+Microsoft는 2026년 8월에 웹 연결용 화면캡처 보호를 쓸 수 있다고 안내합니다. 화면캡처 보호 문서는 이 기능이 표준 운영체제 기능과 API를 통한 캡처를 막는 조치이며, DRM 수준 보호를 제공하지 않는다고 명시합니다. 웹에서는 Edge for Business 작업 프로필에 Intune 앱 보호 정책이 적용되고, 브라우저 클라이언트에 앱 보호를 요구하는 조건부 액세스가 있을 때 보호가 적용됩니다.
+
+프린터 재연결 문서는 새로 만든 Azure Virtual Desktop 호스트 풀에서 로컬 프린터 재연결이 기본으로 꺼져 있다고 적습니다. RAW 인쇄는 프린터 재연결이 켜져 있어야 동작하며, what’s-new는 라벨 프린터처럼 RAW가 필요한 장치를 예로 듭니다. RAW 인쇄는 확인일 기준 공개 미리보기입니다.
+
+## 지금 결정할 것
+
+- 브라우저 접속 사용자에게 Edge for Business, 앱 보호 정책, 조건부 액세스를 전제로 화면캡처 보호를 요구할지
+- 화면캡처 보호를 DRM이나 사진 촬영 방지로 설명하지 않을지
+- 라벨 프린터·미리보기용 RAW 인쇄를 위해 프린터 재연결을 다시 켤지
+- 재연결을 켤 대상을 모든 호스트 풀이 아니라 인쇄가 필요한 풀로 한정할지
+- 클립보드·드라이브 재연결과 화면캡처 보호를 같은 방어 묶음으로 볼지
+
+## 의사결정 기준
+
+### 웹 화면캡처 보호는 브라우저와 정책이 맞을 때만 적용됩니다
+
+관리자가 세션 호스트에 화면캡처 보호를 켜도, 웹 연결은 Edge for Business와 Intune 앱 보호, 조건부 액세스가 있어야 지원 모델로 동작합니다. 임의의 브라우저에서 같은 보호가 된다고 보지 않습니다. Windows와 macOS 데스크톱 클라이언트는 다른 적용 경로를 쓰므로, 브라우저 사용자 군을 별도 목록으로 둡니다.
+
+### 화면캡처 보호를 DRM으로 약속하지 않습니다
+
+공식 문서는 화면캡처 보호가 DRM 수준 보호가 아니며, 조건부 액세스, 데이터 손실 방지, 엔드포인트 관리와 함께 써야 한다고 적습니다. 실제 카메라로 화면을 찍는 행위는 이 기능만으로 막히지 않으며, 워터마크는 별도 기능입니다.
+
+### 프린터 재연결은 기본 꺼짐에서 예외로 엽니다
+
+새로 만든 호스트 풀의 결과적 기본 동작은 프린터 재연결 비활성입니다. RAW 인쇄를 쓰려면 재연결을 켜고, SmartRawPrinters 값으로 모든 재연결 프린터 또는 특정 드라이버 이름 접두사만 허용할지를 정합니다. 라벨 프린터나 RAW 미리보기가 필요 없는 풀까지 같이 열지 않습니다.
+
+### 이 글에서는 연결 경로 기능을 다루지 않습니다
+
+화면캡처 보호와 인쇄 재연결은 세션 안의 데이터 유출·주변 장치 문제이며, 다른 연결 복원 기능의 전제나 효과로 설명하지 않습니다.
+
+## 실무 체크리스트
+
+1. 브라우저로 들어오는 사용자, 사용 브라우저, Edge for Business 배포 여부를 목록화합니다.
+2. 세션 호스트의 화면캡처 보호 설정과 Intune 앱 보호, 조건부 액세스 적용 대상을 대조합니다.
+3. 화면캡처 보호를 DRM, 사진 촬영 차단, 완전한 유출 방지로 안내하지 않을 문구를 정합니다.
+4. 라벨 프린터 또는 RAW 미리보기가 필요한 업무와 호스트 풀을 분리합니다.
+5. 해당 풀에서만 프린터 재연결을 켜고, RAW 허용 범위를 모든 프린터 또는 드라이버 접두사로 정합니다.
+6. 클립보드·드라이브 재연결을 함께 줄일지 보안 담당자와 확인합니다.
+7. 인쇄 예외 풀과 화면캡처 보호 풀이 겹치면 승인자, 종료 조건, 사용자 안내를 기록합니다.
+8. 적용 후 웹 세션에서 캡처 차단 여부와 재연결 프린터 동작을 확인합니다.
+
+## 제외 범위
+
+- 연결 경로, 다중 전송, 자동 재연결 기능의 효과나 전제
+- 특정 VDI·보안·인쇄 제품의 우열, 가격, 성능 비교
+- 화면캡처 보호를 DRM 또는 유출 방지 보장으로 설명하는 주장
+- 고객별 프린터 드라이버, 내부 주소, 사용자 목록의 공개
+- 공개 미리보기 RAW 인쇄의 일반 공급 시기 단정
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 브라우저 접속 사용자, Edge·앱 보호·조건부 액세스, 호스트 풀 재연결, RAW 인쇄 필요 업무를 현황화합니다.
+- 의사결정 산출물: 웹 화면캡처 보호 적용 범위, 프린터 재연결 예외 풀, RAW 허용 조건과 안내 문구를 담은 판단표를 만듭니다.
+- 운영 검증: 웹 세션 캡처 차단과 예외 풀의 인쇄 동작을 시나리오로 확인합니다. 유출 차단, 인쇄 품질, 호환성 또는 사용자 경험을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+브라우저 AVD의 화면캡처 보호와 인쇄 예외를 가르려면 페이지 하단의 전환 진단 범위 확인에서 VDI 워크스페이스 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, What’s new in Azure Virtual Desktop, August 2026. 웹 화면캡처 보호, RAW 인쇄 공개 미리보기. https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new (확인일: 2026-08-19)
+- Microsoft Learn, Screen capture protection in Azure Virtual Desktop. DRM 아님, 웹은 Edge for Business와 Intune MAM, 조건부 액세스. https://learn.microsoft.com/en-us/azure/virtual-desktop/screen-capture-protection?tabs=intune (확인일: 2026-08-19)
+- Microsoft Learn, Configure printer redirection. 신규 호스트 풀 기본 꺼짐, RAW 인쇄는 재연결 필요. https://learn.microsoft.com/en-us/azure/virtual-desktop/redirection-configure-printers?tabs=intune&pivots=azure-virtual-desktop (확인일: 2026-08-19)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 유출 방지, 인쇄 호환성, 규제 적합성을 보증하지 않습니다.

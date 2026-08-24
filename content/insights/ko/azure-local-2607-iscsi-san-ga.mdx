@@ -1,0 +1,98 @@
+---
+contentId: insight-azure-local-2607-iscsi-san-ga
+title: "Azure Local 2607에서 iSCSI SAN이 GA다"
+summary: "Azure Local 2607 iSCSI SAN GA와 공식 문서의 FC 전용 잔존 안내를 대조해 기존 SAN 재사용, S2D 전용, SAN 전용을 가르는 리뷰 초안"
+slug: azure-local-2607-iscsi-san-ga
+locale: ko
+status: review
+updatedAt: 2026-08-19
+audience: [customer, partner]
+tags: [azure-local, hci, iscsi, san]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2607"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/release-information-23h2?view=azloc-2607"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/deploy/enable-external-storage"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/concepts/san-requirements"
+relatedContent: ["service:hci-private-cloud", "insight:hci-readiness-checklist"]
+---
+
+## 한눈에 보기
+
+Azure Local 2607 what’s-new는 하이퍼컨버지드 배포에서 지원 벤더 SAN을 iSCSI로 붙이는 기능이 일반 공급이라고 적습니다. 같은 날에도 SAN 요구사항 문서는 Fibre Channel만 지원한다고 남아 있습니다.
+
+- 결정: 기존 SAN을 재사용할지, Storage Spaces Direct만 쓸지, SAN만 쓰는 분리 배포로 갈지
+- 전제: 외부 저장소 연결 문서는 2604 이상, iSCSI에는 전용 물리 NIC가 필요하다고 적는다
+- 빌드: solution version 12.2607.1003.73, 제공일 2026-08-07
+- 문서 불일치: san-requirements는 2026-06-03 갱신 기준으로 여전히 FC only다
+
+## 문제 상황
+
+HCI 저장소 결정을 제품 이름만으로 내면, 이미 있는 SAN을 살릴지 로컬 디스크로만 갈지가 같은 표에 섞입니다.
+
+Microsoft what’s-new 2607은 SAN integration using iSCSI가 하이퍼컨버지드 배포에서 일반 공급이며, Fibre Channel에 더해 iSCSI를 쓸 수 있다고 적습니다. 같은 페이지는 분리 배포에서도 iSCSI SAN이 일반 공급이라고 안내합니다. enable-external-storage는 FC 또는 iSCSI로 외부 SAN을 붙이고, Storage Spaces Direct와 함께 쓰거나 SAN만 쓰는 구성을 설명합니다.
+
+반면 Supported SAN solutions 문서(san-requirements)는 2026-06-03에 갱신된 상태로, 외부 SAN은 Fibre Channel 블록 저장소만 지원한다고 적습니다. 2607 뷰에서도 이 문구는 그대로입니다. 운영 승인은 한 문서만 인용하지 말고, 일반 공급 안내와 요구사항 문서의 불일치를 변경 기록에 남겨야 합니다.
+
+## 지금 결정할 것
+
+- 기존 SAN을 Azure Local에 붙여 재사용할지
+- Storage Spaces Direct만 쓰는 구성으로 남을지
+- 계산과 저장소를 나누는 SAN 전용 분리 배포로 갈지
+- 클러스터가 2604 이상인지, iSCSI용 전용 물리 NIC를 확보했는지
+- san-requirements의 FC 전용 문구를 언제까지 잔여 불일치로 추적할지
+
+## 의사결정 기준
+
+### 세 가지 저장소 모델을 먼저 고릅니다
+
+enable-external-storage는 기존 또는 신규 SAN을 블록 장치로 붙이고, Storage Spaces Direct와 함께 쓰는 구성과 SAN만 쓰는 구성을 나눕니다. what’s-new 2604 전후 안내는 SAN을 Storage Spaces Direct와 함께 쓰거나 SAN만 쓰는 배포를 구분합니다. 워크로드마다 다른 모델을 쓰더라도, 클러스터 승인 단위에서는 어느 모델을 기본으로 둘지 적습니다.
+
+### 2607 GA와 2604 전제를 함께 봅니다
+
+iSCSI 일반 공급은 2607 what’s-new의 기능 안내입니다. 연결 절차 문서는 Azure Local 클러스터가 2604 이상이어야 한다고 적습니다. 릴리스 정보는 12.2607.1003.73을 2026-08-07 제공, OS build 26100.33158로 표시합니다. 포털에 2607이 보인다고 해서 노드별 현재 버전과 업데이트 경로 확인을 생략하지 않습니다.
+
+### iSCSI는 전용 물리 포트를 전제로 합니다
+
+하이브리드 구성에서 iSCSI는 전용 물리 포트가 필요하며, 가상 NIC는 지원되지 않는다고 적혀 있습니다. 모든 노드는 같은 NIC 구성을 써야 하고, iSCSI NIC는 Network ATC 의도에서 빼라고 안내합니다. 관리·계산·Storage Spaces Direct 트래픽과 iSCSI를 같은 포트에 겹친다고 가정하지 않습니다.
+
+### 공식 문서 불일치를 숨기지 않습니다
+
+san-requirements는 2026-06-03 갱신 이후에도 외부 SAN을 Fibre Channel만 지원한다고 적고, ReFS는 이 미리보기에서 SAN 볼륨에 지원되지 않는다고 남아 있습니다. what’s-new 2607과 enable-external-storage는 iSCSI 일반 공급을 말합니다. 벤더 지원 표나 파트너 발표를 우열 근거로 쓰지 말고, Microsoft 문서 사이의 불일치를 승인 조건으로 기록합니다.
+
+## 실무 체크리스트
+
+1. 현재 Azure Local solution version, OS build, 배포 유형을 노드별로 기록합니다.
+2. 목표 모델이 기존 SAN 재사용, S2D 전용, SAN 전용 중 어디인지 적습니다.
+3. 클러스터가 2604 이상인지, 2607 경로가 지원되는지 릴리스 정보에서 확인합니다.
+4. iSCSI를 쓸 경우 전용 물리 NIC, 동일 노드 구성, Network ATC 제외를 점검합니다.
+5. what’s-new 2607, enable-external-storage, san-requirements의 FC only 문구를 같은 변경 요청서에 붙입니다.
+6. 지원 벤더·모델은 공식 표의 해당 여부를 확인하되, 우열이나 성능을 단정하지 않습니다.
+7. SAN LUN을 모든 노드에 동일하게 제시하는지, NTFS CSV 전제인지를 기록합니다.
+8. 문서 불일치가 해소되기 전에 어떤 문서를 운영 기준으로 삼을지 승인자를 정합니다.
+
+## 제외 범위
+
+- SAN·HCI 공급자의 우열, 가격, 성능, 지연시간 또는 호환성 순위
+- 소셜 게시물을 일반 공급 근거로 사용하는 주장
+- 고객별 어레이 펌웨어, HBA, 스위치 구성의 공개 확정
+- 2604 미만 클러스터에서 iSCSI GA를 쓸 수 있다는 가정
+- 무중단, 용량 효율, 마이그레이션 성공의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 현재 버전, 저장소 모델, SAN 재사용 여부, iSCSI용 물리 NIC와 공식 문서 불일치를 현황화합니다.
+- 의사결정 산출물: S2D 전용·SAN 재사용·SAN 전용 선택, 2604 이상 전제, 문서 기준 충돌 기록을 담은 판단표를 만듭니다.
+- 운영 검증: 대상 클러스터에서 LUN 가시성, CSV 등록, 문서 기준 잔여 불일치를 확인합니다. 성능, 호환성, 완료 시간을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+기존 SAN을 재사용할지 S2D로 남을지를 가르려면 페이지 하단의 전환 진단 범위 확인에서 HCI 저장소 진단을 요청할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, What’s new in Azure Local 2607. iSCSI SAN GA, solution 12.2607.1003.73. https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2607 (확인일: 2026-08-19)
+- Microsoft Learn, Azure Local release information. 12.2607.1003.73 availability date 2026-08-07. https://learn.microsoft.com/en-us/azure/azure-local/release-information-23h2?view=azloc-2607 (확인일: 2026-08-19)
+- Microsoft Learn, Connect an external storage array to Azure Local. FC 또는 iSCSI, 2604 이상, iSCSI 전용 물리 NIC. https://learn.microsoft.com/en-us/azure/azure-local/deploy/enable-external-storage (확인일: 2026-08-19)
+- Microsoft Learn, Supported SAN solutions on Azure Local. updated 2026-06-03, 외부 SAN은 FC only로 잔존. https://learn.microsoft.com/en-us/azure/azure-local/concepts/san-requirements (확인일: 2026-08-19)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 하드웨어 적합성, 성능, 공급자 우위를 보증하지 않습니다.
