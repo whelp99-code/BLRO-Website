@@ -1,0 +1,100 @@
+---
+contentId: insight-citrix-entra-sso-vda-2607
+title: "Citrix Entra SSO: VDA 2607 정책과 미리보기를 가를 것"
+summary: "2026년 8월 Citrix DaaS에서 VDA 2607 Entra SSO 머신 정책과, 온프레미스 2607 LTSR 미리보기 한계를 가르는 리뷰 초안"
+slug: citrix-entra-sso-vda-2607
+locale: ko
+status: review
+updatedAt: 2026-08-25
+audience: [customer, partner]
+tags: [citrix, daas, entra, sso, vda, vdi]
+evidenceRefs:
+  - "https://docs.citrix.com/en-us/citrix-daas/whats-new.html"
+  - "https://docs.citrix.com/en-us/citrix-daas/install-configure/session-authentication/entra-sso.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/install-configure/session-authentication/entra-sso.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/whats-new/whats-new"
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Citrix DaaS What's new 2026년 8월은 VDA 2607부터 Microsoft Entra single sign-on 머신 정책으로 세션 호스트별 사용 여부를 고를 수 있다고 적습니다. 온프레미스 2607 LTSR 문서는 같은 기능을 미리보기로 두고 생산에 권하지 않습니다.
+
+- 결정: DaaS 제어면인지, 온프레미스 2607 LTSR인지
+- 전제: Entra 조인 또는 하이브리드 조인 세션 호스트, 최소 VDA와 Workspace 앱
+- 불일치: DaaS 표와 2607 LTSR 표가 온프레미스와 StoreFront 지원을 다르게 적음
+- 범위: AVD 다중경로나 세션 호스트 구성 글이 아니라 Citrix 인증 경계
+
+## 문제 상황
+
+Entra 자격 증명으로 가상 데스크톱을 열면, 클라우드 DaaS와 온프레미스 사이트와 StoreFront 미리보기가 한 승인에 섞입니다.
+
+DaaS What's new는 2026-08-21 페이지에서 8월 항목으로 VDA 2607 머신 정책을 안내합니다. DaaS Entra SSO 문서는 2026-06-25 날짜이고, Entra 조인과 하이브리드 조인 세션 호스트에서 Entra ID 자격 증명으로 단일 로그온을 쓴다고 적습니다. 이 페이지는 기능을 미리보기라고 부르지 않습니다. StoreFront의 Entra ID 지원만 미리보기라고 적습니다. 최소 VDA는 Windows 2507 이상입니다. 세션 호스트 OS는 Windows 11 24H2 빌드 26100.6725 이상, Windows Server 2025 빌드 26100.32230 이상입니다.
+
+2607 LTSR Entra SSO 문서는 2026-08-18 날짜이고 제목에 Preview를 붙입니다. 미리보기이며 지원이 없고 생산에 아직 권하지 않는다고 적습니다. 제어면은 Citrix Virtual Apps and Desktops 2607 LTSR 이상, StoreFront 2607 LTSR 이상입니다. 같은 페이지는 VDA에서 Entra SSO가 기본으로 켜져 있고, 일부 호스트만 끄려면 머신 정책을 쓰라고 적습니다.
+
+지원 표가 갈립니다. DaaS 문서는 온프레미스 CVAD와 StoreFront를 하이브리드 조인에서 No로 둡니다. 2607 LTSR 문서는 온프레미스와 StoreFront를 하이브리드 조인에서 Yes로 둡니다. 운영 승인은 어떤 제어면을 쓰는지 같은 기록에 남기고, 온프레미스는 미리보기 페이지를 엽니다.
+
+## 지금 결정할 것
+
+- 대상이 Citrix DaaS인지, 온프레미스 2607 LTSR인지
+- DaaS에서 VDA 2607 머신 정책으로 호스트별 사용을 고정할지
+- 온프레미스라면 미리보기 한계를 승인 조건에 넣을지
+- 세션 호스트를 Entra 조인으로 둘지, 하이브리드 조인으로 둘지
+- StoreFront를 쓸지. DaaS 문서는 StoreFront Entra ID를 미리보기로 둠
+
+## 의사결정 기준
+
+### 제어면부터 가릅니다
+
+DaaS 문서는 제어면을 Citrix DaaS로 두고, Citrix Cloud Commercial과 Japan을 적습니다. 2607 LTSR 문서는 온프레미스 제어면과 StoreFront 2607을 전제로 합니다. DaaS What's new의 8월 정책을 온프레미스 생산 승인으로 옮기지 않습니다.
+
+### 조인 유형과 로그온 유형을 맞춥니다
+
+DaaS 문서는 Entra 조인은 MachineLogOnType AzureAd, 하이브리드 조인은 HybridAzureAd를 요구합니다. MCS나 Citrix Provisioning이나 Windows 365가 아니면 레지스트리와 배달 그룹을 따로 적습니다. 하이브리드 조인에서 Domain Admins 같은 권한 그룹은 기본으로 SSO가 되지 않고 RODC 허용 목록이 필요합니다.
+
+### 미리보기 문구를 한 페이지로 합치지 않습니다
+
+DaaS 본문은 기능을 일반 문서로 두고 StoreFront만 미리보기라고 적습니다. 2607 LTSR 본문은 기능 전체를 미리보기로 두고 생산에 권하지 않습니다. 온프레미스 사이트를 DaaS와 같은 일반 공급으로 적지 않습니다.
+
+### 접속 방식 전제를 빠뜨리지 않습니다
+
+하이브리드 접속은 Edge 또는 Chrome과 Citrix Web Extension이 필요합니다. Auto Client Reconnect는 이 로그온에서 자동으로 꺼집니다. Always prompt for password와 Intune 보안 기준의 LSASS 사용자 지정 SSP 차단은 SSO를 막습니다. 세션 잠금 기본은 Windows 잠금 화면입니다.
+
+## 실무 체크리스트
+
+1. 제어면을 DaaS와 온프레미스 2607 LTSR로 나눕니다.
+2. 세션 호스트 조인 유형, OS 빌드, VDA 버전을 최소 요구와 대조합니다.
+3. DaaS면 VDA 2607 머신 정책으로 켤 호스트와 끌 호스트를 적습니다.
+4. 온프레미스면 미리보기와 미지원 문구를 변경 요청서에 남깁니다.
+5. StoreFront를 쓰면 DaaS 미리보기 안내와 2607 LTSR 표를 같이 기록합니다.
+6. Entra 앱 등록, 동의 숨김, 하이브리드면 Kerberos 서버 개체를 확인합니다.
+7. 조건부 액세스와 Intune LSASS 설정, 비밀번호 프롬프트 정책을 검토합니다.
+8. 하이브리드 접속이면 Web Extension과 팝업 허용을 사용자 경로에 넣습니다.
+
+## 제외 범위
+
+- AVD 다중경로, 웹 화면 캡처, 세션 호스트 구성 업데이트 글의 재작성
+- 가상 데스크톱 용량 산정 글의 재작성
+- 특정 VDI 제품의 우열, 가격, 성능 비교
+- 단일 로그온이 침해나 계정 탈취를 막는다는 보장
+- 고객별 테넌트 ID, 앱 등록, 계정, 웹훅의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 제어면, 조인 유형, VDA 버전, StoreFront 사용, 미리보기 한계를 현황화합니다.
+- 의사결정 산출물: DaaS 정책 대상, 온프레미스 미리보기 범위, 문서 불일치를 담은 판단표를 만듭니다.
+- 운영 검증: 호스트별 SSO 성공과 실패, 잠금 동작을 시나리오로 확인합니다. 사용자 경험, 규제 적합성, 무중단을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Citrix Entra SSO의 제어면과 미리보기 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 디지털 워크스페이스 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Citrix, Citrix DaaS What's new, August 2026. VDA 2607부터 Entra SSO 머신 정책. 페이지 날짜 2026-08-21. https://docs.citrix.com/en-us/citrix-daas/whats-new.html (확인일: 2026-08-25)
+- Citrix, Microsoft Entra single sign-on, Citrix DaaS. 페이지 날짜 2026-06-25. 기능 본문은 미리보기 표시 없음. StoreFront Entra ID만 미리보기. https://docs.citrix.com/en-us/citrix-daas/install-configure/session-authentication/entra-sso.html (확인일: 2026-08-25)
+- Citrix, Microsoft Entra single sign-on Preview, CVAD 7 2607 LTSR. 페이지 날짜 2026-08-18. 미리보기, 생산 미권고, VDA 기본 사용과 머신 정책. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/install-configure/session-authentication/entra-sso.html (확인일: 2026-08-25)
+- 운영 기준: 온프레미스 생산 여부는 2607 LTSR 미리보기 페이지를 연다. DaaS 호스트별 정책은 What's new 8월을 연다. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/whats-new/whats-new (확인일: 2026-08-25)
+
+위 출처는 Citrix 공개 문서를 설명합니다. 고객별 적용, 라이선스, 운영 결과를 보증하지 않습니다.
