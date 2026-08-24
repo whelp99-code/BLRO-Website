@@ -1,0 +1,98 @@
+---
+contentId: insight-azure-monitor-diagnostics-otlp-path
+title: "Azure Monitor OTLP 경로: Diagnostics 폐기 후 수집 경로를 정할 것"
+summary: "2026-03-31 Diagnostics 확장 폐기와 OTLP Collector 일반 공급, AMA·AKS 미리보기를 대조해 게스트 원격 분석 경로를 가르는 리뷰 초안"
+slug: azure-monitor-diagnostics-otlp-path
+locale: ko
+status: review
+updatedAt: 2026-08-20
+audience: [customer, partner]
+tags: [observability, azure-monitor, opentelemetry, diagnostics, operations]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-overview"
+  - "https://learn.microsoft.com/en-us/azure/azure-monitor/containers/opentelemetry-options"
+  - "https://learn.microsoft.com/en-us/azure/azure-monitor/containers/opentelemetry-protocol-ingestion"
+  - "https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/whats-new"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+Azure Diagnostics 확장 개요는 Windows와 Linux 확장이 2026년 3월 31일에 폐기되어 더 이상 지원되지 않는다고 적습니다. 같은 해 OpenTelemetry 옵션 문서는 Collector와 Microsoft Distro를 일반 공급으로, Azure Monitor Agent와 AKS 경로는 미리보기로 나눕니다.
+
+- 결정: 게스트 원격 분석을 AMA, Microsoft Distro, Collector 중 어디로 옮길지
+- 전제: 저장소, Event Hubs, 메트릭 목적지에 따라 마이그레이션 안내가 갈린다
+- 문서 불일치: 같은 개요 페이지가 한곳에서는 retired, 한계 절에서는 deprecated라고 적는다
+- 범위: 수집 경로 선택. 보안 제품, HCI, VDI, SASE 평가가 아니다
+
+## 문제 상황
+
+가상 머신 진단 설정에 남아 있는 WAD나 LAD는 폐기일 이후에도 데이터가 잠깐 흐를 수 있습니다. 지원과 새 기능은 끊기므로, 보이면 아직 된다와 운영 승인 가능을 같은 상태로 보면 안 됩니다.
+
+개요 페이지는 새 배포를 하지 말고, Azure Monitor Agent를 구성한 뒤 확장을 제거해 중복 수집을 피하라고 적습니다. 저장소로 보내던 경우에는 AMA와 Auxiliary 로그, Event Hubs로 보내던 경우에는 Logs data export, 게스트 성능 카운터는 Azure Monitor workspace의 OpenTelemetry 메트릭으로 안내합니다.
+
+OpenTelemetry 옵션 문서는 AMA와 AKS 통합 경로만 미리보기이며 생산 워크로드에 권장하지 않는다고 적습니다. Collector와 Microsoft Distro는 일반 공급입니다. 수집 문서의 전제는 Collector 0.132.0 이상이고, Entra 인증 예시 절은 0.148.0 이후 구문이라고 적습니다. 한 경로를 골랐다고 모든 하위 문서의 버전 전제가 같다고 보지 않습니다.
+
+## 지금 결정할 것
+
+- 아직 Diagnostics 확장이 있는 가상 머신과 클라우드 서비스를 목록에서 뺄지
+- 목적지별로 AMA, Logs data export, Azure Monitor workspace 중 무엇을 쓸지
+- 애플리케이션 원격 분석을 Microsoft Distro로 둘지, Collector OTLP로 둘지
+- AMA 또는 AKS 미리보기 경로를 생산 범위에서 제외할지
+- Collector 최소 버전을 0.132.0으로 볼지, 인증 예시의 0.148.0으로 볼지
+
+## 의사결정 기준
+
+### 폐기된 확장과 대체 환경 에이전트를 같은 수집기로 보지 않습니다
+
+Diagnostics 확장은 Azure 자원 게스트 수집용이며, 2026년 3월 31일 이후 지원되지 않습니다. 부트 진단은 확장 없이 가상 머신 기본 기능입니다. 확장을 제거하기 전에 대체 경로가 같은 목적지로 데이터를 보내는지 확인합니다. 제거 없이 AMA만 켜면 중복 수집이 됩니다.
+
+### 일반 공급 경로와 미리보기 경로를 나눕니다
+
+옵션 문서는 Distro와 Collector를 일반 공급, AMA와 AKS를 미리보기로 적습니다. 수집 문서는 Collector, AMA, AKS 세 메커니즘을 나열하지만 이 페이지의 본문은 Collector 설정입니다. 생산 승인은 미리보기 경로를 기본값으로 두지 않습니다. Distro는 Application Insights 경험을 유지하려는 팀에, Collector는 벤더 중립 파이프라인을 유지하려는 팀에 맞다고 옵션 문서가 안내합니다.
+
+### 목적지와 작업 영역을 먼저 고정합니다
+
+메트릭은 Azure Monitor workspace에 들어가 PromQL로 조회합니다. 로그와 추적은 Log Analytics에 OpenTelemetry 의미 체계로 들어갑니다. 수집 문서는 Application Insights에서 OTLP를 켜 자원을 자동 만들거나, 작업 영역과 DCR을 수동으로 조합하는 두 방법을 나눕니다. 메트릭 작업 영역과 로그 작업 영역을 같은 자원으로 가정하지 않습니다.
+
+### 같은 문서 안의 용어와 버전 차이를 숨기지 않습니다
+
+개요 페이지 상단은 retired, 한계 절은 deprecated입니다. 수집 문서는 전제 버전과 인증 예시 버전이 다릅니다. 변경 요청서에 두 문구를 같이 붙이고, 운영 기준 버전을 하나로 고릅니다. 가격이나 제품 순위를 근거로 쓰지 않습니다.
+
+## 실무 체크리스트
+
+1. 구독에서 Microsoft.Azure.Diagnostics 게시자 확장이 남은 자원을 찾습니다.
+2. 각 확장의 목적지가 저장소, Event Hubs, 메트릭 중 어디인지 적습니다.
+3. 목적지별 공식 대체 경로를 매핑한 뒤 AMA를 켠 다음 확장을 제거합니다.
+4. 애플리케이션 원격 분석이 Distro인지 Collector인지, 미리보기 AMA·AKS인지 표시합니다.
+5. 로그 작업 영역과 메트릭 작업 영역을 분리해 기록합니다.
+6. Collector를 쓸 경우 전제 버전과 인증 예시 버전 중 운영 기준을 고릅니다.
+7. 부트 진단은 확장과 분리해 가상 머신 기본 설정으로 확인합니다.
+8. 개요 페이지의 retired와 deprecated 문구, 옵션 문서의 미리보기 범위를 같은 요청서에 붙입니다.
+
+## 제외 범위
+
+- 특정 관찰 가능성 제품, APM, 수집기의 우열이나 가격 비교
+- 보안, 서버 가상화, HCI, VDI, SASE 영역의 재작성
+- 고객별 작업 영역 이름, 질의, 장애 이력 공개
+- AMA 또는 AKS 미리보기 경로를 일반 공급처럼 쓰는 가정
+- 수집 완전성, 알림 정확도, 성능의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 남은 Diagnostics 확장, 목적지, Distro·Collector·미리보기 경로, 작업 영역 분리를 현황화합니다.
+- 의사결정 산출물: 목적지별 대체 경로, 생산에 쓸 일반 공급 경로, 버전 기준, 문서 불일치 기록을 담은 판단표를 만듭니다.
+- 운영 검증: 대체 수집이 뜬 뒤 확장 제거와 중복 여부를 확인합니다. 데이터 완전성이나 알림 품질을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Diagnostics 폐기 후 어느 수집 경로를 생산에 둘지를 가르려면 페이지 하단의 컨설팅 문의를 통해 관찰 가능성 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Azure Diagnostics extension overview. 2026-03-31 폐기, 목적지별 마이그레이션, 같은 페이지의 retired와 deprecated 혼용. https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-overview (확인일: 2026-08-20)
+- Microsoft Learn, OpenTelemetry with Azure Monitor. Distro와 Collector는 일반 공급, AMA와 AKS는 미리보기. https://learn.microsoft.com/en-us/azure/azure-monitor/containers/opentelemetry-options (확인일: 2026-08-20)
+- Microsoft Learn, Ingest OTLP Data into Azure Monitor with OTel Collector. Collector 경로, 전제 0.132.0, 인증 예시 0.148.0. https://learn.microsoft.com/en-us/azure/azure-monitor/containers/opentelemetry-protocol-ingestion (확인일: 2026-08-20)
+- Microsoft Learn, What's new in Azure Monitor documentation. 2026년 6월 Collector 일반 공급, 2026년 7월 Diagnostics 폐기 안내 반영. https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/whats-new (확인일: 2026-08-20)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 수집 완전성, 비용, 제품 우위를 보증하지 않습니다.
