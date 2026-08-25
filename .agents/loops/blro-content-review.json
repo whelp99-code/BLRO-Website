@@ -1,5 +1,5 @@
 {
-  "historyNote": "2026-08-20 lived on PR #5 (cursor/ko-review-insights-2026-08-20-3502). 2026-08-21 lived on PR #6 (cursor/ko-review-insights-2026-08-21-c0ac). Both are copied here so this file does not wipe that history.",
+  "historyNote": "2026-08-20 lived on PR #5. 2026-08-21 lived on PR #6. 2026-08-22 lived on this file's previous current run. 2026-08-23 and 2026-08-24 had no PR. 2026-08-25 lived on open PR #8 (cursor/ko-review-insights-2026-08-25-3583). Those runs are copied here so this file does not wipe that history.",
   "priorRunsPreserved": [
     {
       "run": "2026-08-20",
@@ -34,31 +34,55 @@
         "avd-session-host-configuration-update",
         "prisma-access-saa-agentless-boundary"
       ]
+    },
+    {
+      "run": "2026-08-22",
+      "timezone": "KST",
+      "note": "Copied from the previous current object in this file. New branch from then-current main. Did not stack onto PR #3, #5, or #6.",
+      "rotation": {
+        "todayAreas": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
+        "priorRun": "2026-08-21",
+        "priorRunAreasNotRepeated": ["security", "server-virtualization", "hci", "vdi", "sase"]
+      },
+      "slugs": [
+        "bedrock-web-search-external-access",
+        "iam-identity-center-account-access-optional",
+        "aks-azure-files-identity-eit",
+        "gcp-backup-vault-project-lien",
+        "cloudwatch-otel-promql-query-path"
+      ]
+    },
+    {
+      "run": "2026-08-25",
+      "timezone": "KST",
+      "note": "Copied from open PR #8 (cursor/ko-review-insights-2026-08-25-3583). This 2026-08-26 run does not stack onto that branch.",
+      "rotation": {
+        "todayAreas": ["security", "server-virtualization", "hci", "vdi", "sase"],
+        "priorRun": "2026-08-22",
+        "priorRunAreasNotRepeated": ["ai", "cloud", "infrastructure", "backup/DR", "observability"]
+      },
+      "slugs": [
+        "oracle-http-weblogic-proxy-kev",
+        "vcf-91-forward-only-upgrade",
+        "nutanix-nci-76-external-storage",
+        "citrix-entra-sso-vda-2607",
+        "fortisase-mature-feature-upgrade"
+      ]
     }
   ],
-  "run": "2026-08-22",
+  "run": "2026-08-26",
   "timezone": "KST",
-  "note": "New branch from current main. Does not stack onto PR #3 (cursor/ko-review-insights-8aab), PR #5 (cursor/ko-review-insights-2026-08-20-3502), or PR #6 (cursor/ko-review-insights-2026-08-21-c0ac). Five Korean status: review insight drafts only.",
+  "note": "New branch from current main. Does not stack onto PR #8 (cursor/ko-review-insights-2026-08-25-3583). Five Korean status: review insight drafts only.",
   "rotation": {
     "todayAreas": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
-    "priorRun": "2026-08-21",
+    "priorRun": "2026-08-25",
     "priorRunAreasNotRepeated": ["security", "server-virtualization", "hci", "vdi", "sase"],
     "skippedOpenPrSlugs": [
-      "windows-ike-cve-2026-33824-kev",
-      "azure-local-gpu-dda-partition-boundary",
-      "azure-local-local-identity-key-vault",
-      "avd-session-host-configuration-update",
-      "prisma-access-saa-agentless-boundary",
-      "foundry-agent-identity-publish-boundary",
-      "aws-organizations-default-departure-scp",
-      "arc-kubernetes-workload-identity-ga",
-      "aws-backup-eks-logically-airgapped-vault",
-      "azure-monitor-diagnostics-otlp-path",
-      "cisco-asa-ftd-cve-2026-20349-kev",
-      "vmware-vmsa-2026-0006-vcenter-esx",
-      "azure-local-2607-iscsi-san-ga",
-      "avd-web-screen-capture-raw-print",
-      "prisma-sdwan-ion-681-pqc"
+      "oracle-http-weblogic-proxy-kev",
+      "vcf-91-forward-only-upgrade",
+      "nutanix-nci-76-external-storage",
+      "citrix-entra-sso-vda-2607",
+      "fortisase-mature-feature-upgrade"
     ]
   },
   "counts": {
@@ -70,79 +94,82 @@
     "inventedExtraTopics": 0
   },
   "slugs": [
-    "bedrock-web-search-external-access",
-    "iam-identity-center-account-access-optional",
-    "aks-azure-files-identity-eit",
-    "gcp-backup-vault-project-lien",
-    "cloudwatch-otel-promql-query-path"
+    "foundry-model-router-agentic-pool",
+    "gcp-mcp-org-policy-iam-deny",
+    "eks-cluster-ca-rotation-lifecycle",
+    "aws-backup-s3-access-point-read",
+    "gcp-telemetry-api-otlp-ga"
   ],
   "skipped": [],
+  "vendorMix": {
+    "ai": "Azure",
+    "cloud": "GCP",
+    "infrastructure": "AWS",
+    "backupDR": "AWS",
+    "observability": "GCP",
+    "sameVendorOnThreeOrMoreSlots": false
+  },
   "perSlug": {
-    "bedrock-web-search-external-access": {
+    "foundry-model-router-agentic-pool": {
       "area": "ai",
       "status": "review",
-      "path": "content/insights/ko/bedrock-web-search-external-access.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-bedrock-web-search-external-access-research.md",
+      "path": "content/insights/ko/foundry-model-router-agentic-pool.mdx",
+      "research": ".agents/results/blro-content/2026-08-26-foundry-model-router-agentic-pool-research.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-08-26"
     },
-    "iam-identity-center-account-access-optional": {
+    "gcp-mcp-org-policy-iam-deny": {
       "area": "cloud",
       "status": "review",
-      "path": "content/insights/ko/iam-identity-center-account-access-optional.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-iam-identity-center-account-access-optional-research.md",
+      "path": "content/insights/ko/gcp-mcp-org-policy-iam-deny.mdx",
+      "research": ".agents/results/blro-content/2026-08-26-gcp-mcp-org-policy-iam-deny-research.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-08-26"
     },
-    "aks-azure-files-identity-eit": {
+    "eks-cluster-ca-rotation-lifecycle": {
       "area": "infrastructure",
       "status": "review",
-      "path": "content/insights/ko/aks-azure-files-identity-eit.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-aks-azure-files-identity-eit-research.md",
+      "path": "content/insights/ko/eks-cluster-ca-rotation-lifecycle.mdx",
+      "research": ".agents/results/blro-content/2026-08-26-eks-cluster-ca-rotation-lifecycle-research.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-08-26"
     },
-    "gcp-backup-vault-project-lien": {
+    "aws-backup-s3-access-point-read": {
       "area": "backup/DR",
       "status": "review",
-      "path": "content/insights/ko/gcp-backup-vault-project-lien.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-gcp-backup-vault-project-lien-research.md",
+      "path": "content/insights/ko/aws-backup-s3-access-point-read.mdx",
+      "research": ".agents/results/blro-content/2026-08-26-aws-backup-s3-access-point-read-research.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-08-26"
     },
-    "cloudwatch-otel-promql-query-path": {
+    "gcp-telemetry-api-otlp-ga": {
       "area": "observability",
       "status": "review",
-      "path": "content/insights/ko/cloudwatch-otel-promql-query-path.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-cloudwatch-otel-promql-query-path-research.md",
+      "path": "content/insights/ko/gcp-telemetry-api-otlp-ga.mdx",
+      "research": ".agents/results/blro-content/2026-08-26-gcp-telemetry-api-otlp-ga-research.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-08-26"
     }
   },
   "publicationGate": {
     "publicApprovalsJson": "untouched",
     "existingApprovedMdx": "untouched",
     "homepageOrSangforFiles": "untouched",
-    "pr2Branch": "not used",
-    "pr3Branch": "not used",
-    "pr5Branch": "not used",
-    "pr6Branch": "not used",
+    "pr8Branch": "not used",
     "merge": false,
     "deploy": false
   },
   "validation": {
-    "contentValidate": "PASS",
-    "contentValidateDetail": "4 files / 45 tests",
-    "build": "PASS",
-    "reviewSlugsOnPublicRoutes": false,
-    "reviewSlugsOnSitemap": false,
-    "publicInsightRoutes": 12,
-    "verdict": "final_review_ready"
+    "contentValidate": "pending",
+    "build": "pending",
+    "reviewSlugsOnPublicRoutes": null,
+    "reviewSlugsOnSitemap": null,
+    "verdict": "pre_test"
   },
-  "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat 2026-08-20, 2026-08-21, or these five slugs. Do not fill leftover slots with Azure Local or HCI."
+  "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat 2026-08-25 security/virtualization/HCI/VDI/SASE or these five slugs. Do not stack onto PR #8."
 }

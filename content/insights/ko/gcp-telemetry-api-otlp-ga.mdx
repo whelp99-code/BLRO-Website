@@ -1,0 +1,100 @@
+---
+contentId: insight-gcp-telemetry-api-otlp-ga
+title: "GCP Telemetry API: OTLP 지표와 로그 수집을 가를 것"
+summary: "2026-08-05 지표 GA와 2026-08-14 로그 GA, Ops Agent 미리보기를 기존 Monitoring·Logging API와 가르는 리뷰 초안"
+slug: gcp-telemetry-api-otlp-ga
+locale: ko
+status: review
+updatedAt: 2026-08-26
+audience: [customer, partner]
+tags: [operations, observability, opentelemetry, gcp, telemetry-api]
+evidenceRefs:
+  - "https://cloud.google.com/monitoring/docs/release-notes"
+  - "https://docs.cloud.google.com/stackdriver/docs/release-notes"
+  - "https://cloud.google.com/stackdriver/docs/otlp-metrics/overview"
+  - "https://docs.cloud.google.com/stackdriver/docs/otlp-metrics/deploy-collector"
+relatedContent: ["insight:azure-monitor-diagnostics-otlp-path"]
+---
+
+## 한눈에 보기
+
+Cloud Monitoring 릴리스 노트는 2026-08-05에 Telemetry API 지표 수집을 일반 공급이라고 적습니다. 통합 Observability 릴리스 노트는 2026-08-14에 로그 수집을 일반 공급이라고 적습니다.
+
+- 결정: Collector와 Telemetry API로 옮길지, 기존 Monitoring·Logging API를 남길지, Ops Agent 미리보기를 쓸지
+- 전제: 엔드포인트는 telemetry.googleapis.com이며 역할은 telemetry.writer와 할당량 프로젝트의 serviceUsageConsumer라고 개요가 적는다
+- 불일치: 지표는 8월 5일 GA인데 Ops Agent의 Telemetry API 내보내기는 같은 문서군에서 미리보기로 남는다
+- 범위: Azure Diagnostics OTLP 경로나 CloudWatch PromQL이 아니라 GCP 수집 API 경계
+
+## 문제 상황
+
+애플리케이션은 이미 OTLP로 보냅니다. Google Cloud 쪽은 Monitoring API, Logging API, Telemetry API가 섞여 있습니다. 신호를 GA로 옮겼다고 에이전트 경로까지 GA가 된 것은 아닙니다.
+
+Monitoring 릴리스 노트 2026-08-05는 OpenTelemetry Collector와 OTLP exporter, Telemetry API로 지표를 넣는 경로를 일반 공급이라고 적습니다. 통합 릴리스 노트 2026-08-14는 같은 방식으로 로그를 넣는 경로를 일반 공급이라고 적습니다. 2026-08-17 항목은 Cloud Trace API 한도를 Telemetry API와 맞춘다고 적습니다.
+
+개요는 로그·지표·추적을 모두 Telemetry API로 넣을 수 있다고 적습니다. 로그는 LogEntry의 otel 필드에 리소스와 스코프 메타데이터를 복사해 저장 용량이 늘 수 있습니다. 지표는 prometheus.googleapis.com 접두사로 바뀌고, Collector 0.140.0 이상이 아니면 Prometheus 지표 OTLP가 동작하지 않는다고 적습니다. 이름과 레이블 문자 제한에 걸리면 거절됩니다.
+
+배포 문서는 otlphttp exporter의 엔드포인트를 https://telemetry.googleapis.com 으로 두고 googleclientauth로 인증하라고 적습니다. Ops Agent 2.66.0부터 Telemetry API로 지표와 로그를 보낼 수 있지만, 미리보기 기간에는 선택 가입이라고 Monitoring 노트가 적습니다.
+
+## 지금 결정할 것
+
+- 지표만 Telemetry API로 옮길지, 로그까지 같이 옮길지
+- Collector를 직접 둘지, GKE Managed OpenTelemetry를 쓸지
+- Ops Agent 미리보기 경로를 운영에 넣을지
+- 로그의 otel 메타데이터를 남길지, 레거시 매핑으로 용량을 줄일지
+- 추적 수집을 Cloud Trace API에 둘지 Telemetry API로 올릴지
+
+## 의사결정 기준
+
+### 신호별 GA와 에이전트 미리보기를 한 전환으로 보지 않습니다
+
+지표 GA와 로그 GA의 날짜가 다릅니다. Ops Agent 경로는 미리보기로 남아 있습니다. 운영 승인은 신호와 전송 구성 요소를 따로 적습니다. 미리보기 에이전트를 GA 수집 API와 같은 상태로 보지 않습니다.
+
+### 기존 exporter와 Telemetry API를 같은 할당량으로 보지 않습니다
+
+개요는 Telemetry API 지표 기본 할당량을 분당 60,000 요청으로 적고, 추적은 Telemetry API가 Cloud Trace API보다 수집 할당량이 크다고 권합니다. Monitoring API 한도도 그대로 적용됩니다. 경로를 바꾸면 거절 사유와 과금 항목이 달라질 수 있습니다. 이 글은 금액을 단정하지 않습니다.
+
+### 로그 용량 증가와 지표 이름 거절을 한 위험으로 묶지 않습니다
+
+로그는 리소스·스코프 속성이 항목마다 복사됩니다. 지표는 이름과 레이블 문자 집합이 다릅니다. Collector에서 속성을 줄이는 작업과 이름 변환 작업을 나눕니다. gcp.use_legacy_mapping은 로그 otel 필드를 막는 선택입니다.
+
+### Azure Monitor OTLP 폐기 일정과 GCP 수집 API를 섞지 않습니다
+
+이 글은 Google Cloud Telemetry API의 신호별 일반 공급입니다. Diagnostics 확장 폐기나 CloudWatch PromQL 질의 경로를 다시 쓰지 않습니다.
+
+## 실무 체크리스트
+
+1. 지금 쓰는 경로가 Monitoring API, Logging API, Telemetry API, Ops Agent 중 무엇인지 적습니다.
+2. 옮길 신호를 지표, 로그, 추적으로 나눕니다.
+3. Collector 버전이 0.140.0 이상인지 확인합니다.
+4. telemetry.googleapis.com 과 telemetry.writer, 할당량 프로젝트를 기록합니다.
+5. 로그 리소스 속성 수와 otel 필드 보존 여부를 정합니다.
+6. 지표 이름과 레이블이 거절 정규식에 맞는지 점검합니다.
+7. Ops Agent 미리보기를 쓸 워크로드와 제외할 워크로드를 나눕니다.
+8. GKE면 Managed OpenTelemetry와 직접 Collector 중 무엇을 볼지 적습니다.
+
+## 제외 범위
+
+- Azure Monitor Diagnostics OTLP 경로 글을 다시 쓰는 범위
+- CloudWatch PromQL 질의 경로 글을 다시 쓰는 범위
+- 특정 Collector 배포, APM 상품, 저장 기간의 우열이나 가격 비교
+- Telemetry API가 관측 품질이나 비용을 보장한다는 주장
+- 고객별 규제 적용, 계약, 라이선스의 확정 판정
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 신호, 전송 구성 요소, API, 역할, 용량·거절 조건을 현황화합니다.
+- 의사결정 산출물: 신호별 이전 대상, 미리보기 제외, 문서 날짜 차이를 담은 판단표를 만듭니다.
+- 운영 검증: 지표·로그 수집 성공과 이름 거절 시나리오를 확인합니다. 비용, 품질, 규제 적합성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+GCP OTLP 수집 경로를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 관측 수집 경계 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Cloud Monitoring release notes, 2026-08-05. Telemetry API 지표 수집 일반 공급. https://cloud.google.com/monitoring/docs/release-notes (확인일: 2026-08-26)
+- Google Cloud Observability release notes, 2026-08-14. Telemetry API 로그 수집 일반 공급. 2026-08-17은 Cloud Trace API 한도 정렬. https://docs.cloud.google.com/stackdriver/docs/release-notes (확인일: 2026-08-26)
+- 운영 기준: 인증, 역할, 로그 otel 복사, 지표 이름 거절, 할당량은 OTLP ingestion overview를 연다. https://cloud.google.com/stackdriver/docs/otlp-metrics/overview (확인일: 2026-08-26)
+- Google Cloud Observability, Deploy and use the collector. otlphttp 엔드포인트와 googleclientauth. https://docs.cloud.google.com/stackdriver/docs/otlp-metrics/deploy-collector (확인일: 2026-08-26)
+
+위 출처는 Google Cloud 공개 릴리스 노트와 운영 문서를 설명합니다. 고객별 적용, 과금, 운영 결과를 보증하지 않습니다.
