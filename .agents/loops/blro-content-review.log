@@ -27,3 +27,8 @@
 2026-08-26T00:00:07+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
 2026-08-26T00:00:08+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage/Sangfor untouched no merge no deploy
 2026-08-26T00:00:09+09:00 validate pending before first push
+2026-08-26T00:00:10+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-26T00:00:11+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-26T00:00:12+09:00 confirm review slugs absent from sitemap.xml and out/insights
+2026-08-26T00:00:13+09:00 verdict final_review_ready
+2026-08-26T00:00:14+09:00 improvement next run must not repeat these five slugs or 2026-08-25 security/virtualization/HCI/VDI/SASE; do not stack onto PR #8 or PR #9

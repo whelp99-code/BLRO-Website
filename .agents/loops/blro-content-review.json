@@ -165,11 +165,13 @@
     "deploy": false
   },
   "validation": {
-    "contentValidate": "pending",
-    "build": "pending",
-    "reviewSlugsOnPublicRoutes": null,
-    "reviewSlugsOnSitemap": null,
-    "verdict": "pre_test"
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 46 tests",
+    "build": "PASS",
+    "reviewSlugsOnPublicRoutes": false,
+    "reviewSlugsOnSitemap": false,
+    "publicInsightRoutes": 17,
+    "verdict": "final_review_ready"
   },
   "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat 2026-08-25 security/virtualization/HCI/VDI/SASE or these five slugs. Do not stack onto PR #8."
 }
