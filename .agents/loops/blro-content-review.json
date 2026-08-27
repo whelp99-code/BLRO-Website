@@ -191,11 +191,13 @@
     "contactSend": "dead"
   },
   "validation": {
-    "contentValidate": "pending",
-    "build": "pending",
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 46 tests",
+    "build": "PASS",
     "reviewSlugsOnPublicRoutes": false,
     "reviewSlugsOnSitemap": false,
-    "verdict": "pre_test_commit"
+    "publicInsightRoutes": 17,
+    "verdict": "final_review_ready"
   },
   "improvement": "Citrix/Omnissa/Nutanix support-portal login-wall pages are not official-3; public-open pages only. CISA KEV short text vs NVD CVSS impact must be written as a discrepancy, not flattened. These five are review-only. Do not publish without content-owner approval. /contact send is still dead. Do not stack onto PR #8 or PR #9."
 }
