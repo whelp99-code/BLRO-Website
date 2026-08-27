@@ -1,0 +1,101 @@
+---
+contentId: insight-nutanix-nci-76-security-profiles
+title: "NCI 7.6 Security Profiles: 업그레이드 후 not set을 먼저 볼 것"
+summary: "NCI 7.6에서 Standard·Elevated·Strict 프로파일과 업그레이드 후 not set, 롤링 재부팅, 프로파일이 건드리지 않는 설정을 가르는 리뷰 초안"
+slug: nutanix-nci-76-security-profiles
+locale: ko
+status: review
+updatedAt: 2026-08-28
+audience: [customer, partner]
+tags: [nutanix, hci, security, aos, ahv]
+evidenceRefs:
+  - "https://next.nutanix.com/community-blog-154/nutanix-cloud-infrastructure-nci-episode-7-6-a-nutanix-aos-software-and-ahv-hypervisor-security-story-45746"
+  - "https://next.nutanix.com/product-updates/prism-central-pc-7-6-45766"
+  - "https://next.nutanix.com/product-updates/aos-7-6-45767"
+  - "https://www.nutanix.com/blog/multi-tenant-ai-workloads-on-a-modern-enterprise-ready-virtualization-platform"
+relatedContent: ["service:hci-private-cloud", "insight:hci-readiness-checklist"]
+---
+
+## 한눈에 보기
+
+Nutanix Cloud Infrastructure 7.6는 Prism Central에서 Security Profiles를 고르는 경로를 엽니다. 이 글은 외부 스토리지 글이 아니라 클러스터 보안 프로파일 경계입니다.
+
+- 결정: Standard, Elevated, Strict 중 무엇을 명시적으로 적용할지, 업그레이드 직후 not set을 유지할지
+- 전제: AOS 7.6, Prism Central 7.6, AHV 11.2. 비-AHV면 AOS 계층만 적용된다고 TME 글이 적는다
+- 적용 영향: 커널 수준 변경은 호스트 롤링 재부팅이 필요할 수 있다
+- 비범위: syslog, LDAP, 네트워크 세그멘테이션처럼 추가 정보가 필요한 항목은 프로파일이 켜지 않는다
+
+## 문제 상황
+
+클러스터를 7.6로 올린 뒤 보안 대시보드만 보면, 프로파일이 비어 있는 상태와 이미 경화된 상태가 같은 완료로 읽힙니다.
+
+Nutanix 직원 TME 커뮤니티 글은 Standard를 기본 권장, Elevated를 CPU 취약점 완화와 강한 암호 정책, Strict를 규제 환경과 AIDE 파일 무결성 감시라고 적습니다. 적용은 Prism Central Security Dashboard에서 고르면 오케스트레이터가 사전 점검, 클러스터 동기화, 필요 시 롤링 재부팅을 한다고 적습니다. 프로파일이 켜진 뒤에는 개별 설정을 예전 경로로 바꾸지 못하게 막고, 2시간 주기 보안 cron이 드리프트를 고친다고 적습니다. 재부팅이 필요한 드리프트는 NCC 알림을 남긴다고 적습니다.
+
+업그레이드 동작은 의도적으로 프로파일을 not set으로 둔다고 적습니다. 강제로 얹으면 기존 설정을 깨뜨릴 수 있어서, 올린 뒤 상태를 보고 고르라고 안내합니다. syslog 서버, AOS 네트워크 세그멘테이션, LDAP처럼 단순 켜기/끄기가 아닌 항목은 프로파일 밖이며, 추가 내용은 포털의 Security Hardening Guide라고 적습니다. 그 가이드는 확인일 기준 지원 포털 로그인이 필요하므로 공식 3출처로 세지 않습니다.
+
+Prism Central 7.6 제품 업데이트 2026-07-27는 Apply predefined Security Profiles to strengthen cluster security with a single selection이라고 적습니다. AOS 7.6 제품 업데이트는 Security Profiles 이름을 쓰지 않고 important security enhancements, Secure Access로 SSH와 지원 세션을 중앙 제어, RHEL 9 기반을 더 안전한 플랫폼 기초라고만 적습니다. 운영 승인은 어떤 페이지를 근거로 썼는지 남깁니다.
+
+## 지금 결정할 것
+
+- 업그레이드 직후 not set을 유지한 채 현황을 먼저 볼지, 프로파일을 바로 고를지
+- Standard, Elevated, Strict 중 무엇을 명시적으로 적용할지
+- 롤링 재부팅 창과 워크로드 대피 책임을 어디에 둘지
+- syslog, LDAP, 네트워크 세그멘테이션을 프로파일 밖 별도 작업으로 남길지
+- 비-AHV 하이퍼바이저에서 AOS 계층만 적용된다는 한계를 승인에 넣을지
+
+## 의사결정 기준
+
+### not set을 미적용 실패로 보지 않습니다
+
+TME 글은 이전 버전에서 올리면 프로파일이 not set으로 보인다고 적습니다. 이는 기존 설정을 유지하려는 의도입니다. 대시보드가 비어 있다고 해서 경화가 끝났거나 실패한 것으로 보지 않습니다. 적용 전에는 현재 개별 설정과 원하는 프로파일을 같은 기록에 대조합니다.
+
+### 프로파일 적용과 롤링 재부팅을 한 클릭으로 묶지 않습니다
+
+적용 워크플로는 사전 점검 후 호스트를 한 대씩 재부팅할 수 있습니다. Elevated와 Strict는 성능 영향을 High로 적어 둡니다. 이 초안은 고객 클러스터 성능을 측정하지 않았습니다. 변경 창에 재부팅과 워크로드 대피를 넣지 않으면 적용 승인을 내지 않습니다.
+
+### 프로파일이 켜지 않는 항목을 완료 목록에 넣지 않습니다
+
+syslog, LDAP, 네트워크 세그멘테이션은 프로파일 밖입니다. 포털 Security Hardening Guide는 로그인 벽이므로, 그 PDF를 읽은 것처럼 인용하지 않습니다. 가이드를 열려면 지원 계정 보유자와 확인일을 따로 적습니다.
+
+### AOS 제품 업데이트의 보안 문장을 프로파일 표로 읽지 않습니다
+
+AOS 7.6 공개 업데이트는 Security Profiles 표를 싣지 않습니다. Secure Access SSH 제어와 외부 스토리지 기능은 다른 결정입니다. 외부 스토리지와 PowerStore 각도를 이 글에 넣지 않습니다. Nutanix.com 블로그는 AHV와 AOS의 security hardening을 공개 언급할 뿐 프로파일 이름을 쓰지 않습니다.
+
+## 실무 체크리스트
+
+1. AOS, Prism Central, AHV 버전을 7.6·7.6·11.2 전제와 대조합니다.
+2. 업그레이드 후 프로파일 표시가 not set인지, 이미 적용됐는지 기록합니다.
+3. 대상 클러스터의 하이퍼바이저가 AHV인지, AOS만 적용되는 구성인지 나눕니다.
+4. Standard, Elevated, Strict 중 적용 후보와 적용하지 않을 이유를 적습니다.
+5. 롤링 재부팅 창, 대피 경로, NCC 알림 담당을 지정합니다.
+6. syslog, LDAP, 네트워크 세그멘테이션을 프로파일 밖 작업으로 분리합니다.
+7. 포털 Hardening Guide는 로그인 벽임을 남기고, 연 사람과 날짜를 적습니다.
+8. 적용 후 2시간 cron과 드리프트 알림을 누가 보는지 정합니다.
+
+## 제외 범위
+
+- NCI 7.6 외부 스토리지·PowerStore 글의 재작성
+- 포털에 잠긴 Security Hardening Guide PDF를 공식 출처로 인용
+- VMware와 Nutanix의 기능, 가격, 성능 비교
+- 특정 프로파일이 규제 적합이나 성능 목표를 보장한다는 주장
+- 고객별 클러스터 암호, 계정, 웹훅, 내부 자산 목록의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 소프트웨어 열차, 프로파일 상태, 재부팅 창, 프로파일 밖 설정을 현황화합니다.
+- 의사결정 산출물: 적용할 프로파일, not set 유지 여부, 로그인 벽 문서 한계를 담은 판단표를 만듭니다.
+- 운영 검증: 적용 전후 프로파일 표시와 호스트 재부팅 순서를 시나리오로 확인합니다. 성능, 규제 적합성, 무중단을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+NCI 7.6 보안 프로파일 적용 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 HCI 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Nutanix Community, NCI Episode 7.6 AOS and AHV security story, TME 직원 글, 2026-07-28. Standard·Elevated·Strict, 롤링 재부팅, 2시간 cron, 업그레이드 후 not set, syslog·LDAP·세그멘테이션 제외, 포털 Hardening Guide 안내. https://next.nutanix.com/community-blog-154/nutanix-cloud-infrastructure-nci-episode-7-6-a-nutanix-aos-software-and-ahv-hypervisor-security-story-45746 (확인일: 2026-08-28)
+- Nutanix Community, Prism Central pc.7.6 product update, 2026-07-27. Apply predefined Security Profiles to strengthen cluster security with a single selection. https://next.nutanix.com/product-updates/prism-central-pc-7-6-45766 (확인일: 2026-08-28)
+- Nutanix Community, AOS 7.6 product update, 2026-07-27. important security enhancements, Secure Access SSH 제어, RHEL 9. Security Profiles 이름은 없음. https://next.nutanix.com/product-updates/aos-7-6-45767 (확인일: 2026-08-28)
+- Nutanix Blog, NCI 7.6 multi-tenant AI workloads. AHV와 AOS security hardening 공개 언급. 외부 스토리지 각도는 사용하지 않음. https://www.nutanix.com/blog/multi-tenant-ai-workloads-on-a-modern-enterprise-ready-virtualization-platform (확인일: 2026-08-28)
+- Nutanix Portal Security Hardening Guide는 확인일 기준 로그인 벽. 공식 3출처에 넣지 않음.
+
+위 출처는 공개 커뮤니티와 제품 업데이트, 공개 블로그를 설명합니다. 고객별 적용, 성능, 규제 적합을 보증하지 않습니다.
