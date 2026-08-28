@@ -46,3 +46,7 @@
 2026-08-29T08:20:10+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
 2026-08-29T08:20:11+09:00 improvement body is operator decision not changelog dump; do not invent dates or GA not read today
 2026-08-29T08:20:12+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage Sangfor untouched no merge no deploy no public approval recommended contact send dead
+2026-08-29T08:30:00+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-29T08:30:01+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-29T08:30:02+09:00 confirm review slugs absent from sitemap.xml.body listing artifacts and generateStaticParams
+2026-08-29T08:30:03+09:00 verdict final_review_ready

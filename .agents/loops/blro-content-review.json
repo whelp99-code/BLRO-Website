@@ -214,13 +214,13 @@
     "contactSend": "dead"
   },
   "validation": {
-    "contentValidate": "PENDING",
-    "contentValidateDetail": "pre-test commit",
-    "build": "PENDING",
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 46 tests",
+    "build": "PASS",
     "reviewSlugsOnPublicRoutes": false,
     "reviewSlugsOnSitemap": false,
-    "publicInsightRoutes": null,
-    "verdict": "pre_test"
+    "publicInsightRoutes": 17,
+    "verdict": "final_review_ready"
   },
   "improvement": "These five are review-only. Do not publish without content-owner approval. /contact send is still dead. Do not stack onto PR #8, PR #9, or PR #10. Next rotation should not repeat 2026-08-28 security/HCI/VDI/SASE or these five slugs."
 }
