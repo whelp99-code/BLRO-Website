@@ -1,0 +1,101 @@
+---
+contentId: insight-eks-multiple-oidc-identity-providers
+title: "Amazon EKS: OIDC 공급자를 여러 개 둘지 정할 것"
+summary: "클러스터당 외부 OIDC 공급자를 최대 10개까지 둘지 중개자로 합칠지, What's New 한 줄과 User Guide 1.32 전제를 가르는 리뷰 초안"
+slug: eks-multiple-oidc-identity-providers
+locale: ko
+status: review
+updatedAt: 2026-08-29
+audience: [customer, partner]
+tags: [cloud, amazon-eks, oidc, identity-provider, kubernetes]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-eks-multiple-oidc-providers/"
+  - "https://docs.aws.amazon.com/eks/latest/userguide/authenticate-oidc-identity-provider.html"
+  - "https://docs.aws.amazon.com/eks/latest/APIReference/API_AssociateIdentityProviderConfig.html"
+---
+
+## 한눈에 보기
+
+Amazon EKS What's New는 2026-08-24에 클러스터당 외부 OpenID Connect 공급자를 최대 10개까지 연결할 수 있다고 적습니다. IAM 인증은 계속 함께 동작하고, 연결은 기존과 같이 AssociateIdentityProviderConfig를 쓴다고 적습니다.
+
+- 결정: 인구 집단마다 공급자를 직접 둘지, 하나의 중개 공급자로 합칠지
+- 전제: 운영 한도는 User Guide다. Kubernetes 1.32 이상에서 최대 10개, 설정 합은 12 KB 미만
+- 불일치: What's New 한 줄은 버전 문을 적지 않는다. 1.32 미만은 공급자 하나
+- 범위: EKS 클러스터 CA 교체 글이 아니라 외부 OIDC 연결 수와 충돌 방지
+
+## 문제 상황
+
+직원, 협력사, CI/CD가 서로 다른 OIDC 공급자를 쓰면, 클러스터 하나에 공급자를 여러 개 붙일지 중개 계층을 둘지가 먼저 갈립니다.
+
+What's New는 인구 집단을 한 공급자로 모으거나 중개 브로커를 두지 않고 각 공급자를 클러스터에 직접 연결할 수 있다고 적습니다. 각 공급자는 독립적으로 구성되고, 기존 IAM 인증은 설정된 모든 공급자와 함께 동작한다고 적습니다. 추가 비용 없이 Amazon EKS가 있는 모든 AWS 리전에서 쓸 수 있다고 적습니다. 버전 전제는 이 한 줄에 없습니다.
+
+User Guide가 운영 한도의 출처입니다. Kubernetes 1.32 이상에서는 최대 10개, 모든 OIDC 설정 합은 12 KB 미만입니다. 1.32 미만은 공급자 하나만 연결할 수 있습니다. IAM 인증은 끌 수 없습니다. 노드 조인에 필요하기 때문입니다. issuer URL은 공개적으로 도달해야 하고 자체 서명 인증서는 지원하지 않습니다. issuerUrl과 name은 클러스터에 연결된 공급자 사이에서 고유해야 하며 같은 공급자를 두 번 연결할 수 없습니다. 연결은 클러스터 업데이트이며 클러스터는 UPDATING 상태가 되고 API 서버에 반영되기까지 수 분이 걸릴 수 있습니다. 진행은 DescribeUpdate로 봅니다.
+
+여러 공급자를 둘 때 usernamePrefix와 groupsPrefix를 두어 공급자 사이 사용자와 그룹 이름이 겹치지 않게 하라고 User Guide가 적습니다. 접두어에 system: 또는 그 일부를 넣지 말라고 적습니다. 콘솔은 OIDC 계정으로 AWS Management Console에 로그인하지 못한다고 적습니다.
+
+AssociateIdentityProviderConfig API 문서는 연결 요청 형식과 oidc 객체를 적습니다. 10개 한도와 1.32 전제는 API 페이지에 없습니다. What's New 한 줄이나 API 페이지만 보고 모든 클러스터에 10개를 붙일 수 있다고 보지 않습니다.
+
+## 지금 결정할 것
+
+- 공급자를 클러스터에 최대 10개까지 직접 둘지, 중개 브로커 하나로 합칠지
+- 대상 클러스터 Kubernetes 버전이 1.32 이상인지, 미만이면 먼저 올릴지
+- 설정 JSON 합이 12 KB 미만인지
+- 공급자마다 usernamePrefix와 groupsPrefix를 어떻게 나눌지
+- issuer URL이 컨트롤 플레인에서 공개적으로 도달하는지
+- 연결 중 UPDATING 창을 어느 변경 창에 둘지
+- IAM 인증을 끄는 전제를 내부 문서에서 뺄지
+
+## 의사결정 기준
+
+### 연결 수 한도의 운영 출처는 User Guide입니다
+
+What's New는 최대 10개를 한 줄로 적습니다. User Guide는 그 한도를 Kubernetes 1.32 이상에 걸고, 1.32 미만은 하나라고 적습니다. 설정 합 12 KB도 User Guide에만 있습니다. 버전을 확인하지 않은 채 What's New만 인용해 승인하지 않습니다.
+
+### IAM 인증과 외부 OIDC를 대체 관계로 보지 않습니다
+
+User Guide는 IAM 인증을 끌 수 없다고 적습니다. What's New도 IAM 인증이 모든 구성 공급자와 함께 동작한다고 적습니다. 외부 OIDC를 켰다고 해서 IAM 경로가 사라졌다고 내부 보고하지 않습니다.
+
+### 공급자 사이 이름 충돌을 연결 성공과 같은 검증으로 보지 않습니다
+
+User Guide는 usernamePrefix와 groupsPrefix를 두라고 적습니다. 접두어 없이 두면 다른 공급자가 같은 Kubernetes 사용자나 그룹을 만들 수 있습니다. 연결이 UPDATING을 통과해도 접두어 설계가 끝나지 않습니다.
+
+### issuer 도달 가능은 클러스터 업데이트 전제입니다
+
+issuer URL은 공개적으로 도달해야 하고 컨트롤 플레인이 서명 키를 가져옵니다. 자체 서명 인증서는 지원하지 않습니다. customer-routed control plane egress를 쓰면 그 경로에서도 issuer에 닿아야 한다고 User Guide가 적습니다. 사설 전용 issuer를 전제로 두지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상 클러스터 Kubernetes 버전이 1.32 이상인지, 미만이면 하나 제한을 기록합니다.
+2. 붙일 공급자 수와 설정 JSON 합이 12 KB 미만인지 계산합니다.
+3. 직접 연결과 중개 브로커 중 무엇을 선택하는지 인구 집단별로 적습니다.
+4. issuerUrl과 name 중복, 공개 도달, 자체 서명 여부를 확인합니다.
+5. 공급자마다 usernamePrefix와 groupsPrefix를 정하고 system: 사용을 금지합니다.
+6. IAM 인증 유지와 노드 조인 전제를 변경 요청에서 빼지 않습니다.
+7. AssociateIdentityProviderConfig 호출 뒤 UPDATING과 DescribeUpdate 담당자를 정합니다.
+8. OIDC 계정으로 콘솔 로그인이 되지 않는다는 점을 운영 안내에 남깁니다.
+
+## 제외 범위
+
+- EKS 클러스터 CA 교체 수명 주기 글의 재작성
+- IAM Identity Center 계정 접근 선택 글의 재작성
+- 특정 신원 공급자 제품의 우열, 가격, 성능 비교
+- IAM 인증 제거, 사설 전용 issuer, 모든 리전 동작의 사전 보장
+- 악용 절차나 고객 클러스터 식별자의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 클러스터 버전, 공급자 수, 설정 크기, 접두어, issuer 도달, UPDATING 창을 현황화합니다.
+- 의사결정 산출물: 직접 연결과 중개 브로커, 1.32 전제, 접두어 규칙을 담은 판단표를 만듭니다.
+- 운영 검증: 연결 후 공급자별 로그인과 그룹 매핑을 시나리오로 확인합니다. 인증 가용성과 콘솔 로그인을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+여러 OIDC 공급자 연결과 중개 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 클라우드 신원 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Amazon Web Services, Amazon EKS now supports multiple external OIDC identity providers per cluster, Posted on Aug 24, 2026. 최대 10개, IAM 병행, AssociateIdentityProviderConfig. 버전 문 없음. https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-eks-multiple-oidc-providers/ (확인일: 2026-08-29)
+- Amazon EKS User Guide, Grant users access to Kubernetes with an external OIDC provider. 1.32 이상 최대 10개, 합 12 KB, 미만은 하나, IAM 비활성 불가, 공개 issuer, UPDATING, 접두어. https://docs.aws.amazon.com/eks/latest/userguide/authenticate-oidc-identity-provider.html (확인일: 2026-08-29)
+- Amazon EKS API Reference, AssociateIdentityProviderConfig. 연결 API와 oidc 객체. 10개·1.32 한도 없음. https://docs.aws.amazon.com/eks/latest/APIReference/API_AssociateIdentityProviderConfig.html (확인일: 2026-08-29)
+
+위 출처는 AWS 공개 What's New, User Guide, API 문서를 설명합니다. 고객별 적용, 인증 결과, 리전 동작을 보증하지 않습니다.
