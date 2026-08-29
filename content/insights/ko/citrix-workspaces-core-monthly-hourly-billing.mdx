@@ -1,0 +1,98 @@
+---
+contentId: insight-citrix-workspaces-core-monthly-hourly-billing
+title: "WorkSpaces Core MCS: Monthly 고정요금과 Hourly를 계정 빌링부터 맞출 것"
+summary: "Amazon WorkSpaces Core Managed Instances를 Citrix MCS로 만들 때 Monthly 고정과 Hourly를 AWS 계정 빌링부터 가르는 리뷰 초안"
+slug: citrix-workspaces-core-monthly-hourly-billing
+locale: ko
+status: review
+updatedAt: 2026-08-30
+audience: [customer, partner]
+tags: [citrix, workspaces-core, mcs, monthly, hourly, vdi]
+evidenceRefs:
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/whats-new/whats-new.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/whats-new.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/install-configure/create-catalog-amazon-wsc.html"
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Citrix Virtual Apps and Desktops 2607 LTSR What’s new는 2026-08-24 날짜이고, Citrix MCS로 Amazon WorkSpaces Core Managed Instances를 만들 때 Monthly 고정요금과 Hourly 종량을 고를 수 있다고 적습니다. 이 선택은 AWS 계정이 Amazon WorkSpaces billing service로 설정된 뒤에만 됩니다.
+
+- 결정: 계정 빌링을 WorkSpaces로 둘지, Monthly를 쓸지, Hourly로 남을지
+- 전제: Monthly는 persistent desktop, Hourly는 on-demand. 카탈로그 페이지는 Hourly가 AWS 기본이며 BillingMode를 빼면 Hourly가 된다
+- 한계: legacy EC2 billing 계정은 Monthly를 쓸 수 없고, 한 계정에서 두 빌링을 섞을 수 없으며 Spot은 WorkSpaces billing과 함께 쓰지 못한다
+- 범위: Entra SSO나 Web sign-in 글의 재작성이 아니다
+
+## 문제 상황
+
+WorkSpaces Core 카탈로그를 버전 이름만으로 승인하면, AWS 계정 빌링과 MCS BillingMode가 한 창에 섞입니다.
+
+2607 LTSR What’s new는 Monthly를 persistent desktop의 예측 가능한 고정요금으로, Hourly를 간헐 워크로드로 안내합니다. Current Release What’s new는 2026-08-21 날짜이고 같은 Monthly와 Hourly 문단을 둡니다. 그 페이지는 이어서 교차 계정 프로비저닝과 MCSIO를 켠 WorkSpaces Core MCS 카탈로그도 적습니다. 교차 계정과 MCSIO를 2607 LTSR 빌링 승인으로 옮기지 않습니다.
+
+카탈로그 문서는 페이지 날짜가 2026-05-13이지만 확인일에도 Flexible billing 본문이 있습니다. Hourly는 빌링 모드를 명시하지 않으면 AWS 기본입니다. PowerShell CustomProperties의 BillingMode를 빼도 Hourly입니다. WorkSpaces billing이 아니라 legacy EC2 billing에 남은 계정은 Monthly 옵션이 없습니다. WorkSpaces billing과 EC2 billing을 한 계정에서 섞을 수 없습니다. Spot instances는 WorkSpaces billing과 함께 지원되지 않습니다. 표준 AWS EC2 호스트 연결에는 Flexible billing이 적용되지 않습니다.
+
+이미 있는 VM에 빌링을 바꾸려면 service window 또는 power cycle이 필요하다고 적습니다. 금액은 이 글에 쓰지 않습니다.
+
+## 지금 결정할 것
+
+- AWS 계정이 WorkSpaces billing인지, legacy EC2 billing에 남아 Monthly를 못 쓰는지
+- 대상 카탈로그가 persistent라 Monthly인지, on-demand라 Hourly인지
+- BillingMode를 빼서 Hourly 기본에 둘지, Monthly를 명시할지
+- 이미 있는 VM에 바꾸려면 service window나 power cycle 창을 열지
+- Current Release의 교차 계정·MCSIO를 이 빌링 결정과 섞지 않을지
+
+## 의사결정 기준
+
+### 계정 빌링을 카탈로그 모드보다 먼저 가릅니다
+
+What’s new와 카탈로그 문서는 AWS 계정이 Amazon WorkSpaces billing service로 설정돼야 한다고 적습니다. legacy EC2 billing이면 Monthly가 없습니다. 한 계정에서 WorkSpaces billing과 EC2 billing을 섞을 수 없습니다. 카탈로그에 Monthly를 적기 전에 계정 빌링을 확인합니다.
+
+### Monthly와 Hourly를 한 카탈로그 관행으로 보지 않습니다
+
+2607 LTSR과 Current Release는 Monthly를 persistent, Hourly를 on-demand로 나눕니다. 카탈로그 문서는 Hourly를 기본으로 둡니다. persistent 카탈로그를 만들고 BillingMode를 빼면 Hourly가 됩니다. 워크로드 유형과 명시한 모드를 같은 기록에 남깁니다.
+
+### Current Release 부가 기능과 빌링을 한 승인으로 보지 않습니다
+
+Current Release What’s new는 교차 계정 IAM과 MCSIO 카탈로그를 같은 8월 항목 근처에 둡니다. 2607 LTSR What’s new의 Flexible billing 문단에는 그 두 항목이 없습니다. 교차 계정이나 MCSIO가 필요해도 빌링 모드 승인을 대체하지 않습니다.
+
+### 기존 VM 변경은 전원 창이 전제입니다
+
+카탈로그 문서는 기존 VM에 빌링을 적용하려면 service window 또는 power cycle이 필요하다고 적습니다. 프로비저닝 스킴만 바꿨다고 기존 VM 과금이 바뀐 것으로 보지 않습니다.
+
+## 실무 체크리스트
+
+1. AWS 계정이 WorkSpaces billing인지, legacy EC2 billing인지 확인합니다.
+2. 호스트 연결이 WorkSpaces Core인지, 표준 EC2인지 나눕니다. 표준 EC2에는 Flexible billing이 없습니다.
+3. 카탈로그가 persistent인지 on-demand인지 적고 Monthly와 Hourly를 맞춥니다.
+4. PowerShell BillingMode를 명시할지, 빼서 Hourly 기본에 둘지 기록합니다.
+5. Spot을 쓰려는 요청이 있으면 WorkSpaces billing과 함께 쓸 수 없음을 남깁니다.
+6. 이미 있는 VM을 바꿀지, 새로 추가되는 VM만 바꿀지, service window 책임을 정합니다.
+7. Current Release의 교차 계정·MCSIO를 쓸지는 빌링과 분리합니다.
+8. Entra SSO, Web sign-in 글과 중복 승인하지 않습니다.
+
+## 제외 범위
+
+- Citrix Entra SSO VDA 2607 글, Web sign-in 미리보기 글의 재작성
+- AWS 또는 Citrix 단가, 할인, 절감액의 인용
+- 가상 데스크톱 제품의 우열, 성능 비교
+- 카탈로그 페이지 날짜를 기능 철회일로 보는 해석
+- 고객별 계정 ID, 역할, 웹훅의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: AWS 계정 빌링, 호스트 연결 유형, 카탈로그 지속성, BillingMode, 기존 VM 전원 창을 현황화합니다.
+- 의사결정 산출물: Monthly와 Hourly 대상, 계정 전제, 변경 창을 담은 판단표를 만듭니다.
+- 운영 검증: 카탈로그와 VM의 빌링 모드, legacy 계정에서 Monthly 거부를 시나리오로 확인합니다. 금액과 절감액을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+WorkSpaces Core MCS의 계정 빌링과 Monthly·Hourly를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 디지털 워크스페이스 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Citrix, What’s new, CVAD 7 2607 LTSR. 페이지 날짜 2026-08-24. Monthly 고정과 Hourly 종량, WorkSpaces billing 전제. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/whats-new/whats-new.html (확인일: 2026-08-30)
+- Citrix, What’s new, Citrix Virtual Apps and Desktops Current Release. 페이지 날짜 2026-08-21. 같은 Monthly·Hourly 문단, 교차 계정, MCSIO 카탈로그. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/whats-new.html (확인일: 2026-08-30)
+- Citrix, Create a catalog of Amazon WorkSpaces Core Managed Instances, 2607 LTSR. 페이지 날짜 2026-05-13. Hourly 기본, legacy EC2는 Monthly 없음, 혼용·Spot 제한, service window. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/install-configure/create-catalog-amazon-wsc.html (확인일: 2026-08-30)
+
+위 출처는 Citrix 공개 문서를 설명합니다. 고객별 단가, 계정 설정, 과금 결과를 보증하지 않습니다.
