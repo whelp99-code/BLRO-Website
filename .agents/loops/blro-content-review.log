@@ -77,3 +77,7 @@
 2026-08-30T23:30:07+09:00 write research notes for switched slugs plus update 2026-08-30.md
 2026-08-30T23:30:08+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
 2026-08-30T23:30:09+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage Sangfor untouched no merge no deploy no public approval recommended contact send dead
+2026-08-30T23:40:00+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-30T23:40:01+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-30T23:40:02+09:00 confirm review slugs absent from sitemap.xml.body listing artifacts and generateStaticParams
+2026-08-30T23:40:03+09:00 verdict final_review_ready

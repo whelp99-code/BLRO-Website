@@ -265,13 +265,13 @@
     "contactSend": "dead"
   },
   "validation": {
-    "contentValidate": "pending",
-    "contentValidateDetail": "",
-    "build": "pending",
-    "reviewSlugsOnPublicRoutes": null,
-    "reviewSlugsOnSitemap": null,
-    "publicInsightRoutes": null,
-    "verdict": "drafts_written_awaiting_validate"
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 46 tests",
+    "build": "PASS",
+    "reviewSlugsOnPublicRoutes": false,
+    "reviewSlugsOnSitemap": false,
+    "publicInsightRoutes": 17,
+    "verdict": "final_review_ready"
   },
   "improvement": "These five are review-only. Do not publish without content-owner approval. /contact send is still dead. Do not stack onto PR #8, PR #9, PR #10, PR #11, or PR #12. Next rotation should not repeat 2026-08-30 security/server-virtualization/hci/vdi/sase or these five slugs. Do not reuse citrix-web-signin-preview-2607 next to citrix-entra-sso-vda-2607. Do not treat Prisma Access 12.1.8 coming soon as GA."
 }
