@@ -5,7 +5,7 @@
 
 ## Evidence
 
-- What’s new view=azloc-2608. HTTP 200, 144625 bytes. August 2026 version 12.2608.1003.8. OS 26100.33296. Driver compatible with that OS or Windows Server 2025. Prepare updates workflow. Feature updates new state Pending OEM Validation. Portal Shut down vs Turn off requires 2604+. Add node via portal preview. GPU Management from Azure preview. Arc Site Manager preview.
+- What’s new view=azloc-2608. HTTP 200, 144625 bytes. August 2026 version 12.2608.1003.8. OS 26100.33296. Driver compatible with that OS or Windows Server 2025. Prepare updates workflow. Feature updates new state Pending OEM Validation. Portal Shut down vs Turn off requires 2604+. Add node via portal preview. GPU Management from Azure preview. Arc Site Manager preview. Frontmatter tag is azloc-2608 because YAML 2608 is a number.
 - Known issues view=azloc-2608. HTTP 200. Solution 12.2608.1003.8, OS 26100.33296. No fixed issues in this release. No known issues specific to this release. Previous-release issues remain listed.
 - Release information view=azloc-2608. HTTP 200. 12.2608.1003.8 availability date 2026-08-18. New deployments use this build. SBE clusters get feature releases after hardware vendor validation, typically weeks, varies by vendor. Six-month update window. Last cumulative before feature update.
 - add-server page also opened. Portal add-node path labeled preview. Used as corroboration, not required fourth if three stand.
