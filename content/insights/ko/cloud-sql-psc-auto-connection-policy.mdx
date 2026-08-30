@@ -1,0 +1,111 @@
+---
+contentId: insight-cloud-sql-psc-auto-connection-policy
+title: "Cloud SQL PSC 인스턴스 만들 때 서비스 연결 정책을 자동 생성할 수 있다 — 권한·Shared VPC·허용 프로젝트부터 맞춰라"
+summary: "2026-08-27부터 PSC 인스턴스 생성 시 서비스 연결 정책·엔드포인트를 자동 만들 수 있지만 추가 IAM이 필요하고 Shared VPC 정책은 호스트 프로젝트에만 둔다. 2026-08 이후 인스턴스는 allowlist에서 프로젝트를 빼면 기존 PSC가 즉시 끊긴다."
+slug: cloud-sql-psc-auto-connection-policy
+locale: ko
+status: review
+updatedAt: 2026-08-31
+audience: [customer, partner]
+tags: [cloud, gcp, cloud-sql, private-service-connect, networking]
+evidenceRefs:
+  - "https://docs.cloud.google.com/sql/docs/postgres/release-notes"
+  - "https://docs.cloud.google.com/sql/docs/postgres/configure-private-service-connect"
+  - "https://docs.cloud.google.com/sql/docs/mysql/about-private-service-connect"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+Cloud SQL for PostgreSQL 릴리스 노트 2026-08-27은 Private Service Connect를 켠 인스턴스를 만들 때 서비스 연결 정책과 엔드포인트를 VPC에 자동 생성할 수 있다고 적습니다.
+
+영향 범위는 새로 만드는 PSC 인스턴스와, 2026-08 이후 생성·복제·PSC 활성화분입니다. 전제는 자동 정책 생성에 추가 IAM이 필요하고 Shared VPC 정책은 호스트 프로젝트에만 둔다는 점입니다. 검증 항목은 --enable-psc-auto-connection-policy 권한, 서비스 클래스 google-cloud-sql, 리전·VPC당 정책 하나, 허용 프로젝트 제거 시 즉시 끊김, Enterprise Plus의 psc_write_endpoint_dns입니다.
+
+- 결정: 인스턴스 생성 때 정책을 자동으로 만들지, 호스트 프로젝트에 먼저 둘지
+- 전제: 자동 생성은 추가 관리 권한과 Cloud SQL 서비스 에이전트 역할이 필요하다
+- 단절: 2026-08 이후 생성분은 허용 프로젝트에서 빼면 기존 PSC 연결이 즉시 닫힌다
+- 범위: 인프라 컨설팅 기준 글의 재작성이 아니다. PSC 자동 정책과 허용 목록만 가른다
+
+## 문제 상황
+
+PSC 인스턴스를 만들었다는 보고만 있으면, 자동 정책 생성과 Shared VPC 위치, 허용 프로젝트 제거의 즉시 단절이 한 승인에 섞입니다.
+
+릴리스 노트 2026-08-27은 PSC를 켠 인스턴스를 만들 때 사용할 VPC에 서비스 연결 정책과 엔드포인트를 자동 생성할 수 있다고 적습니다. 구성 문서는 --enable-psc-auto-connection-policy를 붙이면 인스턴스 생성 때 정책을 만들거나 갱신한다고 적습니다. 이 옵션은 추가 권한이 필요합니다.
+
+구성 문서는 콘솔이 필요한 역할을 확인하고 자동으로 구성한다고 적습니다. gcloud나 Admin API를 쓰면 인스턴스를 만들기 전에 Cloud SQL 서비스 에이전트에 역할을 더 줘야 합니다. 문서가 적는 역할은 Service Automation Consumer Network Admin인 roles/networkconnectivity.consumerNetworkAdmin과 Compute Network Viewer인 roles/compute.networkViewer입니다. 권한이 없다고 자동 정책이 생겼다고 보지 않습니다.
+
+Shared VPC에서 서비스 연결 정책은 호스트 프로젝트에만 둡니다. 서비스 프로젝트에는 이 정책이 지원되지 않는다고 구성 문서가 적습니다. 엔드포인트를 만들 소비자 프로젝트는 호스트이거나 서비스 프로젝트일 수 있습니다. 정책 위치와 엔드포인트 프로젝트를 같은 값으로 합치지 않습니다.
+
+개요 문서는 서비스 클래스·리전·VPC 조합마다 정책을 최대 하나만 둘 수 있다고 적습니다. Cloud SQL의 서비스 클래스는 google-cloud-sql입니다. 같은 리전의 여러 정책은 서브넷을 재사용할 수 있습니다.
+
+허용 프로젝트 목록에서 프로젝트를 빼는 동작은 생성 시점에 따라 갈립니다. 2026-08 이후 생성, 복제, PSC 활성화분은 connection reconciliation이 기본이며 끌 수 없습니다. 허용 목록에서 프로젝트를 빼면 그 프로젝트의 기존 PSC 연결이 즉시 닫힙니다. 2026-08 이전 생성분은 엔드포인트를 수동으로 제거할 때까지 연결이 남을 수 있습니다. 목록에서 뺐다고 예전 인스턴스까지 즉시 끊긴다고 보지 않습니다.
+
+psc_write_endpoint_dns는 Enterprise Plus에서만 지원되며 --enable-psc-auto-dns도 켜져 있어야 합니다. 새 인스턴스에서는 기본이 꺼짐입니다. DNS 자동화를 켰다고 write endpoint DNS까지 됐다고 보지 않습니다.
+
+## 지금 결정할 것
+
+- 인스턴스 생성 때 --enable-psc-auto-connection-policy를 켤지, 호스트 프로젝트에 정책을 먼저 둘지
+- Cloud SQL 서비스 에이전트에 consumerNetworkAdmin과 networkViewer를 줄지
+- Shared VPC면 정책을 호스트 프로젝트에만 둘지
+- 서비스 클래스 google-cloud-sql, 리전, VPC 조합에 정책이 이미 있는지
+- 허용 프로젝트 목록에서 빼면 즉시 끊기는 대상인지, 2026-08 이전 생성분인지
+- psc_write_endpoint_dns를 Enterprise Plus와 --enable-psc-auto-dns 전제에서만 켤지
+
+## 의사결정 기준
+
+### 자동 정책 생성과 인스턴스 생성을 같은 권한으로 보지 않습니다
+
+구성 문서는 자동 정책 생성에 추가 관리 권한이 필요하다고 적습니다. gcloud와 API는 서비스 에이전트에 두 역할을 먼저 달라고 적습니다. 인스턴스 생성 권한이 있다고 정책이 자동으로 생긴 것은 아닙니다.
+
+### Shared VPC 정책은 호스트 프로젝트에만 둡니다
+
+구성 문서는 Shared VPC 네트워크의 서비스 연결 정책을 호스트 프로젝트에 배포해야 하고 서비스 프로젝트에서는 지원되지 않는다고 적습니다. 서비스 프로젝트에서 인스턴스를 만든다고 정책도 그 프로젝트에 둔다고 보지 않습니다.
+
+### 정책은 서비스 클래스·리전·VPC마다 하나입니다
+
+개요 문서는 조합마다 최대 하나라고 적습니다. 서비스 클래스는 google-cloud-sql입니다. 같은 리전에 정책을 더 만들려 하면 기존 정책을 먼저 확인합니다.
+
+### 허용 프로젝트 제거의 즉시 단절은 2026-08 이후 생성분에 기본입니다
+
+개요 문서는 2026-08 이후 생성, 복제, PSC 활성화분에 reconciliation이 기본이며 끌 수 없다고 적습니다. 허용 목록에서 빼면 그 프로젝트의 기존 PSC가 즉시 닫힙니다. 이전 생성분은 엔드포인트를 수동으로 제거할 때까지 남을 수 있습니다. 한 운영 절차로 합치지 않습니다.
+
+### write endpoint DNS는 Enterprise Plus와 자동 DNS가 같이 있을 때만 봅니다
+
+구성 문서는 psc_write_endpoint_dns가 Enterprise Plus에서만 되고 --enable-psc-auto-dns가 필요하다고 적습니다. 기본은 꺼짐입니다. PSC를 켰다고 write endpoint DNS가 켜진 것은 아닙니다.
+
+## 실무 체크리스트
+
+1. 대상이 신규 PSC 인스턴스인지, 기존 인스턴스에 엔드포인트만 붙이는지 나눕니다.
+2. --enable-psc-auto-connection-policy를 쓸지, 호스트 프로젝트에 정책을 먼저 만들지를 적습니다.
+3. gcloud나 API면 Cloud SQL 서비스 에이전트에 roles/networkconnectivity.consumerNetworkAdmin과 roles/compute.networkViewer가 있는지 확인합니다.
+4. Shared VPC면 정책이 호스트 프로젝트에만 있는지 확인합니다. 서비스 프로젝트에 정책을 두지 않습니다.
+5. 서비스 클래스 google-cloud-sql, 리전, VPC 조합에 정책이 이미 있는지 확인합니다. 최대 하나 한도를 넘기지 않습니다.
+6. 자동 연결 파라미터의 프로젝트가 허용 목록에 들어가는지 기록합니다.
+7. 허용 목록에서 프로젝트를 빼기 전에 대상이 2026-08 이후 생성분인지 확인합니다. 이후 분이면 기존 PSC가 즉시 닫힌다고 안내합니다.
+8. psc_write_endpoint_dns를 쓰려면 Enterprise Plus인지, --enable-psc-auto-dns가 켜져 있는지 대조합니다.
+
+## 제외 범위
+
+- 인프라 컨설팅 운영 조건 글의 재작성
+- Cloud SQL 에디션, 가격, 성능 비교
+- 권한 없이 자동 정책이 생긴다는 단정
+- 2026-08 이전 생성분까지 즉시 단절된다는 해석
+- 연결 무중단, 장애 시간, 네트워크 결과의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: PSC 생성 방식, 정책 위치, IAM, 허용 프로젝트, DNS 옵션을 현황화합니다.
+- 의사결정 산출물: 자동 정책 사용 여부, Shared VPC 호스트 배치, 허용 목록 제거 영향, write endpoint DNS 전제를 담은 판단표를 만듭니다.
+- 운영 검증: 정책 존재, 엔드포인트 상태, 허용 목록 변경 후 연결 잔존을 시나리오로 확인합니다. 무중단과 권한 전파를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Cloud SQL PSC 자동 연결 정책과 허용 프로젝트 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 클라우드 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Google Cloud, Cloud SQL for PostgreSQL release notes. 2026-08-27 PSC 인스턴스 생성 시 서비스 연결 정책과 엔드포인트 자동 생성. https://docs.cloud.google.com/sql/docs/postgres/release-notes (확인일: 2026-08-31)
+- Google Cloud, Configure Private Service Connect for Cloud SQL for PostgreSQL. --enable-psc-auto-connection-policy, 추가 IAM, Shared VPC는 호스트 프로젝트만, google-cloud-sql, psc_write_endpoint_dns는 Enterprise Plus와 --enable-psc-auto-dns. https://docs.cloud.google.com/sql/docs/postgres/configure-private-service-connect (확인일: 2026-08-31)
+- Google Cloud, Private Service Connect overview, Cloud SQL for MySQL. 서비스 클래스·리전·VPC당 정책 하나, 2026-08 이후 생성분은 허용 프로젝트 제거 시 기존 PSC 즉시 종료. https://docs.cloud.google.com/sql/docs/mysql/about-private-service-connect (확인일: 2026-08-31)
+
+위 출처는 Google Cloud 공개 문서를 설명합니다. 고객별 IAM, Shared VPC, 연결 결과를 보증하지 않습니다.
