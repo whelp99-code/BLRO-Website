@@ -19,7 +19,7 @@ relatedContent: ["insight:infrastructure-consulting-baseline"]
 
 Istio GCP 이전 블로그는 1.31부터 컨테이너 이미지를 docker.io/istio에만 올린다고 적습니다. 1.30이 gcr.io/istio-release, registry.istio.io/release, GCS 차트에 올리는 마지막 마이너입니다.
 
-영향 범위는 gcr.io/istio-release, registry.istio.io, GCS Helm을 가리키는 클러스터와 파이프라인입니다. 전제는 1.30 기본 hub가 registry.istio.io라는 점과, 후속 블로그가 그 레지스트리도 폐기해 docker.io/istio로 옮기라고 한 점입니다. 검증 항목은 첫 scream test 2026-09-15 15:00–16:00 UTC 전에 hub와 Helm 저장소를 바꿨는지, 서명 키를 버전에 맞게 뒀는지입니다.
+영향 범위는 gcr.io/istio-release, registry.istio.io, GCS Helm을 가리키는 클러스터와 파이프라인입니다. 전제는 1.30 기본 hub가 registry.istio.io/release라는 점과, 후속 블로그가 그 레지스트리도 폐기해 docker.io/istio로 옮기라고 한 점입니다. 검증 항목은 첫 scream test 2026-09-15 15:00–16:00 UTC 전에 hub와 Helm 저장소를 바꿨는지, 서명 키를 버전에 맞게 뒀는지입니다.
 
 - 결정: 9/15 창 전에 docker.io/istio와 blob.istio.io로 옮길지
 - 전제: registry.istio.io는 이전 대상이 아니다. 후속 블로그가 그 경로를 폐기한다
@@ -32,9 +32,9 @@ Istio를 올렸다는 보고만 있으면, 1.30 기본 hub와 폐기되는 GCR·
 
 GCP 이전 블로그는 1.31부터 이미지를 docker.io/istio에만 올린다고 적습니다. Helm과 기타 산출물은 2026년 12월에 gcr.io/istio-release, GCS에서 제거된다고 적습니다. 모든 버전의 Helm 차트는 현재 https://blob.istio.io/istio-release/charts 에 있고, OCI 차트는 ghcr.io/istio/release/charts에 있다고 적습니다. 1.30이 gcr.io/istio-release, registry.istio.io/release, https://istio-release.storage.googleapis.com/charts 에 올리는 마지막 마이너입니다. 1.31은 그 위치에 이미지와 Helm을 올리지 않습니다.
 
-후속 블로그는 원래 registry.istio.io/release를 새 홈으로 안내했다가, 프록시 이그레스 제한 때문에 그 경로도 폐기한다고 적습니다. 2026년 후반까지는 호스팅을 유지하지만 오늘 옮길 대상은 docker.io/istio 또는 pull-through cache입니다. hub를 registry.istio.io로 바꾸는 이전은 후속 글이 닫은 경로입니다.
+후속 블로그는 원래 registry.istio.io/release를 새 홈으로 안내했다가, 프록시 이그레스 제한 때문에 그 경로도 폐기한다고 적습니다. 2026년 후반까지는 호스팅을 유지하지만 오늘 옮길 대상은 docker.io/istio 또는 pull-through cache입니다. hub를 registry.istio.io/release로 바꾸는 이전은 후속 글이 닫은 경로입니다.
 
-후속 블로그는 1.30 설치의 기본 hub가 registry.istio.io라고 적습니다. 다른 버전은 기본이 docker.io/istio입니다. 1.30을 기본값으로 둔 클러스터는 첫 scream test 대상입니다.
+후속 블로그는 1.30 설치의 기본 hub가 registry.istio.io/release라고 적습니다. 다른 버전은 기본이 docker.io/istio입니다. 1.30을 기본값으로 둔 클러스터는 첫 scream test 대상입니다.
 
 첫 scream test는 2026-09-15 15:00–16:00 UTC입니다. 같은 글은 이후 창도 적지만, 운영 마감은 첫 창입니다. 그 시간에 gcr.io/istio-release, registry.istio.io/release, GCS 산출물 접근이 잠시 끊깁니다.
 
@@ -59,7 +59,7 @@ GCP 이전 블로그는 1.31에 이미지와 Helm을 gcr.io/istio-release, regis
 
 ### registry.istio.io는 이전 대상이 아닙니다
 
-후속 블로그는 registry.istio.io/release도 폐기하고 docker.io/istio로 옮기라고 적습니다. 1.30 기본 hub가 registry.istio.io라는 문장을 이전 목표로 읽지 않습니다. hub를 그 값으로 바꾸라는 권고를 이 글에 두지 않습니다.
+후속 블로그는 registry.istio.io/release도 폐기하고 docker.io/istio로 옮기라고 적습니다. 1.30 기본 hub가 registry.istio.io/release라는 문장을 이전 목표로 읽지 않습니다. hub를 그 값으로 바꾸라는 권고를 이 글에 두지 않습니다.
 
 ### Helm은 blob.istio.io, OCI는 ghcr.io입니다
 
@@ -76,7 +76,7 @@ HTTP 차트는 https://blob.istio.io/istio-release/charts 입니다. OCI는 ghcr
 ## 실무 체크리스트
 
 1. 파드 이미지가 gcr.io/istio-release 또는 registry.istio.io/release로 시작하는지 목록으로 남깁니다.
-2. IstioOperator 또는 Helm values의 hub가 registry.istio.io이면 docker.io/istio 또는 pull-through cache로 바꿀지 적습니다. registry.istio.io를 목표 hub로 두지 않습니다.
+2. IstioOperator 또는 Helm values의 hub가 registry.istio.io/release이면 docker.io/istio 또는 pull-through cache로 바꿀지 적습니다. registry.istio.io/release를 목표 hub로 두지 않습니다.
 3. Helm repo가 https://istio-release.storage.googleapis.com/charts 이면 https://blob.istio.io/istio-release/charts 로 바꿉니다.
 4. OCI 차트가 gcr.io/istio-release/charts이면 ghcr.io/istio/release/charts로 바꿉니다.
 5. 첫 scream test 2026-09-15 15:00–16:00 UTC 전에 위 경로를 적용할지 변경 창을 정합니다.
@@ -87,7 +87,7 @@ HTTP 차트는 https://blob.istio.io/istio-release/charts 입니다. OCI는 ghcr
 
 - 인프라 컨설팅 운영 조건 글의 재작성
 - Istio와 다른 서비스 메시의 우열, 가격, 성능 비교
-- hub를 registry.istio.io로 바꾸라는 권고
+- hub를 registry.istio.io/release로 바꾸라는 권고
 - scream test 시간에 접근이 유지된다는 단정
 - 무중단, 풀 성공, 미러 가용성의 사전 보장
 
@@ -104,7 +104,7 @@ Istio GCR·GCS 경로와 9/15 scream test 이전 범위를 정리하려면 mailt
 ## 출처와 확인 날짜
 
 - Istio, ACTION REQUIRED FOR GOOGLE CONTAINER REGISTRY USERS, scream tests, and our move to AWS. 1.31부터 docker.io/istio만, 1.30이 GCR·GCS 마지막 마이너, Helm은 blob.istio.io, OCI는 ghcr.io, 첫 scream test 2026-09-15 15:00–16:00 UTC, 서명 키 1.31.0 istio-key.pub·1.31.1+ istio-key-v2.pub. https://istio.io/latest/blog/2026/retirement-of-gcp/ (확인일: 2026-08-31)
-- Istio, An Update on Our Container Registry Migration. registry.istio.io 폐기, 1.30 기본 hub registry.istio.io, 이전 대상은 docker.io/istio 또는 pull-through cache. https://istio.io/latest/blog/2026/retirement-of-gcr.io-follow-up/ (확인일: 2026-08-31)
+- Istio, An Update on Our Container Registry Migration. registry.istio.io 폐기, 1.30 기본 hub registry.istio.io/release, 이전 대상은 docker.io/istio 또는 pull-through cache. https://istio.io/latest/blog/2026/retirement-of-gcr.io-follow-up/ (확인일: 2026-08-31)
 - Istio, Supported Releases. 1.30 출시 2026-05-14, 지원 종료 예상 약 2026-12, 지원 Kubernetes 1.32–1.36. https://istio.io/latest/docs/releases/supported-releases/ (확인일: 2026-08-31)
 
 위 출처는 Istio 공개 문서와 블로그를 설명합니다. 고객별 pull 결과, scream test 영향, 지원 종료 일정을 보증하지 않습니다.
