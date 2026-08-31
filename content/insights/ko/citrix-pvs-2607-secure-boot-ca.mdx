@@ -1,0 +1,105 @@
+---
+contentId: insight-citrix-pvs-2607-secure-boot-ca
+title: "Citrix Provisioning 2607: Secure Boot CA를 하이퍼바이저·VM·NBP 순서로 올릴 것"
+summary: "Citrix Provisioning 2607 LTSR는 Microsoft UEFI CA 2023을 지원한다. 하이퍼바이저와 기존 VM NVRAM을 먼저 올리고, 새 CA로 서명한 NBP가 오기 전에 CVE-2023-24932 폐기를 하지 말라는 리뷰 초안"
+slug: citrix-pvs-2607-secure-boot-ca
+locale: ko
+status: review
+updatedAt: 2026-09-01
+audience: [customer, partner]
+tags: [citrix, provisioning, secure-boot, vdi, ltsr]
+evidenceRefs:
+  - "https://docs.citrix.com/en-us/provisioning/2607-ltsr/whats-new.html"
+  - "https://docs.citrix.com/en-us/provisioning/2607-ltsr/advanced-concepts/secure-boot-cert-expiration-ca-updates.html"
+  - "https://aka.ms/getsecureboot"
+relatedContent: ["insight:vdi-capacity-planning", "service:vdi-digital-workspace"]
+---
+
+## 한눈에 보기
+
+Citrix Provisioning 2607 LTSR What’s new는 2026-08-27에 Microsoft Secure Boot 새 CA 인증서 지원을 적습니다. 하이퍼바이저와 기존 VM, Citrix Provisioning을 지금 올리지 않으면 2026년 6월부터 장애가 난다고 적습니다.
+
+영향 범위는 Secure Boot를 켠 Citrix Provisioning 대상 VDA입니다. 전제는 네트워크 부트 프로그램 서명 인증서와 Windows 부트 로더 검증 인증서가 다르다는 점입니다. 검증 항목은 하이퍼바이저 최소 열차, 기존 VM NVRAM, vTPM이 있으면 재프로비저닝인지입니다.
+
+- 결정: 하이퍼바이저와 VM 인증서를 이번 창에 올릴지, 2607 NBP만 먼저 올릴지
+- 전제: 하이퍼바이저를 올려도 기존 VM NVRAM은 자동으로 바뀌지 않는다
+- 검증: vSphere 8은 기존 VM을 재프로비저닝해야 하고, vTPM이 있으면 갱신이 아니라 재프로비저닝이다
+- 범위: Entra SSO, Web sign-in, WorkSpaces Core 과금 글의 재작성이 아니다. Secure Boot CA만 가른다
+
+## 문제 상황
+
+2607을 올렸다고 보고하면, 하이퍼바이저 펌웨어 CA, VM NVRAM, 네트워크 부트 프로그램 서명이 한 완료로 섞입니다.
+
+What’s new는 현재 Secure Boot 검증 인증서가 2026년에 만료되고 새 CA로 바뀐다고 적습니다. 2607은 새 인증서를 쓰는 Secure Boot를 지원합니다. 하이퍼바이저와 기존 VM, 새 인증서를 지원하는 Citrix Provisioning을 지금 시작하라고 적습니다.
+
+고급 개념 문서는 2026-08-11입니다. 대상 VDA 부트에는 인증서가 둘입니다. 네트워크 부트 프로그램을 검증하는 기존 인증서는 Microsoft UEFI CA 2011이고, 새 인증서는 Microsoft UEFI CA 2023입니다. 지금은 NBP가 2011로 서명되며, 만료 뒤에도 폐기되지 않으면 동작한다고 적습니다. 2026년 어느 시점에 NBP가 2023으로 서명되면 하이퍼바이저에 새 인증서가 있어야 로드됩니다. Windows 부트 로더는 NBP에 들어 있는 CA로 검증합니다. 현재 출고분은 이전 CA만 넣고, 이후 릴리스는 둘 다 넣어 시도합니다. 기존 Windows 인증서는 Microsoft Windows Production PCA 2011, 새 인증서는 Windows UEFI CA 2023입니다.
+
+같은 문서는 하이퍼바이저를 올려도 기존 VM은 자동 갱신되지 않는다고 적습니다. 인증서 정보는 VM의 UEFI NVRAM에 있습니다. 순서는 하이퍼바이저, 기존 VM, 양쪽 Windows 부트 로더 인증서를 가진 Citrix Provisioning, BDM 또는 ISO면 이미지 갱신입니다. 1단계와 2단계를 지금 하라고 적습니다. CVE-2023-24932 폐기는 새 인증서로 서명한 펌웨어가 있는 Citrix Provisioning으로 완전히 올린 뒤에만 하라고 적습니다. 그 시점은 What’s new에 발표된다고 적습니다.
+
+하이퍼바이저 최소는 VMware/ESXi vSphere 8.0 update 3h, XenServer 8.4 2025년 11월 업데이트, Hyper-V는 Server 2019 이상에 최신 Windows 업데이트입니다. Server 2019는 수동, Server 2022와 2025는 Windows Update로 자동이라고 적습니다. vTPM이 켜진 VM은 기존 갱신이 불가능하고 재프로비저닝해야 한다고 적습니다. vSphere 8은 기존 Citrix Provisioning 대상 VM을 재프로비저닝해야 합니다. vSphere 9는 공장 기본 Secure Boot 키로 되돌릴 수 있습니다. XenServer 8.4는 재프로비저닝입니다.
+
+Microsoft 지원 KB 5062710은 최초 게시 2025-06-26, 확인일 기준 변경 로그 최종은 2026-05-18입니다. 2011 인증서는 2026년 6월부터 만료를 시작합니다. 2023 인증서를 받지 못한 장치는 계속 기동하고 일반 Windows 업데이트는 설치됩니다. 다만 Windows Boot Manager, Secure Boot 데이터베이스, 폐기 목록, 새로 발견된 부트 취약점 완화는 더 이상 받지 못한다고 적습니다. Microsoft Corporation KEK CA 2011 만료는 2026-06-24, Microsoft UEFI CA 2011 만료는 2026-06-27, Microsoft Windows Production PCA 2011 만료는 2026-10-19입니다.
+
+## 지금 결정할 것
+
+- 하이퍼바이저를 Citrix가 적은 최소 열차로 언제 올릴지
+- 기존 Secure Boot VM을 재프로비저닝할지, vSphere 9 또는 Hyper-V 템플릿 전환으로 갱신할지
+- vTPM이 켜진 대상을 이번 창에서 재프로비저닝할지
+- 2607로 서버만 올리고 NBP 서명이 2023으로 바뀌기 전에 VM을 끝낼지
+- CVE-2023-24932 폐기를 새 NBP 발표 뒤로 미룰지
+- PXE, BDM, ISO 부트별로 이미지 갱신 책임을 나눌지
+
+## 의사결정 기준
+
+### 하이퍼바이저와 VM NVRAM을 NBP보다 먼저 올립니다
+
+Citrix는 1단계와 2단계를 지금 하라고 적습니다. 2607 서버만 올리고 하이퍼바이저와 VM을 남겨 두면, 이후 NBP가 2023으로 서명되는 시점에 Secure Boot가 멈춥니다.
+
+### 하이퍼바이저 업그레이드를 VM 인증서 갱신으로 보지 않습니다
+
+인증서는 VM UEFI NVRAM에 있습니다. 호스트만 올렸다고 기존 대상이 새 CA를 가졌다고 보지 않습니다.
+
+### vSphere 8과 vTPM은 갱신이 아니라 재프로비저닝입니다
+
+Citrix는 vSphere 8과 XenServer 8.4, vTPM 사용 VM을 재프로비저닝하라고 적습니다. vSphere 9 키 초기화나 Hyper-V 템플릿 전환을 모든 하이퍼바이저에 적용하지 않습니다.
+
+### 2011 만료와 폐기를 같은 날로 보지 않습니다
+
+Microsoft는 2023 인증서가 없어도 장치는 기동하고 일반 업데이트는 설치된다고 적습니다. Citrix는 2011 NBP가 폐기되지 않으면 만료 뒤에도 동작한다고 적습니다. CVE-2023-24932 폐기는 새 서명 NBP가 What’s new에 나온 뒤로 미룹니다.
+
+## 실무 체크리스트
+
+1. Secure Boot를 켠 Citrix Provisioning 대상 목록을 만듭니다. Citrix가 적은 스크립트 또는 msinfo32만으로 새 CA 존재 여부를 단정하지 않습니다.
+2. 하이퍼바이저가 vSphere 8.0 update 3h, XenServer 8.4 2025년 11월, Hyper-V Server 2019 이상인지 기록합니다.
+3. vTPM 사용 대상을 따로 빼서 재프로비저닝 창을 정합니다.
+4. vSphere 8이면 재프로비저닝, vSphere 9이면 키 초기화, Hyper-V면 MicrosoftUEFICertificateAuthority 템플릿 전환 가능 여부를 나눕니다. Citrix는 스트리밍 대상에 이 템플릿이 필요하다고 적습니다.
+5. Citrix Provisioning을 2607로 올린 뒤, PXE는 다음 부트, BDM은 콘솔 또는 Start-PvsDeviceUpdateBdm, ISO는 새 이미지로 바꿉니다.
+6. CVE-2023-24932 폐기를 이번 창에 넣지 않습니다. What’s new에 새 서명 NBP가 나온 뒤를 승인 조건으로 적습니다.
+7. Microsoft 만료일 2026-06-24, 2026-06-27, 2026-10-19를 내부 마감 후보로만 두고, 폐기 일정과 합치지 않습니다.
+8. 부트 성공과 NVRAM의 Windows UEFI CA 2023 존재를 같은 완료 보고로 합치지 않습니다.
+
+## 제외 범위
+
+- Citrix Entra SSO VDA 2607 글의 재작성
+- Citrix Web sign-in preview 글의 재작성
+- Amazon WorkSpaces Core 과금 글의 재작성
+- 하이퍼바이저 최소 열차를 이 초안이 고객 환경에 맞게 확정하는 범위
+- 부트 성공, 인증서 갱신, 폐기 일정의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Secure Boot 대상, 하이퍼바이저 열차, vTPM, 부트 방식, NBP 서명 상태를 현황화합니다.
+- 의사결정 산출물: 호스트·VM·NBP 순서, 재프로비저닝 대상, 폐기 보류 조건을 담은 판단표를 만듭니다.
+- 운영 검증: 부트와 CA 존재를 시나리오로 확인합니다. 장애 없음과 폐기 일정을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Citrix Provisioning Secure Boot CA 순서를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 VDI 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Citrix, What’s new, Citrix Provisioning 2607 LTSR. 2026-08-27. 새 Microsoft Secure Boot CA 지원, 하이퍼바이저·기존 VM·Provisioning을 지금 올려 2026년 6월 장애를 피하라고 안내. https://docs.citrix.com/en-us/provisioning/2607-ltsr/whats-new.html (확인일: 2026-09-01). 이번 주 운영 확인 항목: 2607 서버만 올리고 하이퍼바이저·VM을 남기지 않았는지.
+- Citrix, Windows Secure Boot certificate expiration and CA updates. 2026-08-11. UEFI CA 2011·2023, Windows Production PCA 2011·Windows UEFI CA 2023, NVRAM 미자동 갱신, vTPM·vSphere 8 재프로비저닝, CVE-2023-24932 폐기 보류. https://docs.citrix.com/en-us/provisioning/2607-ltsr/advanced-concepts/secure-boot-cert-expiration-ca-updates.html (확인일: 2026-09-01). 이번 주 운영 확인 항목: vTPM 대상과 vSphere 8 대상을 재프로비저닝 목록에 넣었는지.
+- Microsoft, Windows Secure Boot certificate expiration and CA updates, KB 5062710. 최초 게시 2025-06-26, 변경 로그 확인일 기준 2026-05-18. 2011 인증서 만료 시작 2026년 6월, 미갱신 장치는 기동·일반 업데이트 유지, 부트 보호 업데이트는 중단. KEK 2011 만료 2026-06-24, UEFI CA 2011 만료 2026-06-27, Windows Production PCA 2011 만료 2026-10-19. https://aka.ms/getsecureboot (확인일: 2026-09-01). 이번 주 운영 확인 항목: 만료일과 폐기 일정을 한 마감으로 합치지 않았는지.
+
+위 출처는 Citrix와 Microsoft 공개 문서를 설명합니다. 고객별 부트 결과, 인증서 갱신, 폐기 일정을 보증하지 않습니다.
