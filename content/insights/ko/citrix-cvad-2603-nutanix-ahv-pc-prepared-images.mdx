@@ -1,0 +1,113 @@
+---
+contentId: insight-citrix-cvad-2603-nutanix-ahv-pc-prepared-images
+title: "CVAD 2603, Nutanix AHV Prism Central 준비 이미지 MCS"
+summary: "CVAD 7 2603은 Nutanix AHV Prism Central에서 준비 이미지 MCS를 일반 공급한다. Citrix 관리 PC 연결, 마스터 이미지 카탈로그 이전, Linux VDA .NET 10을 가르는 리뷰 초안"
+slug: citrix-cvad-2603-nutanix-ahv-pc-prepared-images
+locale: ko
+status: review
+updatedAt: 2026-09-01
+audience: [customer, partner]
+tags: [citrix, cvad, nutanix, ahv, vdi, mcs]
+evidenceRefs:
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/whats-new"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/install-configure/create-prepared-image-machine-catalogs-nutanix.html"
+  - "https://docs.citrix.com/en-us/linux-virtual-delivery-agent/current-release/whats-new"
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Citrix Virtual Apps and Desktops 7 2603 What’s new는 2026-08-21입니다. Nutanix AHV Prism Central의 이미지 관리가 일반 공급이라고 적습니다.
+
+영향 범위는 Nutanix AHV에서 MCS로 카탈로그를 만드는 CVAD 사이트입니다. 전제는 호스트 연결이 Citrix 관리 AHV Prism Central이라는 점입니다. Prism Element 연결과 같지 않습니다. 검증 항목은 준비 이미지 워크플로로 옮길지, Linux VDA에 .NET Runtime 10이 있는지입니다.
+
+- 결정: 마스터 이미지 카탈로그를 준비 이미지로 옮길지, 연결부터 PC로 바꿀지
+- 전제: 준비 이미지 생성은 현재 PowerShell만 적혀 있다
+- 검증: 연결이 Citrix-managed Nutanix AHV Prism Central인지, Linux VDA 설치 전에 .NET 10인지
+- 범위: VDI 용량 계획 글의 재작성이 아니다. 2603 PC 준비 이미지만 가른다
+
+## 문제 상황
+
+2603을 올렸다고 보고하면, Prism Element 연결, NC2 on Azure 연결, Citrix 관리 Prism Central, 마스터 이미지 MCS, 준비 이미지 MCS, Linux VDA 전제가 한 완료로 섞입니다.
+
+What’s new의 Nutanix AHV Prism Central 절은 이미지 관리가 일반 공급이라고 적습니다. 저장과 시간 비용을 줄이고 VM 배포와 이미지 업데이트를 단순화한다고 적습니다. 지금은 PowerShell만 쓸 수 있다고 적습니다. 안내 페이지 제목은 Create catalogs using prepared images in Nutanix AHV Prism Central입니다.
+
+같은 절은 기존 Nutanix AHV, Prism Element, 그리고 Nutanix AHV PC, NC2 on Azure, 호스트 연결의 카탈로그와 VM을 Citrix 관리 Nutanix AHV Prism Central 호스트 연결로 옮길 수 있다고 적습니다. PowerShell로 옮기고, 문제 시 빠른 롤백과 이전 후 원본 정리를 적습니다.
+
+같은 절은 Citrix Provisioning 카탈로그를 MCS PowerShell로 PC 연결에서 만들 수 있다고 적습니다. 온프레미스 이미지 복제는 VMware, XenServer, Nutanix AHV Prism Central에 적용된다고 적습니다. 이 항목들을 준비 이미지 일반 공급과 한 완료로 합치지 않습니다.
+
+준비 이미지 문서는 2026-04-24입니다. 제품 경로는 Citrix Virtual Apps and Desktops 7 2603입니다. 준비 이미지를 만들어 MCS 카탈로그를 만드는 방법은 PowerShell입니다. 순서는 이미지 정의와 초기 버전, 그 버전을 준비 이미지로 카탈로그 생성입니다. 클러스터로 버전 사양을 복제한 뒤 같은 준비 이미지로 새 프로비저닝 스킴을 만들 수 있다고 적습니다. Web Studio 클릭 경로를 이 문서는 본 절차로 적지 않습니다.
+
+Linux Virtual Delivery Agent 2603 What’s new는 2026-05-05입니다. 이 릴리스부터 지원 Linux 배포에 Linux VDA를 설치하기 전에 .NET Runtime 10을 설치하라고 적습니다. 배포에 있으면 내장 피드, 없으면 Microsoft 패키지 피드입니다. Linux VDA 동작은 OpenShift Virtualization, Amazon WorkSpaces Core, Nutanix Prism Central에서 검증됐다고 적습니다. MCS 배포는 WorkSpaces Core와 Nutanix Prism Central에서 지원합니다. OpenShift Virtualization은 동작만 검증하고 MCS는 지원하지 않습니다. Linux VDA는 MCS 준비 이미지 워크플로를 지원한다고 적습니다.
+
+확인일 기준 docs.citrix.com의 citrix-virtual-apps-and-desktops 경로는 404였고, 운영 출처는 citrix-virtual-apps-desktops 경로입니다.
+
+## 지금 결정할 것
+
+- 호스트 연결이 Citrix 관리 AHV Prism Central인지, Prism Element 또는 NC2 on Azure인지 목록화할지
+- Element 또는 NC2 연결을 이번 창에 PC로 옮길지
+- 마스터 이미지 MCS를 준비 이미지 워크플로로 바꿀지
+- 준비 이미지 작업을 PowerShell 운영으로 받을지
+- Linux VDA 카탈로그에 .NET Runtime 10을 설치 전제로 둘지
+- Linux MCS를 Nutanix Prism Central에만 두고 OpenShift에는 넣지 않을지
+
+## 의사결정 기준
+
+### 호스트 연결 종류를 이미지 기능보다 먼저 가릅니다
+
+준비 이미지 일반 공급은 Nutanix AHV Prism Central 환경입니다. Prism Element 연결을 PC 준비 이미지 대상으로 보지 않습니다.
+
+### Citrix 관리 PC와 Element·NC2를 같은 연결로 보지 않습니다
+
+What’s new는 Element와 NC2 on Azure에서 Citrix 관리 PC로 옮기는 명령을 따로 적습니다. 연결을 바꾸지 않고 준비 이미지만 켰다고 보지 않습니다.
+
+### 마스터 이미지 카탈로그를 준비 이미지 완료로 보지 않습니다
+
+준비 이미지 문서는 이미지 정의, 버전, 준비된 버전 사양, 프로비저닝 스킴 순서를 적습니다. 기존 마스터 이미지 카탈로그가 자동으로 바뀌지 않습니다.
+
+### PowerShell 전제를 Studio 일반 공급으로 바꾸지 않습니다
+
+What’s new와 준비 이미지 문서 모두 현재 PowerShell만 적습니다. Web Studio Images 노드가 Azure Local처럼 열려 있다고 이 페이지들은 적지 않습니다.
+
+### Linux VDA .NET 10을 선택 항목으로 보지 않습니다
+
+Linux VDA 2603은 설치 전에 .NET Runtime 10을 요구합니다. 하이퍼바이저 검증과 설치 전제를 한 완료로 합치지 않습니다.
+
+## 실무 체크리스트
+
+1. 호스트 연결을 Citrix 관리 AHV Prism Central, Prism Element, NC2 on Azure로 나눕니다.
+2. Element 또는 NC2 연결이면 PC로 옮길지와 롤백 책임을 적습니다. What’s new는 PowerShell 이전과 빠른 롤백을 적습니다.
+3. 마스터 이미지 MCS 카탈로그 목록을 만들고, 준비 이미지로 옮길 카탈로그를 고릅니다. 자동 이전으로 보지 않습니다.
+4. 준비 이미지는 이미지 정의, 버전, 준비된 사양, 프로비저닝 스킴 순서로 시험합니다. 현재 운영 수단은 PowerShell입니다.
+5. 클러스터 복제가 필요하면 버전 사양 복제와 ClusterId를 같은 준비 이미지에 묶습니다.
+6. Linux VDA 카탈로그는 설치 전에 .NET Runtime 10을 확인합니다. 내장 피드와 Microsoft 피드를 배포별로 적습니다.
+7. Linux MCS는 Nutanix Prism Central과 WorkSpaces Core만 대상으로 둡니다. OpenShift Virtualization에는 MCS를 넣지 않습니다.
+8. Citrix Provisioning을 MCS PowerShell로 PC에 만드는 항목과 준비 이미지 MCS를 한 프로젝트로 합치지 않습니다.
+9. VDI 용량 계획 글의 수치를 이 워크플로 완료 근거로 쓰지 않습니다.
+
+## 제외 범위
+
+- Citrix Provisioning Secure Boot CA 글의 재작성
+- Prism Element 연결에서 준비 이미지를 쓰는 해석
+- Web Studio GUI로 Nutanix 준비 이미지를 만든다고 보는 해석
+- OpenShift Virtualization Linux MCS 지원
+- 저장 비용 절감과 배포 시간 단축의 사전 보장
+- VDI 용량 계획 글을 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 호스트 연결 종류, 마스터 이미지 카탈로그, PowerShell 운영, Linux VDA .NET 10을 현황화합니다.
+- 의사결정 산출물: PC 이전 대상, 준비 이미지 전환 대상, Linux 전제를 담은 판단표를 만듭니다.
+- 운영 검증: 연결 종류와 이미지 워크플로, Linux 설치 전제를 시나리오로 확인합니다. 용량 절감과 무중단을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+CVAD 2603 Nutanix 준비 이미지 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 VDI 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Citrix, What’s new, Citrix Virtual Apps and Desktops 7 2603. 2026-08-21. Nutanix AHV Prism Central 이미지 관리 일반 공급, 현재 PowerShell, Element·NC2에서 Citrix 관리 PC로 카탈로그 이전. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/whats-new (확인일: 2026-09-01). 이번 주 운영 확인 항목: 호스트 연결이 Citrix 관리 AHV Prism Central인지, 마스터 이미지 카탈로그를 준비 이미지로 옮길지.
+- Citrix, Create a prepared image machine catalog in Nutanix AHV Prism Central. 2026-04-24. PowerShell로 이미지 정의·버전·준비 이미지·카탈로그 생성, 클러스터 복제. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/install-configure/create-prepared-image-machine-catalogs-nutanix.html (확인일: 2026-09-01). 이번 주 운영 확인 항목: 준비 이미지 절차를 PowerShell로 시험했는지. 확인일 기준 and가 있는 문서 경로는 404.
+- Citrix, What’s new, Linux Virtual Delivery Agent 2603. 2026-05-05. 설치 전 .NET Runtime 10, Nutanix Prism Central MCS 지원, MCS 준비 이미지 워크플로. https://docs.citrix.com/en-us/linux-virtual-delivery-agent/current-release/whats-new (확인일: 2026-09-01). 이번 주 운영 확인 항목: Linux VDA 설치 전에 .NET 10을 넣었는지.
+
+위 출처는 Citrix 공개 문서를 설명합니다. 고객별 카탈로그 이전 결과와 용량 절감을 보증하지 않습니다.

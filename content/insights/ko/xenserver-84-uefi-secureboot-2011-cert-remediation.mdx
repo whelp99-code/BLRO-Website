@@ -1,0 +1,118 @@
+---
+contentId: insight-xenserver-84-uefi-secureboot-2011-cert-remediation
+title: "XenServer 8.4, 만료된 2011 UEFI Secure Boot 인증서 교정"
+summary: "XenServer 8.4는 2011 UEFI Secure Boot 인증서만 가진 VM을 재부팅으로 2023 체인에 올리는 교정 흐름을 제공한다. update_available, BitLocker 중지, 풀 자동 교정 기본 꺼짐을 가르는 리뷰 초안"
+slug: xenserver-84-uefi-secureboot-2011-cert-remediation
+locale: ko
+status: review
+updatedAt: 2026-09-01
+audience: [customer, partner]
+tags: [xenserver, secure-boot, uefi, virtualization]
+evidenceRefs:
+  - "https://docs.xenserver.com/en-us/xenserver/8/vms/manage-uefi-secure-boot-certificate-remediation"
+  - "https://docs.xenserver.com/en-us/xenserver/8/whats-new/normal.html"
+  - "https://docs.xenserver.com/en-us/xencenter/current-release/vms-secure-boot-certificates"
+relatedContent: ["insight:virtualization-hci-migration-guide"]
+---
+
+## 한눈에 보기
+
+XenServer 8.4 교정 문서는 2026-07-21입니다. Microsoft 2011 UEFI Secure Boot 인증서는 2026년 6월부터 만료를 시작하고, 2023 교체본으로 바뀐다고 적습니다.
+
+영향 범위는 2011 Microsoft UEFI 체인만 가진 UEFI Windows와 Linux VM입니다. Secure Boot가 꺼져 있어도 대상입니다. 전제는 2025년 11월 업데이트 이전에 만들어진 VM입니다. 검증 항목은 secureboot-certificates-state가 update_available인지, BitLocker를 멈춘 뒤 소량 재부팅하는지, 풀 자동 교정이 꺼져 있는지입니다.
+
+- 결정: update_available VM을 이번 창에서 표시하고 재부팅할지, 풀 자동 교정을 켤지
+- 전제: 스냅샷과 템플릿은 보고만 되고, VM으로 만든 뒤 부트해야 교정된다
+- 검증: xe vm-list로 상태를 읽고, BitLocker를 멈춘 뒤 소량 배치로 재부팅한다
+- 범위: 가상화 평가 글의 재작성이 아니다. 8.4 2011 인증서 교정만 가른다
+
+## 문제 상황
+
+호스트만 올렸다고 보고하면, 신규 VM의 2023 인증서와 기존 VM NVRAM, 표시만 한 상태와 재부팅 완료, BitLocker 복구가 한 완료로 섞입니다.
+
+교정 문서는 관리형 흐름으로 2011 체인만 가진 VM을 찾아, 통제된 재부팅에서 2023 인증서를 넣는다고 적습니다. XenServer 8.4의 2025년 11월 업데이트는 새로 만드는 VM에 2023 인증서를 넣습니다. 이 교정은 그 업데이트 이전에 만들어진 VM에만 적용됩니다.
+
+대상은 2011 Microsoft UEFI 체인만 가진 UEFI Windows와 Linux VM입니다. Secure Boot가 꺼져 있어도 포함합니다. 스냅샷과 템플릿은 상태를 보여 주지만 직접 올리지 않습니다. 제외는 이미 2023 인증서를 가진 VM, BIOS 부트 VM, 사용자 지정 UEFI 인증서 VM입니다. CVAD로 만드는 VM은 CTX696696을 보라고 적습니다.
+
+서버 측 표시와 표시 후 부트 교정은 Early Access 2026-06-11, Normal 2026-06-24입니다. 상태는 ok, update_available, update_on_boot 셋입니다. ok는 BIOS 부트이거나 이미 2023 체인을 가진 경우입니다. update_available은 다음 부트에 표시할 수 있습니다. update_on_boot는 다음 부트에서 자동으로 올립니다.
+
+전제 경고는 TPM PCR, 특히 PCR7이 바뀌면 PCR7에 Volume Master Key를 묶은 Windows에서 BitLocker 복구가 열릴 수 있다는 것입니다. 표시 전에 복구 키를 준비하고 BitLocker 보호를 멈추며, 첫 재부팅을 감시 창에 두라고 적습니다.
+
+CLI 확인은 xe vm-list params=name-label,uuid,secureboot-certificates-state입니다. 공식 예시는 is-a-template,is-snapshot도 넣습니다. 표시는 xe vm-update-secureboot-certificates-on-boot uuid=VM-UUID mark=true, 취소는 mark=false입니다. 재부팅 전에만 취소됩니다. 재부팅 뒤 상태는 ok로 돌아갑니다.
+
+계획 안내는 대표 VM으로 먼저 시험하고, 많은 VM을 한번에 재부팅하지 말라고 적습니다. BitLocker 복구 범위를 제한하려면 소량 배치입니다.
+
+풀 자동 교정은 Early Access 2026-07-16, Normal 2026-07-20입니다. CVAD처럼 다른 제품이 만들거나 가져오는 VM에 자동 적용할 수 있습니다. 기본값은 꺼짐입니다. 켜려면 xe pool-param-set uuid=POOL-UUID auto-update-vm-secureboot-certificates=true입니다. 인증서 조작이 게스트 문제를 일으킬 수 있어 기본 꺼짐이라고 적습니다.
+
+Normal channel updates는 2025-11-19에 신규 UEFI 부트 VM이 기존 인증서와 함께 2023 Microsoft Secure Boot 인증서를 받는다고 적습니다. 2026-06-24에 기존 VM 인증서 갱신 API와 CLI를, 2026-07-20에 자동 교정을 적습니다.
+
+XenCenter Secure Boot Certificates는 2026-06-26입니다. Update available, OK, Update flagged를 보여 주고, VM 메뉴에서 Flag for certificates update 또는 Unflag를 고릅니다. 자세한 전제는 XenServer 8.4 문서를 보라고 적습니다.
+
+## 지금 결정할 것
+
+- update_available VM 목록을 이번 창에서 만들지
+- BitLocker를 멈춘 뒤 소량 재부팅으로 올릴지
+- 스냅샷과 템플릿을 VM으로 바꾼 뒤 교정할지
+- 풀 자동 교정을 기본 꺼짐으로 둘지, CVAD 반입 VM을 위해 켤지
+- CVAD 프로비저닝 VM은 CTX696696을 따로 볼지
+- BIOS 부트와 사용자 지정 UEFI 인증서 VM을 대상에서 뺄지
+
+## 의사결정 기준
+
+### update_available과 재부팅 완료를 같은 상태로 보지 않습니다
+
+상태는 표시 가능, 다음 부트 예정, 완료입니다. 목록만 보고 인증서가 올랐다고 보지 않습니다. 재부팅 뒤에도 update_available이면 표시 여부를 다시 확인합니다.
+
+### 호스트 업데이트와 기존 VM NVRAM을 한 완료로 보지 않습니다
+
+2025년 11월 업데이트는 신규 VM에 2023 인증서를 넣습니다. 그 이전 VM은 교정 흐름이 필요합니다.
+
+### BitLocker를 멈추지 않은 재부팅을 일반 부트로 보지 않습니다
+
+문서는 PCR7 변경이 BitLocker 복구를 열 수 있다고 적습니다. 복구 키 없이 대량 재부팅하지 않습니다.
+
+### 풀 자동 교정을 기본 동작으로 보지 않습니다
+
+자동 교정은 기본 꺼짐입니다. CVAD 반입 편의를 위해 켜면 BitLocker와 게스트 영향을 같은 승인에 적습니다.
+
+### 스냅샷과 템플릿 표시를 교정 완료로 보지 않습니다
+
+스냅샷과 템플릿은 보고만 됩니다. VM으로 변환하고 표시한 뒤 부트해야 상태가 바뀝니다.
+
+## 실무 체크리스트
+
+1. xe vm-list params=name-label,uuid,secureboot-certificates-state로 VM 상태를 읽습니다. 공식 예시는 템플릿과 스냅샷 플래그도 넣습니다.
+2. update_available만 교정 대상으로 남깁니다. ok, BIOS 부트, 사용자 지정 UEFI, 이미 2023을 가진 VM은 뺍니다.
+3. Windows VM은 BitLocker 복구 키를 확인하고 보호를 멈춘 뒤에만 표시합니다.
+4. 대표 VM으로 부트와 BitLocker를 확인한 뒤 소량 배치로 재부팅합니다. 대량 동시 재부팅을 승인하지 않습니다.
+5. 재부팅 뒤 상태가 ok인지 다시 읽습니다. update_available이면 표시 여부를 확인한 뒤 다시 표시합니다.
+6. 스냅샷과 템플릿은 VM으로 만든 뒤에만 표시합니다.
+7. 풀의 auto-update-vm-secureboot-certificates가 기본 꺼짐인지 기록합니다. 켜려면 CVAD 반입 이유와 BitLocker 전제를 같이 적습니다.
+8. CVAD로 만드는 이후 VM은 CTX696696을 별도 확인 항목으로 남깁니다. 이 초안이 그 절차를 확정하지 않습니다.
+9. XenCenter의 Update available과 Flag를 CLI 상태와 같은 의미로만 읽고, XenCenter 화면만으로 전제를 생략하지 않습니다.
+
+## 제외 범위
+
+- Citrix Provisioning Secure Boot CA 글의 재작성
+- CTX696696 절차를 이 초안이 확정하는 범위
+- BIOS 부트 VM과 사용자 지정 UEFI 인증서 VM
+- 부트 성공, BitLocker 미복구, 인증서 만료 일정의 사전 보장
+- XenServer 9 교정 문서를 8.4와 한 절차로 합치는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 인증서 상태, BitLocker, 스냅샷·템플릿, 풀 자동 교정, CVAD 반입 여부를 현황화합니다.
+- 의사결정 산출물: 소량 재부팅 배치, BitLocker 중지 조건, 자동 교정 유지 여부를 담은 판단표를 만듭니다.
+- 운영 검증: 상태 전이와 부트를 시나리오로 확인합니다. 무중단과 만료 일정 준수를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+XenServer 8.4 Secure Boot 인증서 교정 순서를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 가상화 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- XenServer, Manage UEFI Secure Boot certificate remediation, XenServer 8.4. 2026-07-21. 2011 만료와 2023 교체, update_available, BitLocker PCR7, CLI 표시, 풀 자동 교정 기본 꺼짐. https://docs.xenserver.com/en-us/xenserver/8/vms/manage-uefi-secure-boot-certificate-remediation (확인일: 2026-09-01). 이번 주 운영 확인 항목: xe vm-list에서 update_available을 읽었는지, BitLocker를 멈춘 뒤 소량 재부팅하는지, 풀 자동 교정이 꺼져 있는지.
+- XenServer, Normal channel updates, XenServer 8.4. 2025-11-19 신규 UEFI VM에 2023 인증서, 2026-06-24 기존 VM 갱신 API·CLI, 2026-07-20 자동 교정. https://docs.xenserver.com/en-us/xenserver/8/whats-new/normal.html (확인일: 2026-09-01). 이번 주 운영 확인 항목: 호스트가 2026-06-24 이후 Normal인지, 자동 교정은 2026-07-20 이후인지.
+- XenCenter, Secure Boot Certificates. 2026-06-26. Update available·OK·Update flagged, Flag for certificates update. https://docs.xenserver.com/en-us/xencenter/current-release/vms-secure-boot-certificates (확인일: 2026-09-01). 이번 주 운영 확인 항목: XenCenter 표시와 CLI 상태를 같은 VM에 대해 맞춰 봤는지.
+
+위 출처는 XenServer와 XenCenter 공개 문서를 설명합니다. 고객별 부트 결과, BitLocker 복구, 만료 일정을 보증하지 않습니다.
