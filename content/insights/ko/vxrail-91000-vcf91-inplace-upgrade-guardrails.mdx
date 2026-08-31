@@ -37,7 +37,7 @@ VCF 블로그는 기존 VxRail 업그레이드 절차를 따르라고 적습니�
 
 DSA-2026-251은 최초 게시 2026-06-16, 최종 수정 2026-06-16입니다. 영향은 Critical입니다. 대상은 9.1.000 이전 VxRail Appliance이고, 교정 버전은 9.1.000 이상입니다. VMware 쪽은 VMSA-2026-0004의 CVE-2026-41722, CVE-2026-41723, CVE-2026-41724를 적습니다. 이 권고를 VCF 기능 경로와 같은 승인 문장으로 합치지 않습니다.
 
-Dell 상호운용 매트릭스는 고객 관리 vCenter 9.1을 VxRail 9.1.xxx 이상과 VxRail 8.0.300 이상에서 쓸 수 있다고 적습니다. VxRail 8.0.240 이전은 vCenter 9.1과 지원하지 않습니다. 이전 VxRail에서 올리려면 VMware vCenter Server를 먼저 9.1로 올리라고 적습니다. VxRail 9.1.000의 ESXi는 9.1.0.0 빌드 25370933이고, 최소·권장 vCenter는 9.1.0.0 이상입니다. 표의 모든 빌드를 이 초안이 재작성하지 않습니다.
+Dell 상호운용 매트릭스는 고객 관리 vCenter 9.1을 VxRail 9.1.xxx 이상과 VxRail 8.0.300 이상에서 쓸 수 있다고 적습니다. VxRail 8.0.240 이하는 vCenter 9.1과 지원하지 않습니다. 이전 VxRail에서 올리려면 VMware vCenter Server를 먼저 9.1로 올리라고 적습니다. VxRail 9.1.000의 ESXi는 9.1.0.0 빌드 25370933이고, 최소·권장 vCenter는 9.1.0.0 이상입니다. 표의 모든 빌드를 이 초안이 재작성하지 않습니다.
 
 업그레이드 준비 가이드는 9.x 최신을 9.1.000, 출시 June 2026으로 적습니다. 8.x 최신은 8.0.390, July 2026입니다. 9.x로 올리면 구독 라이선스만 지원하고, 라이선스 할당에 VCF Operations가 필요하다고 적습니다. 업그레이드 전에 vSphere Lifecycle Manager 모드를 켜는 것은 고객 작업이라고 적습니다. 고객 관리 vCenter면 상호운용 매트릭스의 최소 버전을 이미 맞춰 두라고 적습니다.
 
@@ -48,7 +48,7 @@ Broadcom VCF 9.1 릴리스 노트 techdocs는 확인일 기준 JS 셸이라 운�
 - 클러스터가 Stretch, 2-node, Dynamic, Satellite인지 먼저 분류할지
 - 표준 클러스터만 이번 창에 제자리 업그레이드를 넣을지
 - 고객 관리 vCenter를 VxRail보다 먼저 9.1로 올릴지
-- 8.0.240 이전은 vCenter 9.1 경로를 포기하고 중간 열차로 갈지
+- 8.0.240 이하는 vCenter 9.1 경로를 포기하고 중간 열차로 갈지
 - 9.x 구독과 VCF Operations 배포를 업그레이드 전제로 둘지
 - vLCM 모드 전환을 고객 작업으로 이번 창에 넣을지
 - DSA-2026-251을 9.1.000 일정 근거로 쓸지, VCF 기능 근거와 섞지 않을지
@@ -65,7 +65,7 @@ Broadcom VCF 9.1 릴리스 노트 techdocs는 확인일 기준 JS 셸이라 운�
 
 ### 고객 관리 vCenter는 VxRail보다 앞입니다
 
-매트릭스는 vCenter를 먼저 9.1로 올리라고 적습니다. VxRail 8.0.240 이전은 vCenter 9.1과 지원하지 않습니다. vCenter만 9.1로 올렸다고 8.0.240 클러스터가 준비됐다고 보지 않습니다.
+매트릭스는 vCenter를 먼저 9.1로 올리라고 적습니다. VxRail 8.0.240 이하는 vCenter 9.1과 지원하지 않습니다. vCenter만 9.1로 올렸다고 8.0.240 클러스터가 준비됐다고 보지 않습니다.
 
 ### 9.x 구독과 VCF Operations를 선택 항목으로 보지 않습니다
 
@@ -80,7 +80,7 @@ DSA-2026-251은 9.1.000 이상 교정을 적습니다. 혼합 하드웨어와 St
 1. 클러스터를 표준, Stretch, 2-node, Dynamic, Satellite로 나눕니다. 후자 넷은 후속 릴리스 대기로 적습니다.
 2. 현재 VxRail이 8.0.361 이상인지, VMware 소프트웨어가 5.2.2 이상인지 기록합니다.
 3. vCenter가 VxRail 관리인지 고객 관리인지 가릅니다. 고객 관리면 매트릭스 최소 버전을 확인하고, 이전 릴리스에서 올릴 때 vCenter 9.1을 먼저 올립니다.
-4. 현재가 8.0.240 이전이면 vCenter 9.1 경로를 쓰지 않습니다. 중간 열차를 따로 적습니다.
+4. 현재가 8.0.240 이하이면 vCenter 9.1 경로를 쓰지 않습니다. 중간 열차를 따로 적습니다.
 5. 9.x 구독과 VCF Operations 배포 여부를 업그레이드 전제로 적습니다. 준비 가이드의 Install VCF Operations and assign licenses for vSphere 9를 확인 항목으로 남깁니다.
 6. vLCM 모드 전환을 고객 작업으로 일정에 넣습니다.
 7. 관리 도메인이 VxRail인 VCF 인스턴스에서 서드파티 vSAN Ready Node나 관리 도메인 혼합을 넣지 않았는지 확인합니다.
@@ -110,7 +110,7 @@ VxRail 9.1.000 제자리 업그레이드 가드레일을 정리하려면 mailto:
 
 - VMware Cloud Foundation Blog, VMware Cloud Foundation 9.1 - Path For Dell VxRail Customers. 2026-06-16. 제자리 업그레이드, 전제 5.2.2·8.0.361, Stretch·Dynamic·2-node·Satellite는 후속 릴리스, Dell 가드레일 안 혼합 하드웨어. https://blogs.vmware.com/cloud-foundation/2026/06/16/vmware-cloud-foundation-9-1-path-for-dell-vxrail-customers/ (확인일: 2026-09-01). 이번 주 운영 확인 항목: Stretch·2노드·Dynamic·Satellite를 먼저 분류했는지.
 - Dell, DSA-2026-251 Security Update for Dell VxRail. 최초·최종 2026-06-16. 9.1.000 이전 영향, 교정 9.1.000 이상, Impact Critical. https://www.dell.com/support/kbdoc/en-us/000477957/dsa-2026-251-security-update-for-dell-vxrail-for-multiple-third-party-component-vulnerabilities (확인일: 2026-09-01). 이번 주 운영 확인 항목: DSA 교정을 VCF 토폴로지 지원과 한 문장으로 합치지 않았는지.
-- Dell, VxRail and Customer-managed VMware vCenter Server Interoperability Matrix. 고객 관리 vCenter 9.1은 9.1.xxx+와 8.0.300+, 8.0.240 이전 미지원, vCenter를 VxRail보다 먼저 9.1로. https://www.dell.com/support/kbdoc/en-us/000157682/vxrail-vxrail-and-external-vcenter-interoperability-matrix (확인일: 2026-09-01). 이번 주 운영 확인 항목: 고객 관리 vCenter를 VxRail보다 먼저 9.1로 올리는지.
+- Dell, VxRail and Customer-managed VMware vCenter Server Interoperability Matrix. 고객 관리 vCenter 9.1은 9.1.xxx+와 8.0.300+, 8.0.240 이하 미지원, vCenter를 VxRail보다 먼저 9.1로. https://www.dell.com/support/kbdoc/en-us/000157682/vxrail-vxrail-and-external-vcenter-interoperability-matrix (확인일: 2026-09-01). 이번 주 운영 확인 항목: 고객 관리 vCenter를 VxRail보다 먼저 9.1로 올리는지.
 - Dell, Remote Proactive Support General Procedure: VxRail-Upgrade Customer-Preparation-Guide. 9.1.000 Released June 2026, 9.x는 구독과 VCF Operations, vLCM 모드 전환은 고객 작업. https://www.dell.com/support/kbdoc/en-us/000200768/dell-vxrail-customer-upgrade-preparation-guide (확인일: 2026-09-01). 이번 주 운영 확인 항목: 9.x 구독과 VCF Operations, vLCM 모드를 업그레이드 전에 확인했는지.
 
 위 출처는 VMware 블로그와 Dell KB를 설명합니다. 고객별 업그레이드 결과와 지원 범위를 보증하지 않습니다.
