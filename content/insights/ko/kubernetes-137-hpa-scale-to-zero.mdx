@@ -1,0 +1,100 @@
+---
+contentId: insight-kubernetes-137-hpa-scale-to-zero
+title: "Kubernetes 1.37 HPA scale-to-zero: object·external만 0으로 둘 것"
+summary: "v1.37 HPA scale-to-zero 베타에서 minReplicas=0과 CPU·메모리 메트릭 제한, ScaledToZero 조건을 가르는 리뷰 초안"
+slug: kubernetes-137-hpa-scale-to-zero
+locale: ko
+status: review
+updatedAt: 2026-09-02
+audience: [customer, partner]
+tags: [infra, kubernetes, hpa, autoscaling, scale-to-zero]
+evidenceRefs:
+  - "https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/"
+  - "https://kubernetes.io/blog/2026/08/27/kubernetes-v1-37-metrics-api-ga/"
+  - "https://github.com/kubernetes/enhancements/issues/2021"
+  - "https://raw.githubusercontent.com/kubernetes/enhancements/master/keps/sig-autoscaling/2021-scale-from-zero/README.md"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+Kubernetes v1.37 릴리스 블로그(2026-08-26)는 HorizontalPodAutoscaler scale to zero가 베타로 기본 켜진다고 적습니다. object·external 메트릭에서만 minReplicas 0이 가능합니다.
+
+- 결정: 유휴 큐·배치·GPU 워크로드에 minReplicas 0을 허용할지, 최소 1을 유지할지
+- 전제: CPU·메모리 메트릭만으로는 0으로 내리지 못한다. 활성 Pod가 있어야 측정되기 때문이다
+- 상태: ScaledToZero=True로 HPA가 내린 0과 수동 replicas 0을 가른다
+- 범위: 메트릭 API GA 글이 아니라 HPA 0 스케일 경계. KEP README는 별도 경로로 확인했다
+
+## 문제 상황
+
+릴리스 블로그는 object 또는 external 메트릭을 쓰는 워크로드가 유휴일 때 Pod를 0으로 내리고 수요가 오면 복구할 수 있다고 적습니다. spec.minReplicas: 0이 그 설정입니다. CPU·메모리 기반 스케일 투 제로는 지원하지 않는다고 명시합니다.
+
+0으로 내린 뒤 HPA status에 ScaledToZero=True를 남깁니다. 다시 올리면 NotScaledToZero 이유로 False가 됩니다. 수동으로 replicas를 0에 둔 워크로드와 HPA가 내린 0을 구분하기 위함입니다.
+
+KEP-2021 이슈는 한 줄 설명을 HPA supports scaling to/from zero pods for object/external metrics로 두고, 베타 대상을 1.37로 적습니다. KEP README는 HPAScaleToZero 게이트, ScaledToZero 조건, 리소스 메트릭 비목표를 적습니다. 메트릭 API GA 블로그는 kubectl top·리소스 메트릭 경로를 다루며, HPA 컨트롤러가 v1.37에서 아직 v1beta1만 지원한다고 적습니다. scale-to-zero 결정과 메트릭 API 버전 이전을 한 승인으로 묶지 않습니다.
+
+## 지금 결정할 것
+
+- 대상 HPA 메트릭이 object·external인지, CPU·메모리인지
+- minReplicas 0을 쓸 워크로드와 최소 1을 유지할 워크로드를 나눌지
+- ScaledToZero 조건과 수동 pause를 운영 문서에 어떻게 적을지
+- 외부 메트릭 파이프라인 장애 시 수동 스케일 책임자를 둘지
+- 다운그레이드 전 minReplicas를 1로 되돌릴지
+
+## 의사결정 기준
+
+### CPU·메모리 HPA에 minReplicas 0을 넣지 않습니다
+
+릴리스 블로그와 KEP는 스케일 투 제로를 object·external에만 둡니다. 큐 길이·외부 QPS 같은 신호가 있을 때만 0을 허용합니다. 리소스 사용률만 보는 HPA는 최소 1을 유지합니다.
+
+### ScaledToZero와 수동 replicas 0을 가릅니다
+
+KEP는 예전처럼 replicas 0만으로 HPA를 끄는 관행이 minReplicas 0과 충돌한다고 적습니다. HPA가 내린 0은 ScaledToZero=True입니다. 배포를 수동으로 멈출 때는 HPA 설정과 워크로드 복제본을 같은 변경 기록에 남깁니다.
+
+### 메트릭 API v1 이전과 scale-to-zero를 분리합니다
+
+메트릭 API GA 블로그는 HPA가 v1.37에서 v1beta1만 지원하고, v1·v1beta1 자동 선택은 아직 없다고 적습니다. scale-to-zero 채택과 metrics.k8s.io/v1 이전 일정을 한 줄로 승인하지 않습니다.
+
+### 게이트·다운그레이드 절차를 미리 적습니다
+
+KEP는 HPAScaleToZero가 apiserver 검증과 controller-manager 동작에 걸린다고 적습니다. 다운그레이드 전 minReplicas 0 HPA를 1로 올리고 워크로드를 최소 1로 두지 않으면 0에 남을 수 있습니다. 관리형 제어면이면 공급자 기본 게이트 상태를 확인합니다.
+
+## 실무 체크리스트
+
+1. 대상 HPA의 metrics type이 object 또는 external인지 확인합니다.
+2. CPU·memory only HPA에는 minReplicas 0을 적용하지 않습니다.
+3. minReplicas 0 적용 후 status에 ScaledToZero 조건이 생기는지 시험합니다.
+4. 외부 메트릭 수집 실패 시 ScalingActive·수동 스케일 절차를 적습니다.
+5. 유휴 비용 절감 대상(큐·배치·GPU)과 상시 1 유지 대상을 나눕니다.
+6. 제어면 다운그레이드 계획이 있으면 minReplicas 원복 순서를 적습니다.
+7. 메트릭 API v1 이전 일정과 이 기능을 같은 변경창에 넣지 않습니다.
+8. 주간 점검: HPA minReplicas=0인 항목의 메트릭 타입이 object·external인지 확인합니다.
+
+## 제외 범위
+
+- KEDA 등 외부 오토스케일러 제품 우열
+- 요청 버퍼링·서버리스 플랫폼 전체 설계
+- 메트릭 API v1 GA 운영 글을 이 글로 대체하는 범위
+- 인프라 컨설팅 베이스라인 재작성
+- minReplicas 0이 비용을 항상 줄인다는 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: HPA 메트릭 타입, minReplicas, ScaledToZero, 외부 메트릭 파이프라인을 현황화합니다.
+- 의사결정 산출물: 0 허용 워크로드, 금지 메트릭, 다운그레이드 절차를 담은 판단표를 만듭니다.
+- 운영 검증: minReplicas=0과 object·external 메트릭 조합을 확인합니다. 스케일 지연이나 비용 절감을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+HPA를 0까지 내릴지 최소 1을 유지할지를 가르려면 jm.park@blro.co.kr 로 오토스케일 경계 진단 범위를 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Kubernetes Blog, Kubernetes v1.37: Garhwal, 2026-08-26. HPA scale to zero 베타, object·external, ScaledToZero. https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/ (확인일: 2026-09-02)
+- Kubernetes Blog, Metrics API graduates to stable, 2026-08-27. HPA는 v1.37에서 v1beta1만 지원. https://kubernetes.io/blog/2026/08/27/kubernetes-v1-37-metrics-api-ga/ (확인일: 2026-09-02)
+- kubernetes/enhancements issue #2021. object/external scale to/from zero, beta target 1.37. https://github.com/kubernetes/enhancements/issues/2021 (확인일: 2026-09-02)
+- KEP-2021 README (sig-autoscaling/2021-scale-from-zero). HPAScaleToZero, 리소스 메트릭 non-goal. https://raw.githubusercontent.com/kubernetes/enhancements/master/keps/sig-autoscaling/2021-scale-from-zero/README.md (확인일: 2026-09-02)
+
+참고: 최초 시도한 keps/.../2021-hpa-scale-to-zero/README.md 경로는 404였고, 이슈에 적힌 2021-scale-from-zero 경로로 확인했다.
+
+위 출처는 Kubernetes 공개 문서를 설명합니다. 고객별 스케일 동작, 비용, 공급자 우위를 보증하지 않습니다.
