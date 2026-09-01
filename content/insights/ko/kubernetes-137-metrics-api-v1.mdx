@@ -1,0 +1,96 @@
+---
+contentId: insight-kubernetes-137-metrics-api-v1
+title: "Kubernetes 1.37 metrics.k8s.io/v1: APIService Available를 먼저 볼 것"
+summary: "v1.37 Metrics API 안정화에서 v1·v1beta1 병행, HPA 한계, metrics-server 구현 전제를 가르는 리뷰 초안"
+slug: kubernetes-137-metrics-api-v1
+locale: ko
+status: review
+updatedAt: 2026-09-02
+audience: [customer, partner]
+tags: [observability, kubernetes, metrics-api, metrics-server, hpa]
+evidenceRefs:
+  - "https://kubernetes.io/blog/2026/08/27/kubernetes-v1-37-metrics-api-ga/"
+  - "https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/"
+  - "https://raw.githubusercontent.com/kubernetes-sigs/metrics-server/master/README.md"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+2026-08-27 Kubernetes 블로그는 metrics.k8s.io API가 안정 버전 v1으로 승급한다고 적습니다. NodeMetrics·PodMetrics로 CPU·메모리 사용량을 제공합니다.
+
+- 결정: 클러스터에서 v1.metrics.k8s.io APIService를 Available로 둘지, v1beta1만 유지할지
+- 전제: v1 표면은 v1beta1과 필드가 같고, feature gate가 아니라 aggregation 구현체가 v1을 서빙해야 한다
+- 한계: kubectl top은 v1을 선호하고 v1beta1으로 폴백한다. HPA는 v1.37에서 v1beta1만 지원한다
+- 범위: 전체 모니터링 파이프라인 대체가 아니라 리소스 메트릭 API 버전과 APIService 상태
+
+## 문제 상황
+
+릴리스 블로그도 metrics.k8s.io API Stable을 적습니다. 메트릭 API GA 글은 거의 9년 베타 끝에 v1이 생겼다고 적습니다. API는 작습니다. 오토스케일과 kubectl top용 리소스 메트릭이며 custom.metrics.k8s.io나 전체 관측 파이프라인을 대체하지 않습니다.
+
+구현체는 metrics-server 같은 aggregation 레이어 컴포넌트입니다. GA 글은 선택한 구현이 v1.metrics.k8s.io를 서빙하고 APIService를 등록해야 v1을 쓸 수 있다고 적습니다. 전환 중에는 v1과 v1beta1을 함께 서빙하라고 권합니다.
+
+metrics-server README는 오토스케일용이며 모니터링 솔루션으로 메트릭을 전달하지 말라고 적습니다. 수집은 Kubelet에서 하고 Metrics API로 노출합니다. 호환 표의 최근 줄은 metrics.k8s.io/v1beta1을 적습니다. README만 보고 v1 서빙이 끝났다고 보지 말고, 클러스터 APIService를 확인합니다.
+
+## 지금 결정할 것
+
+- metrics-server 또는 동등 구현이 v1을 서빙하는지
+- v1beta1을 언제까지 병행할지
+- HPA가 v1만 보게 바꾸지 않도록 일정을 나눌지
+- kubectl top 클라이언트와 커스텀 컨트롤러의 API 버전 고정 여부를 점검할지
+- metrics-server를 모니터링 백엔드로 쓰지 않는지
+
+## 의사결정 기준
+
+### APIService Available과 구현체 버전을 같이 봅니다
+
+GA 글은 kubectl get apiservice v1.metrics.k8s.io로 Available을 확인하라고 적습니다. /apis/metrics.k8s.io/ 로 서빙 버전도 볼 수 있습니다. APIService만 만들고 구현이 v1을 안 켜면 Available이 아닙니다. 업그레이드 체크리스트에 둘을 같이 넣습니다.
+
+### HPA 이전과 kubectl top 이전을 분리합니다
+
+GA 글은 kubectl top이 v1을 선호하고 v1beta1으로 폴백한다고 적습니다. HPA 컨트롤러는 v1.37에서 v1beta1만 지원하고, discovery 기반 선택은 아직 없다고 적습니다. 클라이언트 도구와 HPA 스케줄을 한 변경으로 묶지 않습니다.
+
+### 리소스 메트릭 API와 관측 백엔드를 가릅니다
+
+metrics-server README는 오토스케일 목적이며 모니터링 전달용으로 쓰지 말라고 적습니다. Prometheus 등 관측 스택은 Kubelet /metrics/resource 등 별도 경로를 씁니다. metrics.k8s.io/v1 GA를 관측 플랫폼 교체로 해석하지 않습니다.
+
+### 필드 변경이 없다는 점을 전제로 테스트를 줄이지 않습니다
+
+GA 글은 v1이 v1beta1과 동일한 리소스·필드라고 적습니다. 그래도 집계 APIService, RBAC, 네트워크 경로(제어면↔metrics-server↔kubelet)는 README Requirements에 남아 있습니다. 버전 문자열만 바꾸고 연결 점검을 건너뛰지 않습니다.
+
+## 실무 체크리스트
+
+1. kubectl get apiservice v1.metrics.k8s.io 상태가 Available인지 확인합니다.
+2. kubectl get --raw /apis/metrics.k8s.io/ 로 v1·v1beta1 서빙 여부를 봅니다.
+3. metrics-server(또는 대체 구현) 버전이 v1 서빙을 지원하는지 기록합니다.
+4. HPA가 아직 v1beta1만 쓰는 일정을 메트릭 API 이전과 분리합니다.
+5. kubectl top 폴백이 필요한 구형 클러스터를 목록화합니다.
+6. metrics-server를 모니터링 파이프라인 소스로 쓰지 않는지 확인합니다.
+7. aggregation layer·kubelet 인증 전제(README Requirements)를 점검합니다.
+8. 주간 점검: kubectl get apiservice v1.metrics.k8s.io Available을 확인합니다.
+
+## 제외 범위
+
+- Prometheus·Grafana 등 관측 제품 우열
+- custom.metrics.k8s.io·외부 메트릭 어댑터 전체 설계
+- HPA scale-to-zero 기능 글을 이 글로 대체하는 범위
+- 인프라 컨설팅 베이스라인 재작성
+- v1 승급만으로 오토스케일 정확도가 오른다는 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: metrics.k8s.io APIService, 구현체, v1·v1beta1 병행, HPA·kubectl top 클라이언트를 현황화합니다.
+- 의사결정 산출물: v1 전환 시점, 병행 기간, HPA 대기 사유를 담은 판단표를 만듭니다.
+- 운영 검증: v1.metrics.k8s.io Available을 확인합니다. 모니터링 품질이나 HPA 정확도를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+metrics.k8s.io/v1 전환과 APIService 상태를 정리하려면 jm.park@blro.co.kr 로 클러스터 메트릭 API 진단 범위를 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Kubernetes Blog, Metrics API graduates to stable, 2026-08-27. v1 승급, HPA v1beta1 only, APIService 확인. https://kubernetes.io/blog/2026/08/27/kubernetes-v1-37-metrics-api-ga/ (확인일: 2026-09-02)
+- Kubernetes Blog, Kubernetes v1.37: Garhwal, 2026-08-26. metrics.k8s.io Stable 언급. https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/ (확인일: 2026-09-02)
+- kubernetes-sigs/metrics-server README (master). 오토스케일 목적, aggregation·Kubelet 전제, 호환 표. https://raw.githubusercontent.com/kubernetes-sigs/metrics-server/master/README.md (확인일: 2026-09-02)
+
+위 출처는 Kubernetes 공개 문서를 설명합니다. 고객별 메트릭 품질, 오토스케일 결과, 공급자 우위를 보증하지 않습니다.

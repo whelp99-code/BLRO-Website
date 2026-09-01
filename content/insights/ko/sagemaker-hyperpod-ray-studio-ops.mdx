@@ -1,0 +1,96 @@
+---
+contentId: insight-sagemaker-hyperpod-ray-studio-ops
+title: "SageMaker HyperPod Ray: Studio에서 클러스터 만들기 전에 add-on을 먼저 맞출 것"
+summary: "2026-08-24 HyperPod Ray·Studio 통합에서 KubeRay·Observability·Spaces 전제와 Studio RayCluster 생성 순서를 가르는 리뷰 초안"
+slug: sagemaker-hyperpod-ray-studio-ops
+locale: ko
+status: review
+updatedAt: 2026-09-02
+audience: [customer, partner]
+tags: [ai, sagemaker, hyperpod, ray, kuberay, eks]
+evidenceRefs:
+  - "https://aws.amazon.com/blogs/machine-learning/introducing-new-ray-capabilities-on-sagemaker-hyperpod/"
+  - "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ray.html"
+  - "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html"
+relatedContent: ["insight:ai-governance-decision-operating-model"]
+---
+
+## 한눈에 보기
+
+2026-08-24 AWS 블로그는 Amazon SageMaker HyperPod에 Ray 기능을 붙였다고 적습니다. Studio에서 Ray 클러스터를 만들고 대시보드·Grafana·노트북을 열 수 있다고 안내합니다.
+
+- 결정: Studio RayCluster를 바로 만들지, KubeRay와 HyperPod Observability 등 전제 add-on을 먼저 맞출지
+- 전제: Ray on HyperPod는 EKS 오케스트레이션 HyperPod와 오픈소스 KubeRay를 쓴다고 운영 문서가 적는다
+- 운영 순서: 블로그 Prerequisites는 Spaces, Observability, KubeRay, Ray Endpoint Operator, Studio 도메인을 클러스터에 설치한 뒤 Studio Tasks에서 RayCluster를 만들라고 적는다
+- 범위: Ray 학습·서빙 성능 비교가 아니라 Studio 생성 전 운영 전제와 관측 경로
+
+## 문제 상황
+
+데이터 과학자가 Studio에서 RayCluster만 누르면 YAML과 kubectl이 사라진 것처럼 보입니다. 블로그는 그 전제로 SageMaker Spaces EKS add-on, HyperPod Observability EKS add-on, KubeRay operator, HyperPod Ray Endpoint Operator Helm 차트, SageMaker Studio 도메인이 필요하다고 적습니다.
+
+Observability add-on이 없으면 Ray 메트릭과 Managed Grafana 대시보드가 준비되지 않습니다. KubeRay가 없으면 RayCluster·RayJob·RayService 커스텀 리소스를 다룰 수 없습니다. Endpoint Operator가 없으면 인증된 공개 엔드포인트와 원격 제출 경로가 비어 있습니다.
+
+운영 문서는 Ray 코드와 KubeRay 커스텀 리소스는 그대로 두고 HyperPod가 그 주변에 Studio 인터페이스, 대시보드 접근, Observability, 노드 복구·hung job·티어드 체크포인트, JumpStart·티어드 KV 캐시를 더한다고 적습니다. HyperPod 개요는 EKS와 Slurm 오케스트레이션을 나누고, Ray 문서는 EKS 오케스트레이션 클러스터를 전제로 합니다.
+
+## 지금 결정할 것
+
+- HyperPod를 EKS 오케스트레이션으로 둘지, Slurm만 쓸지
+- Studio RayCluster 생성 전에 KubeRay와 HyperPod Observability add-on을 설치했는지
+- Spaces add-on과 Ray Endpoint Operator를 같은 클러스터에 둘지
+- 원격 엔드포인트를 켤지, kubectl port-forward만 허용할지
+- 관측을 Managed Grafana Ray 대시보드에 둘지, 별도 Prometheus 구성을 유지할지
+
+## 의사결정 기준
+
+### Studio 생성과 클러스터 add-on 설치를 같은 승인으로 묶지 않습니다
+
+블로그는 Studio HyperPod Tasks 탭에서 RayCluster를 만든다고 적습니다. 같은 글 Prerequisites는 Spaces, Observability, KubeRay, Endpoint Operator, Studio 도메인을 먼저 설치하라고 적습니다. Studio UI만 열어 두고 add-on 점검 없이 생성 승인을 내지 않습니다.
+
+### Observability add-on과 수동 Grafana 구성을 가릅니다
+
+블로그는 Observability add-on이 Ray head·worker를 발견하고 메트릭을 수집하며 Ray Core·Data·Train·Serve 네 대시보드를 Managed Grafana에 둔다고 적습니다. 수동 Helm·PodMonitor·대시보드 JSON 경로와 Studio Open Grafana 한 클릭 경로를 같은 운영 모델로 적지 않습니다.
+
+### 오픈소스 Ray API와 HyperPod 부가 기능을 나눕니다
+
+운영 문서는 Ray API와 KubeRay 리소스는 바꾸지 않는다고 적습니다. 노드 자동 복구, hung job detection, 티어드 체크포인트, JumpStart 로더, 티어드 KV 캐시는 HyperPod가 더하는 계층입니다. 기존 Ray 스크립트 호환과 부가 기능 채택을 한 줄로 승인하지 않습니다.
+
+### EKS HyperPod와 Slurm HyperPod를 섞지 않습니다
+
+HyperPod 개요는 Slurm과 Amazon EKS를 각각 설명합니다. Ray on HyperPod 문서는 EKS 오케스트레이션 클러스터를 전제로 합니다. Slurm만 있는 클러스터에 Studio RayCluster 절차를 그대로 적용하지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상이 EKS 오케스트레이션 HyperPod인지 기록합니다.
+2. Studio RayCluster 생성 전 KubeRay operator 설치 여부를 확인합니다.
+3. HyperPod Observability EKS add-on 설치 여부를 확인합니다.
+4. SageMaker Spaces EKS add-on과 Studio 도메인 연결을 확인합니다.
+5. Ray Endpoint Operator Helm 차트 설치와 원격 엔드포인트 사용 여부를 적습니다.
+6. 클러스터 Running 후 Open Ray Dashboard와 Open Grafana 경로를 시험할지 정합니다.
+7. 노트북 연결이 Spaces zero-compute worker와 ray.init(address="auto")인지 기록합니다.
+8. 주간 점검: Studio RayCluster 생성 전 KubeRay와 HyperPod Observability add-on이 있는지 확인합니다.
+
+## 제외 범위
+
+- Ray와 다른 분산 프레임워크의 우열이나 벤치마크
+- GPU 기종, UltraServers, 학습 수렴 속도의 확정 판정
+- 고객별 모델 가중치, 체크포인트, 비용 청구의 공개
+- AI 거버넌스 운영 모델 글을 다시 쓰는 범위
+- add-on만 설치하면 학습·서빙 안정성이 보장된다는 주장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: HyperPod 오케스트레이션, KubeRay·Observability·Spaces·Endpoint Operator, Studio Tasks 경로를 현황화합니다.
+- 의사결정 산출물: Studio 생성 전 전제, 관측 경로, 원격 엔드포인트, EKS 전제 여부를 담은 판단표를 만듭니다.
+- 운영 검증: Studio RayCluster 생성 전 KubeRay와 HyperPod Observability add-on 설치를 확인합니다. 학습 성공이나 서빙 지연을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+HyperPod에서 Ray를 Studio로 열기 전 add-on 순서를 정리하려면 jm.park@blro.co.kr 로 AI 클러스터 운영 진단 범위를 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS Machine Learning Blog, Introducing new Ray capabilities on SageMaker HyperPod, 2026-08-24. Studio RayCluster, Prerequisites add-on, Observability 대시보드. https://aws.amazon.com/blogs/machine-learning/introducing-new-ray-capabilities-on-sagemaker-hyperpod/ (확인일: 2026-09-02)
+- Amazon SageMaker Developer Guide, Ray on SageMaker HyperPod. EKS·KubeRay 전제, Studio·Observability·복원력 계층. https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ray.html (확인일: 2026-09-02)
+- Amazon SageMaker Developer Guide, Amazon SageMaker HyperPod. EKS·Slurm 오케스트레이션 구분, 지원 리전. https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html (확인일: 2026-09-02)
+
+위 출처는 AWS 공개 문서를 설명합니다. 고객별 학습 성공, 비용, 공급자 우위를 보증하지 않습니다.
