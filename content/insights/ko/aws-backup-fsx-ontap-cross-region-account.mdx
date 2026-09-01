@@ -1,0 +1,96 @@
+---
+contentId: insight-aws-backup-fsx-ontap-cross-region-account
+title: "AWS Backup FSx ONTAP: 교차 리전·교차 계정 복사 대상을 먼저 정할 것"
+summary: "2026-08-27 AWS Backup의 FSx for NetApp ONTAP 교차 리전·교차 계정 복사와 동일 리전 복원 한계를 가르는 리뷰 초안"
+slug: aws-backup-fsx-ontap-cross-region-account
+locale: ko
+status: review
+updatedAt: 2026-09-02
+audience: [customer, partner]
+tags: [backup, disaster-recovery, aws-backup, fsx, ontap]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/aws-backup-amazon-fsx-netapp-cross-account-region/"
+  - "https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html"
+  - "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/using-backups.html"
+relatedContent: ["insight:backup-dr-decision-checklist", "service:backup-disaster-recovery"]
+---
+
+## 한눈에 보기
+
+2026-08-27 AWS What's New는 AWS Backup이 Amazon FSx for NetApp ONTAP 백업을 다른 리전, 다른 계정, 또는 둘 다로 복사할 수 있다고 적습니다. 정책 기반 백업 플랜 또는 온디맨드 복사입니다.
+
+- 결정: ONTAP 볼륨 백업의 복사 목적지 리전·계정·볼트를 표준 백업과 같은 승인으로 둘지
+- 전제: FSx 문서는 볼륨 백업 복원이 백업이 저장된 동일 리전의 파일 시스템으로만 가능하다고 적는다
+- 운영: 교차 리전 복사는 백업 플랜의 Copy to destination과 대상 Backup vault로 설정한다
+- 범위: 일반 RPO 가이드 재작성이 아니라 ONTAP의 교차 복사와 동일 리전 복원 경계
+
+## 문제 상황
+
+프로덕션 계정·리전에만 ONTAP 백업이 있으면, 리전 장애와 계정 침해를 같은 경계에서 맞습니다. What's New는 다른 리전 복사가 DR·연속성, 다른 계정 복사가 삭제·운영 실수·계정 침해 완화에 도움이 된다고 적습니다. Organizations로 조직 전체 자동화가 가능하다고 안내합니다.
+
+FSx ONTAP 백업 문서는 AWS Backup이 FSx 내장 백업을 쓰며, AWS Backup으로 만든 백업도 사용자 개시 백업으로 집계된다고 적습니다. 같은 문서는 백업을 복원할 때 백업이 저장된 AWS 리전과 같은 리전의 파일 시스템으로만 복원한다고 적습니다. 교차 리전 사본이 있어도 복원 시험은 그 사본이 있는 리전에서 열어야 합니다.
+
+교차 리전 백업 가이드는 백업 플랜 규칙에서 Copy to destination 리전과 Destination Backup vault를 고른다고 적습니다. 다른 계정 볼트로 복사하려면 별도 교차 계정 복사 문서를 따른다고 안내합니다. What's New만 읽고 복원 리전을 원본과 같다고 가정하지 않습니다.
+
+## 지금 결정할 것
+
+- ONTAP 백업을 AWS Backup 플랜으로 통합할지, FSx 자동 일일 백업만 유지할지
+- 복사 목적지가 다른 리전인지, 다른 계정인지, 둘 다인지
+- 대상 Backup vault와 KMS 키를 누가 소유하는지
+- 복원 시험을 원본 리전에서 할지, 복사본 리전에서 할지
+- Organizations 백업 정책으로 계정 전체에 동일 규칙을 펼칠지
+
+## 의사결정 기준
+
+### 교차 리전 복사와 교차 리전 복원을 한 말로 쓰지 않습니다
+
+What's New는 교차 리전·교차 계정 복사를 말합니다. FSx 문서는 복원이 백업 저장 리전과 같은 리전으로만 된다고 적습니다. DR 런북에는 복사 목적지와 복원 실행 리전을 따로 적습니다.
+
+### 백업 플랜 Copy 규칙과 온디맨드 복사를 가릅니다
+
+교차 리전 가이드는 온디맨드 Copy와 스케줄 백업 플랜의 Copy to destination을 나눕니다. 정기 DR 사본은 플랜 규칙으로 고정하고, 임시 검증만 온디맨드로 둡니다. 플랜 없이 콘솔 복사만 반복하지 않습니다.
+
+### AWS Backup 경로와 FSx 콘솔 삭제 권한을 나눕니다
+
+FSx 문서는 AWS Backup이 만든 백업을 FSx 콘솔·CLI·API로 삭제할 수 없다고 적습니다. 수명 주기와 삭제는 Backup vault·플랜 쪽에서 관리합니다. FSx 볼륨 태그는 파일 시스템이 아니라 볼륨에 붙여 백업 플랜 선택에 쓴다고 적습니다.
+
+### 상용 리전 전제를 확인합니다
+
+What's New는 FSx for NetApp ONTAP와 AWS Backup이 함께 있는 모든 상용 리전에서 가능하다고 적습니다. 교차 리전 가이드는 리소스·리전별 기능표를 보라고 안내합니다. 목표 리전이 표에 있는지 승인 전에 확인합니다.
+
+## 실무 체크리스트
+
+1. ONTAP RW 볼륨이 AWS Backup 보호 대상인지 기록합니다.
+2. 백업 플랜에 Copy to destination Region이 있는지 확인합니다.
+3. 대상 Destination Backup vault와 계정 소유자를 적습니다.
+4. 교차 계정이면 교차 계정 복사 설정 문서와 Organizations 범위를 확인합니다.
+5. 복원 시험 리전이 복사본이 있는 리전인지 런북에 적습니다.
+6. AWS Backup 생성 백업의 삭제·보존이 Backup 쪽에서만 되는지 확인합니다.
+7. 볼륨 단위 태그로 플랜 할당이 되는지 확인합니다.
+8. 주간 점검: Backup plan의 ONTAP Copy destination Region·account vault를 확인합니다.
+
+## 제외 범위
+
+- 특정 백업 제품·저장 계층 가격 비교
+- 일반 백업·DR 체크리스트 전체 재작성
+- SnapMirror·FlexCache DP 볼륨 백업 지원 가정
+- 복구 시간·랜섬웨어 대응의 사전 보장
+- 고객별 볼륨 이름·계정 번호 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: ONTAP 백업 경로, Copy 규칙, 대상 리전·계정 볼트, 복원 시험 리전을 현황화합니다.
+- 의사결정 산출물: 교차 리전·교차 계정 목표, 볼트 소유, 복원 실행 위치를 담은 판단표를 만듭니다.
+- 운영 검증: Backup plan Copy destination을 확인합니다. RTO·데이터 무결성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+FSx ONTAP 백업을 어느 리전·계정 볼트로 복사할지 가르려면 jm.park@blro.co.kr 로 백업·DR 진단 범위를 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, 2026-08-27. FSx for NetApp ONTAP 교차 리전·교차 계정 복사, Organizations. https://aws.amazon.com/about-aws/whats-new/2026/08/aws-backup-amazon-fsx-netapp-cross-account-region/ (확인일: 2026-09-02)
+- AWS Backup Developer Guide, Creating backup copies across AWS Regions. Copy to destination, Destination Backup vault. https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html (확인일: 2026-09-02)
+- Amazon FSx for NetApp ONTAP User Guide, Protecting your data with volume backups. AWS Backup 통합, 동일 리전 복원. https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/using-backups.html (확인일: 2026-09-02)
+
+위 출처는 AWS 공개 문서를 설명합니다. 고객별 복구 성공, 보존 적합성, 공급자 우위를 보증하지 않습니다.
