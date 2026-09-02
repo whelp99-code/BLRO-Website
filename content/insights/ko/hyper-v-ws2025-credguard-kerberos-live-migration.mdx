@@ -1,0 +1,99 @@
+---
+contentId: insight-hyper-v-ws2025-credguard-kerberos-live-migration
+title: "Windows Server 2025 Hyper-V: CredSSP 라이브 마이그레이션을 Kerberos로 바꿀지"
+summary: "Windows Server 2025에서 Credential Guard 기본 활성으로 CredSSP 라이브 마이그레이션이 깨지므로, Kerberos 제한 위임 전환 여부를 가르는 리뷰 초안"
+slug: hyper-v-ws2025-credguard-kerberos-live-migration
+locale: ko
+status: review
+updatedAt: 2026-09-03
+audience: [customer, partner]
+tags: [hyper-v, windows-server-2025, credential-guard, live-migration, kerberos]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/set-up-hosts-for-live-migration-without-failover-clustering"
+  - "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/considerations-known-issues"
+  - "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/"
+  - "https://learn.microsoft.com/en-us/system-center/vmm/migrate-vm?view=sc-vmm-2025"
+relatedContent: ["insight:virtualization-hci-migration-guide"]
+---
+
+## 한눈에 보기
+
+Windows Server 2025로 Hyper-V 호스트를 올리면 Credential Guard가 도메인 조인 비도메인 컨트롤러에서 기본 활성입니다. Microsoft Learn은 이 때문에 CredSSP 기반 라이브 마이그레이션을 쓸 수 없다고 적습니다.
+
+- 결정: Kerberos 제한 위임으로 전환한 호스트만 마이그레이션을 허용할지
+- 전제: Windows Server 2022 이하 기본 인증은 CredSSP입니다. 2025 업그레이드 후 CredSSP 경로는 깨집니다
+- 운영 순서: 위임에 Microsoft Virtual System Migration Service와 cifs를 맞춘 뒤 Set-VMHost -VirtualMachineMigrationAuthenticationType Kerberos를 적용합니다
+- 범위: GPU-P·DDA 라이브 마이그레이션 주제가 아니라 인증 프로토콜 전환입니다
+
+## 문제 상황
+
+라이브 마이그레이션 문서는 Upgrading to Windows Server 2025에서 Credential Guard 기본 활성 때문에 CredSSP 기반 라이브 마이그레이션을 쓸 수 없다고 적습니다. Kerberos constrained delegation으로 바꾸라고 안내합니다.
+
+Credential Guard 개요는 Windows Server 2025에서 도메인 조인·비도메인 컨트롤러·하드웨어 요건을 충족하고 명시적으로 끄지 않은 장치에 Credential Guard가 기본 켜진다고 적습니다. Known Issues는 CredSSP 위임이 저장된 자격 증명·SSO를 쓰지 못해 라이브 마이그레이션이 실패할 수 있다고 적습니다. 오류 예시는 No credentials are available in the security package 0x8009030E입니다.
+
+SCVMM 2025 마이그레이션 문서는 원본 또는 대상이 Windows Server 2025이면 Kerberos를 권장하고, VMM 2025는 그 경우 Kerberos를 기본으로 둔다고 적습니다. CredSSP만 남겨 둔 호스트 쌍은 업그레이드 직후 이동이 멈춥니다.
+
+## 지금 결정할 것
+
+- 업그레이드 대상 Hyper-V 호스트가 도메인 조인 Windows Server 2025인지
+- 라이브 마이그레이션 인증을 CredSSP로 둘지 Kerberos로 바꿀지
+- Active Directory에서 원본·대상 양방향 constrained delegation을 먼저 승인할지
+- SCVMM을 쓰는 클러스터에 VMM 2025 Kerberos 기본을 그대로 따를지
+- Credential Guard를 끄고 CredSSP를 유지하는 우회를 허용할지. Learn은 Kerberos 전환을 권고합니다
+
+## 의사결정 기준
+
+### CredSSP 기본과 2025 기본 활성을 같은 설정으로 적지 않습니다
+
+2022 이하 라이브 마이그레이션 기본은 CredSSP입니다. 2025는 Credential Guard 기본 활성으로 CredSSP 경로를 막습니다. 업그레이드 승인에 인증 프로토콜 변경을 포함합니다.
+
+### Kerberos 위임 서비스 목록을 고정합니다
+
+Constrained delegation에는 가상 머신 이동용 Microsoft Virtual System Migration Service와 스토리지 이동용 cifs가 필요합니다. 위임 탭만 켜고 서비스 목록을 비우지 않습니다.
+
+### 호스트 PowerShell 설정과 도메인 위임을 가릅니다
+
+Set-VMHost -VirtualMachineMigrationAuthenticationType Kerberos는 호스트 쪽 인증 형식입니다. 도메인 Administrators 권한이 필요한 constrained delegation과 한 작업으로 묶지 않습니다.
+
+### SCVMM 경로를 별도 승인으로 둡니다
+
+Known Issues는 SCVMM 등 라이브 마이그레이션에 의존하는 서비스도 영향받을 수 있다고 적습니다. VMM 2025는 원본 또는 대상이 Windows Server 2025이면 Kerberos를 기본으로 둡니다. 호스트만 Kerberos로 바꾸고 VMM 연결 쌍을 점검하지 않으면 실패가 남습니다.
+
+## 실무 체크리스트
+
+1. 업그레이드·신규 Windows Server 2025 Hyper-V 호스트 목록을 만듭니다.
+2. Get-VMHost로 VirtualMachineMigrationAuthenticationType을 기록합니다.
+3. CredSSP인 도메인 조인 2025 호스트를 FAIL 후보로 표시합니다.
+4. 원본·대상 컴퓨터 계정에 Microsoft Virtual System Migration Service와 cifs 위임을 설정합니다.
+5. Set-VMHost -VirtualMachineMigrationAuthenticationType Kerberos를 적용합니다.
+6. Kerberos 티켓 재발급·복제 반영 후 시험 마이그레이션을 한 건 수행합니다.
+7. SCVMM을 쓰면 원본·대상 중 2025가 있는 쌍의 Kerberos 기본을 확인합니다.
+8. 주간 점검: Get-VMHost에서 Kerberos만 PASS로 남깁니다.
+
+## 제외 범위
+
+- Hyper-V GPU-P·DDA 라이브 마이그레이션 성능·호환
+- Credential Guard를 끄는 보안 예외의 장기 승인
+- 고객 클러스터명, 무중단 보장
+- 서버 가상화 마이그레이션 가이드 전체를 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 호스트 OS, Credential Guard 기본 활성 여부, VirtualMachineMigrationAuthenticationType, 위임 서비스, SCVMM 사용 여부를 현황화합니다.
+- 의사결정 산출물: Kerberos 전환 대상 호스트, 위임 범위, VMM 쌍을 담은 판단표를 만듭니다.
+- 운영 검증: Get-VMHost의 VirtualMachineMigrationAuthenticationType이 Kerberos인지 확인합니다. 마이그레이션 성공률을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Windows Server 2025 Hyper-V 라이브 마이그레이션 인증 전환을 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Set up hosts for live migration without Failover Clustering. Windows Server 2025에서 CredSSP 라이브 마이그레이션 불가, Kerberos·Set-VMHost, 0x8009030E. https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/set-up-hosts-for-live-migration-without-failover-clustering (확인일: 2026-09-03)
+- Microsoft Learn, Considerations and known issues when using Credential Guard. Live migration breaks on upgrade to Windows Server 2025, SCVMM 영향, Kerberos Constrained Delegation 권고. https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/considerations-known-issues (확인일: 2026-09-03)
+- Microsoft Learn, Credential Guard. Windows Server 2025 domain-joined non-DC 기본 활성. https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/ (확인일: 2026-09-03)
+- Microsoft Learn, Migrate a virtual machine in the VMM fabric, view=sc-vmm-2025. VMM 2025가 원본·대상 Windows Server 2025에서 Kerberos 기본. https://learn.microsoft.com/en-us/system-center/vmm/migrate-vm?view=sc-vmm-2025 (확인일: 2026-09-03)
+
+이번 주 운영 확인: Get-VMHost | Select-Object ComputerName, VirtualMachineMigrationAuthenticationType — Kerberos면 PASS, 도메인 조인 Windows Server 2025에서 CredSSP면 FAIL.
+
+위 출처는 Microsoft Learn 공개 문서를 설명합니다. 고객별 마이그레이션 성공이나 다운타임 없음을 보증하지 않습니다.
