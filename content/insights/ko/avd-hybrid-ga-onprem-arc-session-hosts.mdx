@@ -1,0 +1,99 @@
+---
+contentId: insight-avd-hybrid-ga-onprem-arc-session-hosts
+title: "AVD Hybrid GA: validation 호스트 풀과 Arc 확장만으로 온프레미스를 붙일지"
+summary: "2026년 9월 AVD Hybrid GA에서 multi-session·Session Host Configuration·Autoscale가 제외되므로, validation 풀+Arc만으로 온프레미스 세션 호스트를 붙일지를 가르는 리뷰 초안"
+slug: avd-hybrid-ga-onprem-arc-session-hosts
+locale: ko
+status: review
+updatedAt: 2026-09-03
+audience: [customer, partner]
+tags: [vdi, avd, azure-arc, hybrid, session-host]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/hybrid-overview"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/deploy-azure-virtual-desktop-hybrid"
+  - "https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-validation-environment"
+relatedContent: ["insight:vdi-capacity-planning", "insight:avd-session-host-configuration-update"]
+---
+
+## 한눈에 보기
+
+Azure Virtual Desktop what’s new September 2026는 Azure Virtual Desktop Hybrid를 Generally Available로 적습니다. 온프레미스 하이퍼바이저 또는 물리 Windows Server에 세션 호스트를 두고, Azure Arc와 AVD Arc 확장으로 호스트 풀에 등록합니다.
+
+- 결정: 지금은 validation 호스트 풀과 Azure Arc 확장만 허용되는 범위에서 온프레미스 세션 호스트를 붙일지
+- 전제: multi-session은 Not supported입니다. Power management·Autoscale·Start VM on Connect·Session Host Configuration은 지원하지 않습니다
+- 운영 순서: validation 환경 호스트 풀 생성 → Arc-enable → AVD Arc 확장 → Session hosts Available 확인. 최대 약 15분
+- 범위: Session Host Configuration 운영 글과의 관계는, Hybrid가 SHC를 쓰지 못한다는 점에서 연결됩니다
+
+## 문제 상황
+
+hybrid-overview는 updated_at 2026-09-01 기준으로, Hybrid가 Azure의 AVD 서비스를 유지한 채 온프레미스에 앱·데스크톱을 둔다고 적습니다. 라이선스는 지원 OS 사용자 entitlement와 Hybrid service user license입니다. Windows 11·10 Enterprise multi-session은 Hybrid에서 Not supported입니다.
+
+배포 문서는 현재 호스트 풀을 validation environment로 구성해야 한다고 적습니다. Session Host Configuration은 지원하지 않습니다. Windows Server 세션 호스트는 ADDS 또는 hybrid-joined여야 하고, Microsoft Entra ID-only join은 RDS 라이선스 서버 의존 때문에 지원하지 않습니다. 확장 Succeeded 후에도 호스트 풀 Available까지 최대 15분이 걸릴 수 있습니다.
+
+validation environment 문서는 validation host pools should only be used for testing, and not in production environments라고 적습니다. Hybrid 배포는 지금 validation 풀을 요구합니다. 운영자는 시험 전용 권고와 Hybrid의 validation-only 요구를 한 결정으로 맞춰야 합니다. 프로덕션 사용자 규모를 validation 풀에 올릴지, Hybrid 온보딩을 시험 풀에만 둘지 먼저 고릅니다.
+
+## 지금 결정할 것
+
+- AVD Hybrid GA 범위에서 온프레미스 세션 호스트 PoC를 시작할지
+- validation 호스트 풀만 쓸지, 프로덕션 사용자 유입을 같은 풀에 허용할지
+- multi-session 이미지를 후보에서 뺄지
+- Session Host Configuration·Autoscale·Start VM on Connect 없이 호스트 수명 주기를 온프레미스 도구로 가져갈지
+- Windows Server를 ADDS·hybrid-joined로만 둘지. Entra-only Server는 제외합니다
+
+## 의사결정 기준
+
+### GA 범위와 미지원 기능을 나눕니다
+
+what’s new는 Hybrid GA와 Arc 확장 등록을 적습니다. overview는 Power management, Autoscale, Start VM on Connect, Session Host Configuration을 미지원으로 둡니다. SHC 기반 자동 호스트 풀 운영을 Hybrid 승인과 같은 줄에 쓰지 않습니다.
+
+### validation 요구와 시험 전용 권고를 운영 결정으로 적습니다
+
+배포 문서는 Hybrid가 현재 validation environment 호스트 풀을 요구합니다. validation 문서는 시험 전용·비프로덕션을 권고합니다. 이 긴장을 Microsoft 모순으로 적지 않고, 시험 풀에만 붙일지 프로덕션 트래픽을 제한한 채 운영할지 운영자 결정으로 남깁니다.
+
+### 세션 호스트 ID 조인 방식을 가릅니다
+
+Windows client는 Entra·ADDS·hybrid-joined가 가능합니다. Windows Server는 ADDS 또는 hybrid-joined만 허용되고 Entra-only는 불가입니다. Server Entra-only 이미지를 Hybrid 대상으로 올리지 않습니다.
+
+### Available 판정 시간을 별도 점검으로 둡니다
+
+확장 상태가 Succeeded여도 호스트 풀 Session hosts가 Available이 되기까지 최대 15분이 걸릴 수 있습니다. 확장 성공만으로 접수 완료로 보지 않습니다.
+
+## 실무 체크리스트
+
+1. what’s new September 2026 Hybrid GA 범위를 변경 기록에 남깁니다.
+2. 호스트 풀을 validation environment=Yes로 만듭니다. Session Host Configuration은 쓰지 않습니다.
+3. 온프레미스 VM 또는 물리 Windows Server를 배포하고 Arc connected machine agent를 설치합니다.
+4. Windows Server면 ADDS 또는 hybrid-joined인지 확인합니다. Entra-only Server는 제외합니다.
+5. multi-session 이미지를 쓰지 않습니다.
+6. AVD Arc extension(CloudDeviceExtension)으로 호스트 풀에 등록합니다.
+7. Session hosts 상태가 Available인지 최대 15분 관찰합니다.
+8. 주간 점검: validation 풀 + Arc 확장 Succeeded + Session host Available이면 PASS로 기록합니다.
+
+## 제외 범위
+
+- Azure의 일반 AVD multi-session·Session Host Configuration·Autoscale 프로덕션 설계
+- TechCommunity 빈 JS 페이지를 근거로 한 GA 날짜 재해석
+- 사용자 체감 성능·동시 접속 수 보장
+- 고객 사이트명, 라이선스 견적 확정
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Hybrid GA 채택 여부, validation 풀, Arc 확장, OS·조인 방식, 미지원 기능 목록을 현황화합니다.
+- 의사결정 산출물: validation-only 운영 범위, multi-session·SHC·Autoscale 제외, Server 조인 조건을 담은 판단표를 만듭니다.
+- 운영 검증: validation 호스트 풀에서 Arc 확장 후 Session host Available을 확인합니다. 접속 품질이나 용량을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+온프레미스 AVD Hybrid 붙임 범위를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, What’s new in Azure Virtual Desktop, September 2026. Azure Virtual Desktop Hybrid Generally Available, on-premises hypervisors or physical Windows Server, Azure Arc extension. https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new (확인일: 2026-09-03)
+- Microsoft Learn, Azure Virtual Desktop Hybrid Overview, updated 2026-09-01. multi-session Not supported, Power management·Autoscale·Start VM on Connect·Session Host Configuration unsupported, licensing. https://learn.microsoft.com/en-us/azure/virtual-desktop/hybrid-overview (확인일: 2026-09-03)
+- Microsoft Learn, Deploy Azure Virtual Desktop Hybrid On-premises. validation host pool required, Session Host Configuration unsupported, Server ADDS/hybrid-joined only, Available ≤15 min. https://learn.microsoft.com/en-us/azure/virtual-desktop/deploy-azure-virtual-desktop-hybrid (확인일: 2026-09-03)
+- Microsoft Learn, Configure a host pool as a validation environment. Validation host pools should only be used for testing, not production. https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-validation-environment (확인일: 2026-09-03)
+
+이번 주 운영 확인: Validation host pool + Arc-enable한 온프레미스 OS(multi-session 아님, Server는 Entra-only 아님)에 AVD Arc 확장을 설치한 뒤 Session hosts가 Available이면 PASS. validation 미설정·Session Host Configuration 사용·multi-session·Entra-only Server면 FAIL.
+
+위 출처는 Microsoft Learn 공개 문서를 설명합니다. 고객별 세션 품질이나 라이선스 적합성을 보증하지 않습니다.
