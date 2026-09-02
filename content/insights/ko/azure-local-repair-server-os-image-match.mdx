@@ -1,0 +1,97 @@
+---
+contentId: insight-azure-local-repair-server-os-image-match
+title: "Azure Local Repair-Server: cluster solution과 같은 OS image로만 재이미지할지"
+summary: "2503 이후 Repair-Server는 기존 클러스터와 같은 solution version OS image가 필요하므로, FRU·재이미지 전 포털 최신 다운로드를 막을지를 가르는 리뷰 초안"
+slug: azure-local-repair-server-os-image-match
+locale: ko
+status: review
+updatedAt: 2026-09-03
+audience: [customer, partner]
+tags: [hci, azure-local, repair-server, fru, operations]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-local/manage/repair-server?view=azloc-2608"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/update/azure-update-manager-23h2?view=azloc-2608"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2608"
+relatedContent: ["insight:hci-readiness-checklist"]
+---
+
+## 한눈에 보기
+
+Azure Local Repair-Server 문서는 버전 2503 이상에서 기존 클러스터와 같은 solution의 OS image를 쓰라고 적습니다. what’s new 2503도 Add and repair node에서 같은 solution version OS image 규칙을 반복합니다.
+
+- 결정: FRU·재이미지 전에 포털에서 cluster solution version을 확인하고, 같은 solution OS image로만 Repair-Server를 돌릴지
+- 전제: Azure portal OS 다운로드는 필요한 matching version을 모두 보여 주지 않을 수 있어, OS image table로 맞춰야 합니다
+- 운영 순서: solution version 확인 → matching OS image로 재이미지 → Repair-Server. 2508부터는 Repair-Server 후 validation이 돌고 실패 시 Repair-Server -Rerun입니다
+- 범위: 2608 배포용 OS 빌드 번호를 Repair 매칭 규칙으로 쓰지 않습니다
+
+## 문제 상황
+
+노드 수리 워크플로는 필요 시 종료, 재이미지, Repair-Server 실행입니다. Repair 중 OS·드라이버·펌웨어가 갱신되고 스토리지는 재균형됩니다.
+
+2503부터는 재이미지에 쓰는 OS image가 클러스터 solution version과 같아야 합니다. Get solution version으로 클러스터 버전을 읽고, OS image table에서 맞는 이미지를 받습니다. 포털만 보면 필요한 matching version이 빠질 수 있다고 Repair-Server 문서가 적습니다.
+
+2508부터는 Repair-Server 실행 후 validation이 돌아갑니다. 테스트가 실패하면 Repair-Server -Rerun으로 재실행합니다. 데이터 디스크를 교체하거나 재포맷하면 노드가 시스템에 다시 들어올 때 디스크를 인식하지 못합니다. Current node reimaged + current data disks reformatted는 지원하지 않습니다.
+
+## 지금 결정할 것
+
+- FRU·재이미지가 필요한 노드가 2503 이상 클러스터인지
+- Azure Local resource Overview → Properties → Updates에 보이는 solution version을 재이미지 승인 입력으로 고정할지
+- 포털 최신 OS 다운로드를 금지하고 OS image table matching만 허용할지
+- 컴포넌트 교체 시 데이터 디스크를 건드리지 않을지
+- 2508 이상에서 validation 실패 시 Repair-Server -Rerun을 같은 변경창에 둘지
+
+## 의사결정 기준
+
+### solution version과 OS image를 한 쌍으로 승인합니다
+
+Repair-Server 문서와 what’s new 2503은 기존 클러스터와 같은 solution version OS image를 요구합니다. solution version을 읽지 않은 채 최신 ISO만 받는 승인을 내지 않습니다.
+
+### 포털 최신 다운로드와 OS image table을 가릅니다
+
+문서는 Don’t use the Azure portal이라고 적습니다. 포털이 모든 OS image version을 나열하지 않을 수 있고 required matching version이 없을 수 있습니다. 다운로드 경로는 OS image table로 고정합니다.
+
+### 데이터 디스크 재포맷을 Repair와 같은 작업으로 묶지 않습니다
+
+컴포넌트 교체 때 데이터 드라이브를 교체·리셋하지 말라고 적습니다. Current node reimaged + current data disks reformatted는 Not supported입니다. FRU와 디스크 초기화를 한 티켓으로 닫지 않습니다.
+
+### 2508 validation 실패는 재실행 경로로 둡니다
+
+2508부터 validation이 Repair-Server 뒤에 실행됩니다. 실패 정보를 보고 Repair-Server -Rerun으로 이어갑니다. validation 실패를 무시하고 노드만 Available로 보지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상 클러스터가 2503 이상인지 확인합니다.
+2. Azure portal에서 Azure Local resource → Overview → Properties → Updates로 solution version을 기록합니다.
+3. OS image table에서 같은 solution version 이미지를 고릅니다. 포털 최신만 받지 않습니다.
+4. 재이미지 전 데이터 디스크 교체·재포맷 여부를 확인합니다. reformatted current disks면 중단합니다.
+5. NetBIOS 이름으로 Repair-Server -Name -LocalAdminCredential을 실행합니다.
+6. 2508 이상이면 Repair-Server 후 validation 결과를 확인합니다.
+7. 실패 시 Get-ActionPlanInstance로 로그를 남기고 Repair-Server -Rerun을 실행합니다.
+8. 주간 점검: Properties→Updates solution version과 재이미지에 쓴 OS image가 같은지 대조합니다.
+
+## 제외 범위
+
+- VxRail·Nutanix 등 다른 HCI의 FRU 절차
+- 2608 what’s new의 배포·업데이트용 OS 빌드 번호를 Repair 매칭 조건으로 쓰는 주장
+- 스토리지 재균형 완료 시간 보장
+- 고객 클러스터명, 성능 비교
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: solution version, 재이미지 OS image 출처, 데이터 디스크 상태, Repair-Server·Rerun 이력을 현황화합니다.
+- 의사결정 산출물: matching OS image 승인, 포털 최신 금지, 디스크 비재포맷, validation 재실행 규칙을 담은 판단표를 만듭니다.
+- 운영 검증: Properties→Updates solution version과 Repair-Server에 쓴 OS image가 일치하는지 확인합니다. 수리 성공이나 재균형 완료를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Azure Local 노드 Repair 전 OS image 매칭을 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Repair a node on Azure Local, view=azloc-2608. 2503+ same solution OS image, OS image table, Repair-Server·-Rerun, 2508 validation, reformatted disks Not supported. https://learn.microsoft.com/en-us/azure/azure-local/manage/repair-server?view=azloc-2608 (확인일: 2026-09-03)
+- Microsoft Learn, Use Azure Update Manager to update your Azure Local, view=azloc-2608. Get solution version: Overview → Properties → Updates. https://learn.microsoft.com/en-us/azure/azure-local/update/azure-update-manager-23h2?view=azloc-2608 (확인일: 2026-09-03)
+- Microsoft Learn, What’s new in Hyperconverged Deployments of Azure Local, view=azloc-2608. 2503 Add and repair node: same solution version OS image. https://learn.microsoft.com/en-us/azure/azure-local/whats-new?view=azloc-2608 (확인일: 2026-09-03)
+
+이번 주 운영 확인: Azure Local resource Overview → Properties → Updates의 solution version이 재이미지에 쓴 OS image와 같고 Repair-Server가 완료되면(2508+는 validation 실패 없음, 실패 시 Repair-Server -Rerun 후 완료) PASS. 포털 최신 OS가 클러스터 solution과 다르거나 current data disks를 reformatted한 채 Repair하면 FAIL.
+
+위 출처는 Microsoft Learn 공개 문서를 설명합니다. 고객별 FRU 성공이나 다운타임 없음을 보증하지 않습니다.
