@@ -1,0 +1,96 @@
+---
+contentId: insight-azure-backup-secure-by-default-soft-delete
+title: "Azure Backup 소프트 삭제: 포털 고정과 불변 잠금을 가를 것"
+summary: "Azure Backup secure-by-default 소프트 삭제의 포털 비활성 불가, 보존 14–180일, 페이지별 RSV 리전 표와 불변 볼트 잠금을 가르는 리뷰 초안"
+slug: azure-backup-secure-by-default-soft-delete
+locale: ko
+status: review
+updatedAt: 2026-09-04
+audience: [customer, partner]
+tags: [backup, disaster-recovery, azure-backup, soft-delete, immutability]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/backup/secure-by-default"
+  - "https://learn.microsoft.com/en-us/azure/backup/backup-azure-enhanced-soft-delete-configure-manage"
+  - "https://learn.microsoft.com/en-us/azure/backup/backup-azure-immutable-vault-concept"
+relatedContent: ["service:backup-disaster-recovery", "insight:backup-dr-decision-checklist"]
+---
+
+## 한눈에 보기
+
+Azure Backup secure-by-default 페이지는 소프트 삭제가 기본으로 강제되며, 포털에서 소프트 삭제 상태를 바꿀 수 없다고 적습니다. 볼트를 지우면 소프트 삭제 상태로 들어가 복구할 수 있습니다.
+
+- 결정: 보존일을 14일에서 180일 사이로 고정할지, 불변 볼트 잠금까지 같이 켤지
+- 전제: 소프트 삭제는 삭제 뒤 복구 창이다. 불변 볼트는 복구 지점 손실 작업을 막는 설정이며 잠그면 되돌릴 수 없다
+- 문서 불일치: 같은 주제의 두 페이지가 Recovery Services vault 일반 공급 리전을 다르게 적는다. 이 초안은 각 페이지 문장만 옮긴다
+- 범위: 일반 RPO 가이드 재작성이 아니라 소프트 삭제 강제와 불변 잠금을 가르는 결정
+
+## 문제 상황
+
+볼트를 지우려면 소프트 삭제를 먼저 끄라는 예전 런북이 남아 있으면, 포털에서 끌 수 없는 볼트와 충돌합니다. secure-by-default 페이지는 소프트 삭제가 복구 지점, 백업 항목, 볼트에 자동으로 켜지고 온보딩된 리전에서는 끌 필요가 없다고 적습니다. 보존은 기본 14일이고 180일까지 늘릴 수 있습니다.
+
+같은 페이지 도입부는 Recovery Services vault에 대해 이 기본 강제가 지금 모든 공용 리전에서 미리보기라고 적습니다. 바로 아래 Supported regions 표는 Recovery Services vault 일반 공급을 All Azure Public Regions and National Clouds로, Backup vault 일반 공급을 Australia East, West Central US, East Asia로, Backup vault 공용 미리보기를 나머지 공용·국가 클라우드로 적습니다. 구성·관리 페이지 표는 Recovery Services Vault 일반 공급을 West Central US만, Recovery Services Vault 미리보기를 나머지 공용 리전, Backup Vault 미리보기를 Australia East, West Central US, East Asia로 적습니다. Backup vault 일반 공급 행은 구성·관리 표에 없습니다. 두 표를 한 리전 목록으로 합치지 않습니다.
+
+불변 볼트 개념 문서는 복구 지점 손실로 이어질 작업을 막고, 설정을 잠그면 되돌릴 수 없다고 적습니다. 잠긴 불변은 Recovery Services vault에서 모든 Azure 리전 일반 공급입니다. 소프트 삭제가 켜져 있다고 불변이 켜진 것은 아닙니다. 구성·관리 페이지는 불변 볼트에서는 컨테이너 재등록이 동작하지 않는다고 적습니다.
+
+## 지금 결정할 것
+
+- 대상 볼트가 Recovery Services vault인지 Backup vault인지
+- 운영 리전을 어느 페이지의 표로 볼지, 표 불일치를 승인 조건으로 남길지
+- 소프트 삭제 보존일을 14일과 180일 사이 어느 값으로 고정할지
+- 불변을 켤지, 켠 뒤 잠글지
+- 포털에서 소프트 삭제를 끄고 볼트를 지운다는 런북을 폐기할지
+
+## 의사결정 기준
+
+### 소프트 삭제와 불변 잠금을 같은 통제로 보지 않습니다
+
+소프트 삭제는 삭제 후 보존 기간 안에 되돌리는 창입니다. 불변은 파괴적 작업을 막고, 잠그면 설정을 끌 수 없습니다. 소프트 삭제 강제만으로 랜섬웨어 삭제 경로가 닫혔다고 보지 않습니다. 보존일과 불변 잠금을 따로 승인합니다.
+
+### 두 페이지의 Recovery Services vault 리전 표를 합치지 않습니다
+
+secure-by-default 표는 Recovery Services vault 일반 공급을 모든 공용 리전과 국가 클라우드로 적습니다. 구성·관리 표는 일반 공급을 West Central US만 적습니다. 같은 secure-by-default 페이지 도입부는 Recovery Services vault 기본 강제를 공용 리전 미리보기로 적습니다. 운영 기록에 어떤 페이지의 어떤 문장을 따랐는지 남깁니다.
+
+### Backup vault에서 포털 비활성 가능 여부를 리전별로 봅니다
+
+두 페이지 모두 Backup vault는 Australia East, West Central US, East Asia가 아니면 포털에서 소프트 삭제를 끌 수 있다고 적습니다. Backup vault와 Recovery Services vault를 한 런북으로 묶지 않습니다.
+
+### 볼트 삭제 절차를 소프트 삭제 전제로 다시 적습니다
+
+secure-by-default는 Recovery Services vault를 지우기 전에 백업을 멈추고 보호 항목을 소프트 삭제하라고 적습니다. 포털에서 소프트 삭제를 끈 뒤 영구 삭제하는 절차는, 그 페이지가 끄는 것을 허용하지 않는다고 적은 리전에서는 쓰지 않습니다.
+
+## 실무 체크리스트
+
+1. 볼트 유형이 Recovery Services vault인지 Backup vault인지 기록합니다.
+2. 운영 리전을 적고, secure-by-default 표와 구성·관리 표 문구를 같은 요청서에 붙입니다.
+3. 포털 Properties에서 소프트 삭제가 항상 켜짐·포털 비활성 불가인지 확인합니다.
+4. Soft delete retention days를 14일에서 180일 사이 값으로 고르고 사유를 적습니다. 기본 14일 초과분은 일반 백업 과금이라고 개념 페이지가 적습니다.
+5. 불변을 켤지, 잠글지를 소프트 삭제와 별도로 정합니다.
+6. 볼트 삭제 런북에서 소프트 삭제 끄기 단계를 제거할지 검토합니다.
+7. 하이브리드 MARS·MABS·DPM은 소프트 삭제를 끄지 않고 등록 해제한다고 개념 페이지가 적는지 대조합니다.
+8. 「이번 주 운영 확인」 PASS = 볼트 Properties의 soft delete가 항상 켜짐·포털에서 끌 수 없고, Soft delete retention days가 14–180 사이 의도한 값이다. FAIL = 일반 공급 secure-by-default Recovery Services vault 리전용 런북이 여전히 볼트 삭제 전 소프트 삭제를 끄라고 하거나, 보존일이 비어 있거나 모른다.
+
+## 제외 범위
+
+- 백업·재해복구 결정 체크리스트와 복구 목표 안내를 다시 쓰는 범위
+- GCP 백업 볼트 프로젝트 선 글을 다시 쓰는 범위
+- 두 리전 표를 이 초안이 하나로 확정하는 범위
+- 소프트 삭제 또는 불변이 랜섬웨어와 내부자 위협을 제거한다는 보장
+- 고객별 규제, 과금, 복구 성공의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 볼트 유형, 리전 표 인용, 포털 소프트 삭제 상태, 보존일, 불변·잠금을 현황화합니다.
+- 의사결정 산출물: 보존일, 불변 잠금 여부, 런북 개정, 문서 불일치 기록을 담은 판단표를 만듭니다.
+- 운영 검증: 포털 소프트 삭제 상태와 보존일을 확인합니다. 복구 시간이나 불변 효과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+소프트 삭제 보존과 불변 잠금을 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 백업과 재해복구 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Secure by Default with Soft Delete for Azure Backup. 포털에서 상태 변경 불가, 보존 14–180일, RSV 표는 모든 공용·국가 클라우드 일반 공급, 도입부는 RSV 공용 리전 미리보기. https://learn.microsoft.com/en-us/azure/backup/secure-by-default (확인일: 2026-09-04)
+- Microsoft Learn, Configure and manage soft delete for Azure Backup. RSV 일반 공급을 West Central US만, RSV 미리보기는 나머지 공용 리전으로 적음. https://learn.microsoft.com/en-us/azure/backup/backup-azure-enhanced-soft-delete-configure-manage (확인일: 2026-09-04)
+- Microsoft Learn, Immutable vault for Azure Backup. 잠그면 되돌릴 수 없음, RSV 잠긴 불변은 모든 Azure 리전 일반 공급. https://learn.microsoft.com/en-us/azure/backup/backup-azure-immutable-vault-concept (확인일: 2026-09-04)
+
+위 출처는 Microsoft 공개 문서를 설명합니다. 고객별 복구 성공, 보존 적합성, 공급자 우위를 보증하지 않습니다.

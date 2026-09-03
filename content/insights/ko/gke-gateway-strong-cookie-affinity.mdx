@@ -1,0 +1,96 @@
+---
+contentId: insight-gke-gateway-strong-cookie-affinity
+title: "GKE Gateway: STRONG_COOKIE를 1.36.3에서만 켤 것"
+summary: "2026-08-31 GKE Gateway 세션 어피니티 GA에서 STRONG_COOKIE_AFFINITY의 최소 버전 1.36.3-gke.1767000과 단일 클러스터 GatewayClass를 가르는 리뷰 초안"
+slug: gke-gateway-strong-cookie-affinity
+locale: ko
+status: review
+updatedAt: 2026-09-04
+audience: [customer, partner]
+tags: [infra, gke, gateway, session-affinity, traffic-distribution]
+evidenceRefs:
+  - "https://docs.cloud.google.com/kubernetes-engine/docs/release-notes"
+  - "https://docs.cloud.google.com/kubernetes-engine/docs/how-to/configure-gateway-resources#expanded-session-affinity"
+  - "https://docs.cloud.google.com/kubernetes-engine/docs/concepts/gateway-api"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+GKE 릴리스 노트 August 31, 2026 항목은 GCPTrafficDistributionPolicy로 GKE Gateway 세션 어피니티가 일반 공급이라고 적습니다. 지금 지원하는 것은 단일 클러스터 GKE Gateway이며 GatewayClass는 gke-l7-rilb, gke-l7-regional-external-managed, gke-l7-global-external-managed입니다.
+
+- 결정: STRONG_COOKIE_AFFINITY를 켤지, CLIENT_IP·HEADER_FIELD·GENERATED_COOKIE·HTTP_COOKIE만 쓸지
+- 전제: STRONG_COOKIE_AFFINITY는 1.36.3-gke.1767000 이상, 나머지 네 유형은 1.35.2-gke.1269001 이상
+- 운영: how-to는 GCPTrafficDistributionPolicy의 sessionAffinity.type과 cookie.name을 적는다. 단일 클러스터 Gateway만 지원한다
+- 범위: Ingress나 멀티클러스터 Gateway 전체가 아니라 단일 클러스터 Gateway의 STRONG_COOKIE 채택
+
+## 문제 상황
+
+세션을 Pod에 붙이려고 어피니티를 켜면, 클러스터 버전이 STRONG_COOKIE 하한보다 낮은데 그 유형을 요청하는 경우가 있습니다. 릴리스 노트는 Preview에 있던 유형에 더해 STRONG_COOKIE_AFFINITY를 쓸 수 있고, 이 유형이 Google Cloud Application Load Balancer 세션 어피니티 가운데 가장 오래 붙는다고 적습니다. 그 문장을 모든 Gateway와 모든 버전의 일반 공급으로 읽지 않습니다.
+
+how-to Configure session affinity using GCPTrafficDistributionPolicy는 같은 최소 버전을 반복합니다. STRONG_COOKIE_AFFINITY는 상태 있는 쿠키 지속이며, 스케일·Pod 풀 크기 변경에도 붙임을 유지한다고 적습니다. cookie.name은 필수이고 cookie.path와 cookie.ttl은 선택입니다. localityLbAlgorithm은 어떤 값이든 쓸 수 있고 기본은 ROUND_ROBIN입니다. HTTP_COOKIE는 MAGLEV 또는 RING_HASH가 필요합니다. STRONG_COOKIE와 HTTP_COOKIE를 같은 설정으로 보지 않습니다.
+
+같은 how-to 제한은 GCPTrafficDistributionPolicy 세션 어피니티가 단일 클러스터 Gateway만 지원하고, InferencePool과는 쓰이지 않으며, classic Application Load Balancer에는 세션 어피니티나 locality 정책을 설정하지 못한다고 적습니다. Gateway API 개념 문서는 HTTPRoute가 Gateway가 받은 HTTP·HTTPS를 Service로 보낸다고 적습니다. GatewayClass·버전·정책 유형이 맞는지 먼저 확인합니다.
+
+## 지금 결정할 것
+
+- 대상이 단일 클러스터 Gateway이고 세 GatewayClass 중 하나인지
+- STRONG_COOKIE_AFFINITY가 필요한지, 1.35.2-gke.1269001 이상에서 다른 유형이면 충분한지
+- 제어면·노드 버전이 1.36.3-gke.1767000 이상인지
+- cookie.name과 선택적 path·ttl을 어떻게 고정할지
+- InferencePool이나 classic 로드 밸런서 경로를 이 정책에서 뺄지
+
+## 의사결정 기준
+
+### STRONG_COOKIE 하한과 다른 유형 하한을 나눕니다
+
+릴리스 노트와 how-to는 STRONG_COOKIE_AFFINITY에 1.36.3-gke.1767000, 나머지 네 유형에 1.35.2-gke.1269001을 적습니다. 1.35.2대 클러스터에 STRONG_COOKIE를 요청하지 않습니다. 세션이 필요해도 버전이 낮으면 다른 유형을 고르거나 업그레이드 창을 따로 둡니다.
+
+### 단일 클러스터 GatewayClass만 대상으로 봅니다
+
+릴리스 노트는 지금 지원을 단일 클러스터와 세 GatewayClass로 한정합니다. how-to는 멀티클러스터와 InferencePool, classic 로드 밸런서를 제외합니다. 멀티클러스터 Gateway나 InferencePool에 이 정책을 그대로 적용하지 않습니다.
+
+### cookie.name과 알고리즘 전제를 유형별로 적습니다
+
+STRONG_COOKIE는 cookie.name이 필요하고 localityLbAlgorithm 기본 ROUND_ROBIN과 같이 쓸 수 있습니다. HTTP_COOKIE는 MAGLEV 또는 RING_HASH가 필요합니다. GENERATED_COOKIE는 쿠키 이름이 GCLB로 고정되고 ttl만 최대 2주까지 고를 수 있다고 how-to가 적습니다. 유형을 바꾼 뒤 쿠키 필드와 알고리즘을 그대로 두지 않습니다.
+
+### Gateway와 HTTPRoute 바인딩을 정책과 같이 봅니다
+
+개념 문서는 HTTPRoute가 어떤 Gateway에서 받아 어떤 Service로 보낼지를 정한다고 적습니다. GCPTrafficDistributionPolicy만 만들고 GatewayClass나 HTTPRoute 대상이 비어 있으면 어피니티가 서지 않습니다. 정책, Gateway, HTTPRoute를 같은 승인 단위로 적습니다.
+
+## 실무 체크리스트
+
+1. GatewayClass가 gke-l7-rilb, gke-l7-regional-external-managed, gke-l7-global-external-managed 중 하나인지 확인합니다.
+2. 대상이 단일 클러스터 Gateway인지 기록합니다.
+3. 제어면과 노드 버전을 기록합니다.
+4. sessionAffinity.type이 STRONG_COOKIE_AFFINITY이면 버전이 1.36.3-gke.1767000 이상인지 확인합니다.
+5. cookie.name이 있는지, path·ttl을 쓸지 적습니다.
+6. InferencePool 또는 classic Application Load Balancer 경로를 이 정책에서 제외합니다.
+7. HTTPRoute가 해당 Gateway에 바인딩되는지 확인합니다.
+8. 「이번 주 운영 확인」 PASS = Gateway와 GCPTrafficDistributionPolicy의 sessionAffinity type이 STRONG_COOKIE_AFFINITY이고 제어면·노드가 1.36.3-gke.1767000 이상이다. FAIL = 그 유형을 요청했는데 클러스터가 그 버전보다 낮다.
+
+## 제외 범위
+
+- Ingress를 Gateway로 이전하는 전체 설계
+- 멀티클러스터 Gateway, InferencePool, classic 로드 밸런서 세션 어피니티
+- 로드 밸런서 제품 우열이나 지연 보장
+- 인프라 컨설팅 베이스라인 재작성
+- STRONG_COOKIE만 켜면 세션이 항상 같은 Pod에 남는다는 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: GatewayClass, 단일·멀티클러스터, 클러스터 버전, 어피니티 유형, cookie 필드, HTTPRoute 바인딩을 현황화합니다.
+- 의사결정 산출물: STRONG_COOKIE 채택 여부, 버전 하한, 대체 유형, 제외 경로를 담은 판단표를 만듭니다.
+- 운영 검증: 정책 type과 클러스터 버전을 확인합니다. 세션 지속이나 성능 수치를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+STRONG_COOKIE를 켤지 다른 어피니티로 둘지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 인프라 게이트웨이 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- GKE release notes, August 31, 2026. GCPTrafficDistributionPolicy 세션 어피니티 일반 공급, 단일 클러스터와 세 GatewayClass, STRONG_COOKIE 최소 1.36.3-gke.1767000. how-to 경로는 이 항목의 링크. GET 최종 경로. https://docs.cloud.google.com/kubernetes-engine/docs/release-notes (확인일: 2026-09-04)
+- GKE documentation, Configure session affinity using GCPTrafficDistributionPolicy. 유형별 최소 버전, cookie.name, 단일 클러스터 제한. https://docs.cloud.google.com/kubernetes-engine/docs/how-to/configure-gateway-resources#expanded-session-affinity (확인일: 2026-09-04)
+- GKE documentation, About Gateway API. HTTPRoute가 Gateway 트래픽을 Service로 보내는 관계. https://docs.cloud.google.com/kubernetes-engine/docs/concepts/gateway-api (확인일: 2026-09-04)
+
+위 출처는 Google Cloud 공개 문서를 설명합니다. 고객별 세션 지속, 성능, 공급자 우위를 보증하지 않습니다.
