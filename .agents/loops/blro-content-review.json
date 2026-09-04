@@ -1,5 +1,5 @@
 {
-  "historyNote": "2026-08-20 lived on PR #5 (cursor/ko-review-insights-2026-08-20-3502). 2026-08-21 lived on PR #6 (cursor/ko-review-insights-2026-08-21-c0ac). Both are copied here so this file does not wipe that history.",
+  "historyNote": "2026-08-20 lived on PR #5. 2026-08-21 lived on PR #6. 2026-08-22 lived on this file before 2026-09-05. Open PRs #8–#19 were not stacked onto. This file keeps that history.",
   "priorRunsPreserved": [
     {
       "run": "2026-08-20",
@@ -34,32 +34,49 @@
         "avd-session-host-configuration-update",
         "prisma-access-saa-agentless-boundary"
       ]
+    },
+    {
+      "run": "2026-08-22",
+      "timezone": "KST",
+      "note": "Preserved from the previous top-level run in this file. B-track drafts on a branch from then-current main.",
+      "rotation": {
+        "todayAreas": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
+        "priorRun": "2026-08-21",
+        "priorRunAreasNotRepeated": ["security", "server-virtualization", "hci", "vdi", "sase"]
+      },
+      "slugs": [
+        "bedrock-web-search-external-access",
+        "iam-identity-center-account-access-optional",
+        "aks-azure-files-identity-eit",
+        "gcp-backup-vault-project-lien",
+        "cloudwatch-otel-promql-query-path"
+      ]
     }
   ],
-  "run": "2026-08-22",
+  "run": "2026-09-05",
   "timezone": "KST",
-  "note": "New branch from current main. Does not stack onto PR #3 (cursor/ko-review-insights-8aab), PR #5 (cursor/ko-review-insights-2026-08-20-3502), or PR #6 (cursor/ko-review-insights-2026-08-21-c0ac). Five Korean status: review insight drafts only.",
+  "note": "New branch from latest main (7e832cf). Does not stack onto open PRs #8–#19. Five Korean status: review insight drafts only. Track A: security / virt / HCI / VDI / SASE.",
   "rotation": {
-    "todayAreas": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
-    "priorRun": "2026-08-21",
-    "priorRunAreasNotRepeated": ["security", "server-virtualization", "hci", "vdi", "sase"],
-    "skippedOpenPrSlugs": [
-      "windows-ike-cve-2026-33824-kev",
-      "azure-local-gpu-dda-partition-boundary",
-      "azure-local-local-identity-key-vault",
-      "avd-session-host-configuration-update",
-      "prisma-access-saa-agentless-boundary",
-      "foundry-agent-identity-publish-boundary",
-      "aws-organizations-default-departure-scp",
-      "arc-kubernetes-workload-identity-ga",
-      "aws-backup-eks-logically-airgapped-vault",
-      "azure-monitor-diagnostics-otlp-path",
-      "cisco-asa-ftd-cve-2026-20349-kev",
-      "vmware-vmsa-2026-0006-vcenter-esx",
-      "azure-local-2607-iscsi-san-ga",
-      "avd-web-screen-capture-raw-print",
-      "prisma-sdwan-ion-681-pqc"
-    ]
+    "todayAreas": ["security", "server-virtualization", "hci", "vdi", "sase"],
+    "priorRun": "2026-09-04",
+    "priorRunAreasNotRepeated": ["ai", "cloud", "infrastructure", "backup/DR", "observability"],
+    "skippedYesterdayAndDayBefore": {
+      "2026-09-03-A": [
+        "sonicwall-sma1000-cve-2026-83548-83549-kev",
+        "hyper-v-ws2025-credguard-kerberos-live-migration",
+        "azure-local-repair-server-os-image-match",
+        "avd-hybrid-ga-onprem-arc-session-hosts",
+        "netskope-npa-r142-dlp-threat-allow-split"
+      ],
+      "2026-09-04-B": [
+        "bedrock-agentcore-policy-guardrails",
+        "gke-service-fw-priority-999",
+        "gke-gateway-strong-cookie-affinity",
+        "azure-backup-secure-by-default-soft-delete",
+        "grafana-alloy-119-servicemonitor-file-access"
+      ]
+    },
+    "cloudVendorSlotsThisRound": 0
   },
   "counts": {
     "candidatesRequested": 5,
@@ -67,82 +84,87 @@
     "writtenReview": 5,
     "approvedTouched": 0,
     "publicApprovalsEdited": 0,
-    "inventedExtraTopics": 0
+    "inventedExtraTopics": 0,
+    "hciPreferredBlocked": "VxRail vLCM-before-9.x 403 / existing vxrail-* overlap; Nutanix login-thin; no Azure Local repair rewrite"
   },
   "slugs": [
-    "bedrock-web-search-external-access",
-    "iam-identity-center-account-access-optional",
-    "aks-azure-files-identity-eit",
-    "gcp-backup-vault-project-lien",
-    "cloudwatch-otel-promql-query-path"
+    "jfrog-artifactory-cve-2026-82329-kev",
+    "vsphere-8-vlcm-baselines-deprecated-images",
+    "vsan-hci-max-cluster-type-no-convert",
+    "citrix-cvad-2607-edt-mtu-rediscovery",
+    "prisma-access-panorama-mt-to-scm-cutoff"
   ],
-  "skipped": [],
+  "skipped": [
+    {
+      "slot": "security-cisa-html",
+      "reason": "CISA alert and KEV catalog HTML returned HTTP 403. Used KEV JSON + CVE AWG + JFrog advisory + CCCS instead."
+    },
+    {
+      "slot": "hci-vxrail-vlcm-before-9x",
+      "reason": "Preferred Dell pages specified as 403; existing vxrail-* slugs already in open PRs. Substituted vSAN HCI vs Max (same HCI category)."
+    }
+  ],
   "perSlug": {
-    "bedrock-web-search-external-access": {
-      "area": "ai",
+    "jfrog-artifactory-cve-2026-82329-kev": {
+      "area": "security",
       "status": "review",
-      "path": "content/insights/ko/bedrock-web-search-external-access.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-bedrock-web-search-external-access-research.md",
+      "path": "content/insights/ko/jfrog-artifactory-cve-2026-82329-kev.mdx",
+      "research": ".agents/results/blro-content/2026-09-05-a-track-review.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-09-05"
     },
-    "iam-identity-center-account-access-optional": {
-      "area": "cloud",
+    "vsphere-8-vlcm-baselines-deprecated-images": {
+      "area": "server-virtualization",
       "status": "review",
-      "path": "content/insights/ko/iam-identity-center-account-access-optional.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-iam-identity-center-account-access-optional-research.md",
+      "path": "content/insights/ko/vsphere-8-vlcm-baselines-deprecated-images.mdx",
+      "research": ".agents/results/blro-content/2026-09-05-a-track-review.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-09-05"
     },
-    "aks-azure-files-identity-eit": {
-      "area": "infrastructure",
+    "vsan-hci-max-cluster-type-no-convert": {
+      "area": "hci",
       "status": "review",
-      "path": "content/insights/ko/aks-azure-files-identity-eit.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-aks-azure-files-identity-eit-research.md",
+      "path": "content/insights/ko/vsan-hci-max-cluster-type-no-convert.mdx",
+      "research": ".agents/results/blro-content/2026-09-05-a-track-review.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-09-05"
     },
-    "gcp-backup-vault-project-lien": {
-      "area": "backup/DR",
+    "citrix-cvad-2607-edt-mtu-rediscovery": {
+      "area": "vdi",
       "status": "review",
-      "path": "content/insights/ko/gcp-backup-vault-project-lien.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-gcp-backup-vault-project-lien-research.md",
+      "path": "content/insights/ko/citrix-cvad-2607-edt-mtu-rediscovery.mdx",
+      "research": ".agents/results/blro-content/2026-09-05-a-track-review.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-09-05"
     },
-    "cloudwatch-otel-promql-query-path": {
-      "area": "observability",
+    "prisma-access-panorama-mt-to-scm-cutoff": {
+      "area": "sase",
       "status": "review",
-      "path": "content/insights/ko/cloudwatch-otel-promql-query-path.mdx",
-      "research": ".agents/results/blro-content/2026-08-22-cloudwatch-otel-promql-query-path-research.md",
+      "path": "content/insights/ko/prisma-access-panorama-mt-to-scm-cutoff.mdx",
+      "research": ".agents/results/blro-content/2026-09-05-a-track-review.md",
       "firstPass": "pass",
       "secondPass": "pass",
-      "sourcesRecheckedAt": "2026-08-22"
+      "sourcesRecheckedAt": "2026-09-05"
     }
   },
   "publicationGate": {
     "publicApprovalsJson": "untouched",
     "existingApprovedMdx": "untouched",
     "homepageOrSangforFiles": "untouched",
-    "pr2Branch": "not used",
-    "pr3Branch": "not used",
-    "pr5Branch": "not used",
-    "pr6Branch": "not used",
+    "openPrs8to19": "not used",
     "merge": false,
     "deploy": false
   },
   "validation": {
-    "contentValidate": "PASS",
-    "contentValidateDetail": "4 files / 45 tests",
-    "build": "PASS",
+    "contentValidate": "pending",
+    "build": "pending",
     "reviewSlugsOnPublicRoutes": false,
     "reviewSlugsOnSitemap": false,
-    "publicInsightRoutes": 12,
-    "verdict": "final_review_ready"
+    "verdict": "pre_test"
   },
-  "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation should not repeat 2026-08-20, 2026-08-21, or these five slugs. Do not fill leftover slots with Azure Local or HCI."
+  "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation is B-track. Do not repeat these slugs or open PR #8–#19 slugs."
 }

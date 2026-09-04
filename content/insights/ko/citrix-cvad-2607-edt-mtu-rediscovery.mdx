@@ -1,0 +1,102 @@
+---
+contentId: insight-citrix-cvad-2607-edt-mtu-rediscovery
+title: "EDT 단편화가 있으면 MTU Rediscovery를 Off로 남기지 말 것"
+summary: "CVAD 2607 LTSR는 EDT MTU Rediscovery 정책을 Off·Static·Dynamic으로 둔다. Session Reliability와 Workspace app for Windows 2607 이상을 확인한 뒤 레지스트리 잔존을 지울지를 가르는 리뷰 초안"
+slug: citrix-cvad-2607-edt-mtu-rediscovery
+locale: ko
+status: review
+updatedAt: 2026-09-05
+audience: [customer, partner]
+tags: [vdi, citrix, cvad, edt, mtu-rediscovery]
+evidenceRefs:
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/whats-new/whats-new.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/hdx-transport/adaptive-transport/enlightened-data-transport.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/policies/reference/hdx-registry-settings.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/policies/reference/ica-policy-settings.html"
+relatedContent: ["insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Citrix Virtual Apps and Desktops 7 2607 LTSR What’s new는 기계 정책 MTU Rediscovery를 추가했다고 적습니다. Enlightened Data Transport 문서는 Off, Static, Dynamic과 Session Reliability, Workspace app for Windows 2607 이상을 전제로 적습니다.
+
+- 결정: EDT 패킷 단편화 증상이 있으면 MTU Rediscovery를 Off로 두지 말고 Static 또는 Dynamic으로 켤지
+- 전제: Session Reliability가 켜져 있어야 한다. 이전 레지스트리 구성이 있으면 정책을 쓰기 전에 제거해야 한다
+- 운영: Citrix Studio 또는 Web Studio 정책에서 MTU Rediscovery와 Session Reliability를 확인한다
+- 범위: Provisioning Secure Boot CA나 Entra SSO 글의 재작성이 아니다. EDT MTU Rediscovery만 가른다
+
+## 문제 상황
+
+HDX를 켰다고 보고하면, 초기 MTU Discovery와 세션 중 MTU Rediscovery, 레지스트리와 정책이 한 완료로 섞입니다.
+
+What’s new의 HDX connectivity는 A new machine policy setting, MTU Rediscovery is now available라고 적습니다. 상세는 Enlightened Data Transport를 보라고 안내합니다.
+
+EDT 문서는 Packet fragmentation can cause performance degradation or even failure to open sessions in some cases라고 적습니다. 초기 MTU Discovery는 기본 켜짐입니다. Session Reliability must be enabled for MTU Discovery to work. EDT MTU Rediscovery는 연결 뒤에 더 낮은 MTU가 보이면 활성 세션의 MTU를 다시 맞춥니다. Off는 비활성입니다. Static은 감소를 감지하면 세션 남은 기간 동안 MTU를 1200으로 둡니다. Dynamic은 감소를 감지하면 MTU discovery를 다시 돌려 최적 MTU를 찾습니다. By default, this setting is disabled. Session Reliability must be enabled for MTU Rediscovery to work. MTU Rediscovery requires Workspace app for Windows 2607 or later. If you had previously configured MTU Rediscovery through the registry, you must remove the registry configuration to be able to configure MTU Rediscovery with the policy setting.
+
+ICA policy settings도 Off, Static 1200, Dynamic, 기본 비활성을 같은 말로 적습니다. HDX registry settings는 레지스트리로 Rediscovery를 켤 때 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\icawd\MtuRediscovery의 MtuReDiscovery와 MtuReDiscoveryFrequency를 적습니다. 정책으로 바꾸려면 이 잔존을 먼저 지웁니다.
+
+## 지금 결정할 것
+
+- 대상 배달 그룹에서 EDT 단편화 또는 세션 실패가 있는지
+- MTU Rediscovery를 Static 1200으로 둘지 Dynamic으로 둘지, Off로 둘지
+- Session Reliability가 Allowed인지
+- Workspace app for Windows가 2607 이상인지
+- 세션 호스트 레지스트리 MtuRediscovery 잔존을 지울지
+
+## 의사결정 기준
+
+### 초기 Discovery와 Rediscovery를 한 설정으로 보지 않습니다
+
+초기 MTU Discovery는 세션 수립 때 MTU를 맞추고 기본 켜짐입니다. Rediscovery는 연결 뒤 MTU 감소를 다루며 기본 꺼짐입니다. Discovery만 켜고 Rediscovery를 Off로 둔 채 단편화 잔존을 해결했다고 보지 않습니다.
+
+### Session Reliability와 클라이언트 버전을 전제로 둡니다
+
+EDT 문서는 Rediscovery에 Session Reliability와 Workspace app for Windows 2607 이상을 요구합니다. 정책만 켜고 클라이언트가 2607 미만이면 전제가 비어 있습니다.
+
+### 레지스트리 잔존과 정책을 같이 쓰지 않습니다
+
+EDT 문서는 이전 레지스트리 구성을 제거해야 정책을 쓸 수 있다고 적습니다. 레지스트리 DWORD가 남은 채 Studio 정책만 바꿨다고 완료로 보지 않습니다.
+
+### Static과 Dynamic을 같은 완화로 적지 않습니다
+
+Static은 감지 후 1200으로 고정합니다. Dynamic은 다시 discovery를 돌립니다. 경로 MTU가 자주 바뀌는 구간과 고정 1200이 충분한 구간을 한 값으로 승인하지 않습니다.
+
+## 실무 체크리스트
+
+1. 배달 그룹의 EDT 사용과 패킷 단편화·세션 실패 증상을 기록합니다.
+2. Citrix Studio 또는 Web Studio에서 Session Reliability connections가 Allowed인지 확인합니다.
+3. 같은 정책의 MTU Rediscovery가 Off인지 Static인지 Dynamic인지 확인합니다.
+4. 단편화가 남고 Off이면 Static 또는 Dynamic으로 바꿀지를 승인합니다.
+5. Workspace app for Windows가 2607 이상인 대상만 정책 적용 범위에 넣습니다.
+6. 세션 호스트에서 MtuRediscovery 레지스트리 키 잔존을 확인하고, 정책으로 관리할 때는 제거합니다.
+7. NetScaler Gateway 또는 Citrix Gateway Service를 쓰는 경로는 EDT 문서의 Session Reliability 전제를 같이 적습니다.
+8. 주간 점검: 대상 배달 그룹 정책이 Static 또는 Dynamic이고 Session Reliability가 Allowed이면 PASS로 남깁니다.
+
+## 제외 범위
+
+- Citrix Provisioning Secure Boot CA 글의 재작성
+- Entra SSO, Web sign-in preview 글의 재작성
+- 세션 성능, 대역폭, 사용자 체감의 사전 보장
+- VDI 제품 우열, 가격 비교
+- 확인일 기준 GET 404였던 edt-mtu-discovery.html 경로를 근거로 쓰는 해석
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Studio·Web Studio의 MTU Rediscovery와 Session Reliability, Workspace app 버전, 레지스트리 잔존을 현황화합니다.
+- 의사결정 산출물: Off·Static·Dynamic 선택, 레지스트리 제거, 클라이언트 하한을 담은 판단표를 만듭니다.
+- 운영 검증: 정책 값과 Session Reliability Allowed를 확인합니다. 단편화 해소나 세션 성공을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+EDT MTU Rediscovery 정책과 레지스트리 잔존을 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Citrix, What’s new, Citrix Virtual Apps and Desktops 7 2607 LTSR. HDX connectivity EDT MTU Rediscovery 기계 정책 추가. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/whats-new/whats-new.html (확인일: 2026-09-05)
+- Citrix, Enlightened Data Transport, 2607 LTSR. Off·Static 1200·Dynamic, Session Reliability, Workspace app for Windows 2607+, 레지스트리 제거 후 정책. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/hdx-transport/adaptive-transport/enlightened-data-transport.html (확인일: 2026-09-05)
+- Citrix, HDX features managed through the registry, 2607 LTSR. MtuRediscovery 레지스트리 키와 세션 호스트 재시작. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/policies/reference/hdx-registry-settings.html (확인일: 2026-09-05)
+- Citrix, ICA policy settings, 2607 LTSR. MTU Rediscovery Off·Static·Dynamic, 기본 비활성. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/2607-ltsr/policies/reference/ica-policy-settings.html (확인일: 2026-09-05)
+
+이번 주 운영 확인: Citrix Studio 또는 Web Studio에서 대상 배달 그룹의 MTU Rediscovery가 Static 또는 Dynamic이고 Session Reliability가 Allowed이며 세션 호스트에 MtuRediscovery 레지스트리 잔존이 없으면 PASS, 정책이 Off인데 EDT 단편화 증상이 남거나 레지스트리가 정책을 가로막으면 FAIL.
+
+위 출처는 Citrix 2607 LTSR 공개 문서를 설명합니다. 고객별 세션 품질이나 무중단을 보증하지 않습니다.

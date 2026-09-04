@@ -1,0 +1,100 @@
+---
+contentId: insight-vsan-hci-max-cluster-type-no-convert
+title: "vSAN HCI와 Max는 생성 후 바꿀 수 없으니 클러스터 유형을 먼저 가를 것"
+summary: "vSAN Max는 생성 시에만 고를 수 있고 HCI와 서로 변환할 수 없다. 워크로드 VM을 같은 클러스터에 둘지 저장 전용으로 둘지를 생성 전에 가르는 리뷰 초안"
+slug: vsan-hci-max-cluster-type-no-convert
+locale: ko
+status: review
+updatedAt: 2026-09-05
+audience: [customer, partner]
+tags: [hci, vsan, vsan-max, vsphere, cluster-type]
+evidenceRefs:
+  - "https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-administration/expanding-and-managing-a-vsan-cluster/sharing-remote-vsan-datastores-with-hci-mesh.html"
+  - "https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/planning-and-deployment/creating-a-virtual-san-cluster/enabling-virtual-san/configure-a-cluster-for-vsan-using-the-vsphere-client.html"
+  - "https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-administration/expanding-and-managing-a-vsan-cluster/sharing-remote-vsan-datastores-with-hci-mesh/view-remote-vsan-datastores.html"
+relatedContent: ["insight:hci-readiness-checklist", "insight:virtualization-hci-migration-guide"]
+---
+
+## 한눈에 보기
+
+vSAN 8.0 Sharing Remote vSAN Datastores 문서는 You can configure vSAN Max only during cluster creation이라고 적습니다. 기존 vSAN HCI를 vSAN Max로, 또는 그 반대로 변환할 수 없습니다.
+
+- 결정: 워크로드 VM을 같은 클러스터에서 돌릴 vSAN HCI를 만들지, 저장만 제공하는 vSAN Max를 생성 시에 고를지
+- 전제: 바꾸려면 클러스터에서 vSAN을 끄고 다시 구성해야 한다. Max 호스트에는 워크로드 VM을 두지 말라고 적는다
+- 운영: vSphere Client Configure > vSAN > Services에서 HCI configuration type을 고른다. Remote Datastores 페이지로 원격 마운트를 본다
+- 범위: vLCM baseline 폐기 글의 재작성이 아니다. HCI와 Max와 Compute 유형만 가른다
+
+## 문제 상황
+
+저장을 분리하겠다고 보고하면, 기존 HCI 클러스터를 Max로 바꾸는 계획과 생성 시 유형 선택이 한 승인에 섞입니다.
+
+Configure a Cluster for vSAN Using the vSphere Client는 HCI configuration type을 고르라고 적습니다. vSAN HCI는 컴퓨트와 저장을 함께 제공합니다. vSAN Compute Cluster는 컴퓨트만 제공하고 vSAN Max 데이터스토어를 마운트합니다. vSAN Max는 vSAN ESA 클러스터로 저장만 제공하고 컴퓨트는 제공하지 않습니다.
+
+Sharing Remote vSAN Datastores는 vSAN Max가 Express Storage Architecture와 vSAN Ready Nodes만 지원하고 Original Storage Architecture와 호환되지 않는다고 적습니다. storage server only이며 Do not run workload VMs on vSAN Max hosts입니다. 최소 호스트는 six hosts, 호스트당 150 TiB입니다. 호스트 사이 100 Gbps, 컴퓨트 클라이언트에서 10 Gbps를 적습니다. You cannot convert an existing vSAN HCI cluster to a vSAN Max cluster, and you cannot convert vSAN Max cluster to a vSAN HCI cluster. You must deactivate vSAN on the cluster and reconfigure the cluster.
+
+View Remote vSAN Datastores는 Remote Datastores 페이지에서 로컬 클러스터에 마운트된 원격 데이터스토어와, 로컬 데이터스토어를 공유하는 클라이언트 클러스터를 본다고 적습니다. 유형을 바꾼 뒤가 아니라, 생성과 마운트 결과를 이 화면으로 확인합니다.
+
+## 지금 결정할 것
+
+- 대상 클러스터에 워크로드 VM을 둘지, 저장 서버만 둘지
+- 생성 마법사에서 vSAN HCI, vSAN Compute Cluster, vSAN Max 중 무엇을 고를지
+- 기존 HCI를 Max로 바꾸려는 계획을 중단하고 새로 만들지
+- ESA·Ready Node·6호스트·150 TiB 전제를 Max에 만족하는지
+- Remote Datastores로 클라이언트 마운트만 남길지
+
+## 의사결정 기준
+
+### 생성 시 유형과 사후 변환을 한 작업으로 보지 않습니다
+
+문서는 Max를 클러스터 생성 때만 구성할 수 있다고 적습니다. 기존 HCI를 설정만 바꿔 Max로 만든다는 계획을 승인하지 않습니다. 바꾸려면 vSAN을 끄고 재구성합니다.
+
+### HCI와 Max와 Compute를 같은 클러스터로 적지 않습니다
+
+HCI는 컴퓨트와 저장을 함께 둡니다. Max는 저장만 두고 워크로드 VM을 호스트에 두지 말라고 적습니다. Compute Cluster는 로컬 저장 장치 없이 Max 데이터스토어를 마운트합니다. 세 유형을 한 장애 도메인으로 승인하지 않습니다.
+
+### OSA 클러스터를 Max 후보로 보지 않습니다
+
+Max는 ESA와 Max 인증 Ready Node만 지원하고 OSA와 호환되지 않는다고 적습니다. OSA HCI를 Max로 바꿀 수 있다고 보지 않습니다.
+
+### 원격 마운트를 유형 변환으로 보지 않습니다
+
+HCI 클러스터는 데이터스토어를 다른 HCI와 공유할 수 있습니다. Compute는 Max를 마운트합니다. Remote Datastores 화면에 마운트가 보인다고 클러스터 유형이 바뀐 것은 아닙니다.
+
+## 실무 체크리스트
+
+1. 신규 클러스터의 목적이 워크로드+저장인지, 저장 전용인지 기록합니다.
+2. vSphere Client 클러스터 Configure > vSAN > Services에서 HCI configuration type이 HCI인지 Compute인지 Max인지 확인합니다.
+3. 기존 HCI를 Max로 바꾸려는 일정이 있으면 생성 시 전용 클러스터로 바꿉니다.
+4. Max 후보면 ESA, Ready Node, 호스트 수 6 이상, 호스트당 150 TiB를 문서 전제와 대조합니다.
+5. Max 호스트에 워크로드 VM 배치 계획이 있으면 HCI 또는 Compute+마운트로 바꿉니다.
+6. Configure > vSAN > Services > Storage에서 Auto-Policy management, Advanced Options에서 Automatic rebalance를 문서 권고와 맞춰 볼지 정합니다.
+7. Remote Datastores 페이지에서 원격 마운트와 클라이언트 클러스터를 기록합니다.
+8. 주간 점검: Services의 유형이 승인된 HCI·Compute·Max와 같으면 PASS로 남깁니다.
+
+## 제외 범위
+
+- vLCM baseline 폐기와 이미지 전환 글의 재작성
+- vSAN File Service 한도나 SMB·NFS 설계 전체
+- 호스트당 용량, 네트워크 대역을 고객 환경에 맞게 확정하는 범위
+- HCI 제품 우열, 가격, 성능 비교
+- 라이선스 TiB 단가의 추정
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Configure > vSAN > Services 유형, 워크로드 배치, ESA·호스트 전제, Remote Datastores 마운트를 현황화합니다.
+- 의사결정 산출물: HCI·Max·Compute 선택, 변환 금지, 재구성 범위를 담은 판단표를 만듭니다.
+- 운영 검증: Services의 HCI configuration type과 Remote Datastores를 확인합니다. 용량이나 성능을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+vSAN HCI와 Max를 생성 전에 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Broadcom, Sharing Remote vSAN Datastores, vSAN 8.0. Max는 생성 시에만 구성, HCI와 상호 변환 불가, 워크로드 VM 금지, 6호스트·150 TiB, ESA only. https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-administration/expanding-and-managing-a-vsan-cluster/sharing-remote-vsan-datastores-with-hci-mesh.html (확인일: 2026-09-05)
+- Broadcom, Configure a Cluster for vSAN Using the vSphere Client, vSAN 8.0. Configure > vSAN > Services에서 HCI·Compute·Max 유형 선택. https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/planning-and-deployment/creating-a-virtual-san-cluster/enabling-virtual-san/configure-a-cluster-for-vsan-using-the-vsphere-client.html (확인일: 2026-09-05)
+- Broadcom, View Remote vSAN Datastores, vSAN 8.0. Remote Datastores 페이지에서 원격 마운트와 클라이언트 클러스터 확인. https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-administration/expanding-and-managing-a-vsan-cluster/sharing-remote-vsan-datastores-with-hci-mesh/view-remote-vsan-datastores.html (확인일: 2026-09-05)
+
+이번 주 운영 확인: vSphere Client 클러스터 Configure > vSAN > Services의 HCI configuration type이 승인된 HCI 또는 Max 또는 Compute와 같고, Max로 표시된 클러스터에 워크로드 VM 계획이 없으면 PASS, 기존 HCI를 설정만 바꿔 Max로 만들려 하거나 Max 호스트에 VM을 둘 계획이면 FAIL.
+
+위 출처는 Broadcom vSAN 8.0 공개 문서를 설명합니다. 고객별 용량, 변환 성공, 성능을 보증하지 않습니다.

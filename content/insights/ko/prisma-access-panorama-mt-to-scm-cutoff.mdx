@@ -1,0 +1,102 @@
+---
+contentId: insight-prisma-access-panorama-mt-to-scm-cutoff
+title: "2026-04-15 이후 신규 Prisma Access MT는 SCM으로 설계할 것"
+summary: "2026-04-15 이후 그린필드 Prisma Access 멀티테넌시는 Panorama가 아니라 SCM이다. 기존 Panorama MT는 유지되지만 단방향 SCM 이전과 플러그인 5.2 이상을 2026-04-30 전에 계획할지 가르는 리뷰 초안"
+slug: prisma-access-panorama-mt-to-scm-cutoff
+locale: ko
+status: review
+updatedAt: 2026-09-05
+audience: [customer, partner]
+tags: [sase, prisma-access, panorama, strata-cloud-manager, multi-tenancy]
+evidenceRefs:
+  - "https://www.paloaltonetworks.com/services/support/end-of-life-announcements"
+  - "https://docs.paloaltonetworks.com/compatibility-matrix/reference/prisma-access"
+  - "https://docs.paloaltonetworks.com/prisma-access/administration/prisma-access-overview/migrate-prisma-access-from-panorama-to-strata-cloud-manager"
+relatedContent: ["insight:sase-sdwan-roles", "insight:secure-access-selection"]
+---
+
+## 한눈에 보기
+
+Palo Alto Networks End-of-Life Announcements는 Effective April 15, 2026, Panorama-based Prisma Access multi-tenancy will no longer be available for new (greenfield) deployments라고 적습니다. 기존 Panorama 멀티테넌시는 그대로 지원됩니다.
+
+- 결정: 2026-04-15 이후 신규 멀티테넌시 설계를 Strata Cloud Manager로 둘지, 기존 테넌트는 Cloud Services Plugin 5.2 이상으로 올리고 SCM 이전을 계획할지
+- 전제: Panorama에서 SCM으로의 이전은 단방향이다. 되돌릴 수 없다고 마이그레이션 문서가 적는다
+- 운영: 신규는 Strata Cloud Manager 또는 Strata Multitenant Cloud Manager 관리면을 확인한다. 기존은 플러그인 버전을 5.2 이상인지 본다
+- 범위: SAA 에이전트리스나 ION 양자내성 글의 재작성이 아니다. 멀티테넌시 관리면과 플러그인 EOL만 가른다
+
+## 문제 상황
+
+Prisma Access를 확장한다고 보고하면, 그린필드 신규와 기존 Panorama MT, 플러그인 EOL이 한 일정으로 섞입니다.
+
+EOL 페이지는 기존 고객에 No impact to existing customers라고 적습니다. 현재 Panorama 멀티테넌시는 환경과 일상 운영을 바꿀 필요가 없다고 적습니다. 다만 2026-04-15 이후 도입되는 일부 기능은 Strata Cloud Manager에서만 제공될 수 있다고 적습니다. Recommendation은 Panorama 멀티테넌시에서 SCM 멀티테넌시로 이전하는 것입니다.
+
+같은 페이지는 2025-12-15에 Prisma Access Panorama Cloud Services Plugin versions prior to 5.2의 End-of-Life를 2026-04-30로 발표했다고 적습니다. 레거시 플러그인은 2026-04-29까지 지원합니다. 기존 고객은 Customer Support Portal의 최신 Panorama Plugin으로 올리라고 적습니다.
+
+Compatibility Matrix의 Panorama Managed Multitenant Unsupported Features and Functionality는 Starting April 15, 2026, Panorama-based Prisma Access multi-tenancy will no longer be offered for new Prisma Access deployments라고 적습니다. 그 이후 신규 멀티테넌시는 Prisma Access (Managed by Strata Cloud Manager)와 Strata Multitenant Cloud Manager를 쓰라고 강하게 권합니다.
+
+Migrate Prisma Access from Panorama to Strata Cloud Manager는 One-Way Migration이라고 적습니다. After you migrate to Strata Cloud Manager, you can’t return to managing your Prisma Access deployment using Panorama. 워크플로를 켜려면 계정 팀에 연락하라고 적습니다. Superuser 역할과 유효 Prisma Access 라이선스가 전제입니다.
+
+## 지금 결정할 것
+
+- 대상이 2026-04-15 이후 그린필드인지, 기존 Panorama MT인지
+- 그린필드면 관리면을 Strata Cloud Manager로 둘지
+- 기존이면 Cloud Services Plugin을 5.2 이상으로 2026-04-30 전에 올릴지
+- SCM 단방향 이전을 이번 분기에 넣을지, Panorama MT를 유지할지
+- 2026-04-15 이후 기능이 SCM 전용일 수 있음을 승인 조건에 남길지
+
+## 의사결정 기준
+
+### 그린필드와 기존 MT를 한 관리면으로 보지 않습니다
+
+EOL과 Compatibility Matrix는 2026-04-15 이후 신규에 Panorama MT를 제공하지 않는다고 적습니다. 기존은 계속 지원됩니다. 신규 설계서에 Panorama MT를 넣지 않습니다.
+
+### 플러그인 EOL과 관리면 컷오프를 한 날로 보지 않습니다
+
+신규 MT 컷오프는 2026-04-15입니다. 플러그인 5.2 미만 EOL은 2026-04-30이고, 레거시 지원은 2026-04-29까지입니다. 두 날짜를 한 마감으로 합치지 않습니다.
+
+### SCM 이전은 되돌릴 수 없습니다
+
+마이그레이션 문서는 Panorama에서 SCM으로만 갈 수 있고, 이후 Panorama로 관리를 되돌릴 수 없다고 적습니다. 시험 테넌트 없이 운영 테넌트를 이전하지 않습니다.
+
+### 기존 유지와 신규 기능 범위를 가릅니다
+
+기존 Panorama MT는 일상 운영을 바꿀 필요가 없다고 EOL이 적습니다. 같은 글은 2026-04-15 이후 일부 기능이 SCM에만 있을 수 있다고 적습니다. 유지 결정을 모든 미래 기능 사용으로 보지 않습니다.
+
+## 실무 체크리스트
+
+1. 설계를 2026-04-15 이후 그린필드와 기존 Panorama MT로 나눕니다.
+2. 그린필드 관리면이 Strata Cloud Manager 또는 Strata Multitenant Cloud Manager인지 확인합니다.
+3. 기존 Panorama에서 Cloud Services Plugin 버전이 5.2 이상인지 기록합니다.
+4. 5.2 미만이면 2026-04-30 EOL 전에 Customer Support Portal 최신 플러그인 창을 정합니다.
+5. SCM 이전을 넣을지, Panorama MT 유지를 이번 분기 목표로 둘지를 승인합니다.
+6. 이전을 넣으면 단방향과 Superuser, dataplane 업그레이드와 겹치지 말라는 전제를 적습니다.
+7. 2026-04-15 이후 기능 요구가 SCM 전용일 수 있음을 설계 가정에 남깁니다.
+8. 주간 점검: 신규 설계가 Panorama MT가 아니고, 기존 플러그인이 5.2 이상이면 PASS로 남깁니다.
+
+## 제외 범위
+
+- Secure Agentless Access 글의 재작성
+- Prisma SD-WAN ION 양자내성 글의 재작성
+- SASE 제품 우열, 가격, 성능 비교
+- 이전 성공, 무중단, 기능 동등성의 사전 보장
+- 고객 테넌트명, 플러그인 파일, 계정 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 그린필드와 기존 MT, 관리면, Cloud Services Plugin 버전, SCM 이전 의향을 현황화합니다.
+- 의사결정 산출물: 신규 SCM 경로, 플러그인 5.2 일정, 단방향 이전 여부를 담은 판단표를 만듭니다.
+- 운영 검증: 신규 관리면이 SCM인지, 기존 플러그인이 5.2 이상인지 확인합니다. 이전 결과나 기능 공백을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Prisma Access 멀티테넌시 관리면과 플러그인 5.2 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Palo Alto Networks, End-of-Life Announcements. 2026-04-15 이후 그린필드 Panorama MT 중단, 기존 유지, SCM 이전 권고, Cloud Services Plugin 5.2 미만 EOL 2026-04-30. https://www.paloaltonetworks.com/services/support/end-of-life-announcements (확인일: 2026-09-05)
+- Palo Alto Networks, Prisma Access Compatibility Matrix. 2026-04-15 이후 신규는 Strata Cloud Manager와 Strata Multitenant Cloud Manager. Updated on Aug 4, 2026. https://docs.paloaltonetworks.com/compatibility-matrix/reference/prisma-access (확인일: 2026-09-05)
+- Palo Alto Networks, Migrate Prisma Access from Panorama to Strata Cloud Manager. One-Way Migration, SCM 이후 Panorama로 되돌릴 수 없음. Updated on Sep 2, 2026. https://docs.paloaltonetworks.com/prisma-access/administration/prisma-access-overview/migrate-prisma-access-from-panorama-to-strata-cloud-manager (확인일: 2026-09-05)
+
+이번 주 운영 확인: 2026-04-15 이후 신규 MT 설계의 관리면이 Strata Cloud Manager 또는 Strata Multitenant Cloud Manager이고, 기존 Panorama의 Cloud Services Plugin이 5.2 이상이면 PASS, 그린필드를 Panorama MT로 남기거나 플러그인이 5.2 미만이면 FAIL.
+
+위 출처는 Palo Alto Networks 공개 문서를 설명합니다. 고객별 이전 성공이나 기능 동등성을 보증하지 않습니다.
