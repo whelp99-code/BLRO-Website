@@ -160,11 +160,13 @@
     "deploy": false
   },
   "validation": {
-    "contentValidate": "pending",
-    "build": "pending",
+    "contentValidate": "PASS",
+    "contentValidateDetail": "4 files / 46 tests",
+    "build": "PASS",
     "reviewSlugsOnPublicRoutes": false,
     "reviewSlugsOnSitemap": false,
-    "verdict": "pre_test"
+    "publicInsightRoutes": 17,
+    "verdict": "final_review_ready"
   },
   "improvement": "These five are review-only. Do not publish without content-owner approval. Next rotation is B-track. Do not repeat these slugs or open PR #8–#19 slugs."
 }

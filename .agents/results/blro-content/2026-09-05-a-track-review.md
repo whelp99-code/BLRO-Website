@@ -76,6 +76,13 @@ All three preferred Palo Alto URLs HTTP 200 with readable document text.
 - No merge, deploy, or public approve
 - CTA: mailto:jm.park@blro.co.kr only. Does not claim /contact intake works.
 
+## Validation (post-commit)
+
+- `pnpm content:validate`: PASS — 4 files / 46 tests
+- `pnpm build`: PASS — Next.js 16.2.11, 37 static pages
+- prerender-manifest public `/insights/*` routes: 17 approved slugs only. New review slugs absent.
+- sitemap builder uses `publicRecords` (approved + publishedAt only). New review slugs absent from sitemap artifacts (NFT traces of source MDX files are not public routes).
+
 ## Next
 
 B-track (AI · cloud · infra · backup/DR · observability). Do not repeat these five slugs or #8–#19 slugs.
