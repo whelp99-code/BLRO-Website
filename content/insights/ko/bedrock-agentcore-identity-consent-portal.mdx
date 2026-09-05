@@ -12,6 +12,7 @@ evidenceRefs:
   - "https://aws.amazon.com/about-aws/whats-new/2026/09/amazon-bedrock-agentcore/"
   - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html"
   - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-terminology.html"
   - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal-prerequisites.html"
   - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-create-consent-portal.html"
 relatedContent: ["insight:ai-governance-decision-operating-model"]
@@ -32,7 +33,7 @@ relatedContent: ["insight:ai-governance-decision-operating-model"]
 
 릴리스 노트 September 2026 Consent Portal for AgentCore Identity는 사용자를 portalUrl로 보내고, JWT inbound Gateway와 permitted scopes에 openid가 있는 IdP가 필요하다고 적습니다. 운영은 create, get, list, update, delete consent-portal로 합니다.
 
-Configure a consent portal 페이지는 포털이 호스티드·AWS 관리형이며, 소스 Gateway 하나에 붙고, 게이트웨이 inbound JWT authorizer가 신뢰하는 같은 IdP를 OAuth2 credential provider로 가리킨다고 적습니다. 전제 페이지는 기본 IdP가 JWT access token을 발행해야 한다고 적습니다. GitHub, Slack, Salesforce, Atlassian, LinkedIn처럼 ID 토큰과 OIDC discovery가 없는 OAuth2-only 공급자는 기본 IdP가 될 수 없고, 게이트웨이 타깃의 outbound provider로는 남을 수 있습니다. What's New의 도구 연결과 포털의 기본 IdP를 한 승인으로 묶지 않습니다.
+Configure a consent portal 페이지는 포털이 호스티드·AWS 관리형이며, 소스 Gateway 하나에 붙고, 게이트웨이 inbound JWT authorizer가 신뢰하는 같은 IdP를 OAuth2 credential provider로 가리킨다고 적습니다. AgentCore Identity terminology의 Consent portal 항목도 호스티드·AWS 관리형, JWT inbound Gateway, 서버 측 OAuth로 정의하고 Configure a consent portal을 가리킵니다. 전제 페이지는 기본 IdP가 JWT access token을 발행해야 한다고 적습니다. GitHub, Slack, Salesforce, Atlassian, LinkedIn처럼 ID 토큰과 OIDC discovery가 없는 OAuth2-only 공급자는 기본 IdP가 될 수 없고, 게이트웨이 타깃의 outbound provider로는 남을 수 있습니다. What's New의 도구 연결과 포털의 기본 IdP를 한 승인으로 묶지 않습니다.
 
 ## 지금 결정할 것
 
@@ -93,7 +94,8 @@ Gateway 3LO를 관리형 Consent Portal로 옮길지를 가르려면 mailto:jm.p
 
 - AWS What's New, Amazon Bedrock AgentCore Identity now offers a managed consent portal, 2026-09-01. 직접 OAuth callback 인프라 대신 관리형 포털, 게이트웨이별 호스티드 클라이언트. https://aws.amazon.com/about-aws/whats-new/2026/09/amazon-bedrock-agentcore/ (확인일: 2026-09-06)
 - Amazon Bedrock AgentCore Developer Guide, Release notes, September 2026 Consent Portal for AgentCore Identity. portalUrl, JWT inbound Gateway, openid, create·get·list·update·delete consent-portal. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html (확인일: 2026-09-06)
-- Amazon Bedrock AgentCore Developer Guide, Configure a consent portal. 호스티드 포털, Gateway 하나, 서버 측 OAuth, 브라우저는 토큰을 갖지 않음. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal.html (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, Configure a consent portal. 호스티드 포털, Gateway 하나, 서버 측 OAuth, 브라우저는 토큰을 갖지 않음. GET 본문 확인. 스텁 경로 configure-consent-portal.html·consent-portal.html은 쓰지 않음. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal.html (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, AgentCore Identity terminology. Consent portal 정의, JWT inbound Gateway, 서버 측 OAuth, Configure a consent portal 교차 참조. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-terminology.html (확인일: 2026-09-06)
 - Amazon Bedrock AgentCore Developer Guide, Consent portal prerequisites. JWT inbound, 같은 OIDC issuer, openid, OAuth2-only는 기본 IdP 불가. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal-prerequisites.html (확인일: 2026-09-06)
 - Amazon Bedrock AgentCore Developer Guide, Create a consent portal with the AWS CLI. create-consent-portal, get-consent-portal, ACTIVE와 portalUrl, portalUrl/callback, invalid_scope. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-create-consent-portal.html (확인일: 2026-09-06)
 
