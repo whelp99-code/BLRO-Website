@@ -1,0 +1,96 @@
+---
+contentId: insight-otelcol-0159-queue-batch-metrics
+title: "otelcol v0.159: queue batch 메트릭 의미를 가를 것"
+summary: "Collector v0.159.0부터 otelcol_exporter_queue_batch_send_size가 배치 후 크기를 기록하므로, 대시보드를 enqueue 크기 메트릭과 분리할지를 가르는 리뷰 초안"
+slug: otelcol-0159-queue-batch-metrics
+locale: ko
+status: review
+updatedAt: 2026-09-06
+audience: [customer, partner]
+tags: [observability, opentelemetry, collector, exporterhelper, metrics]
+evidenceRefs:
+  - "https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.159.0"
+  - "https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/v0.159.0/exporter/exporterhelper/documentation.md"
+  - "https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/v0.159.0/docs/rfcs/batching-migration.md"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+v0.159.0에서 otelcol_exporter_queue_batch_send_size를 배치 후 크기로 읽고, enqueue 크기는 otelcol_exporter_enqueue_size로 분리할지부터 정합니다.
+
+- 결정: 업그레이드 전에 이 히스토그램을 쓰던 보드·알림을 바꿀지, 예전 Offer/enqueue 의미로 계속 읽을지
+- 전제: v0.159.0 릴리스 노트는 예전 히스토그램이 enqueue 시점 Offer 크기를 재서 들어오는 요청 크기였고, 이제는 obs report sender에서 배치 이후 크기를 기록한다고 적는다
+- 대체: 같은 노트는 enqueue 크기 보존용으로 otelcol_exporter_enqueue_size와 otelcol_exporter_enqueue_size_bytes를 더했다고 적는다
+- 범위: Alloy ServiceMonitor 파일 접근이나 Prometheus OTLP 라벨 충돌이 아니라 exporterhelper 큐·배치 히스토그램 의미
+
+## 문제 상황
+
+큐 적재와 배치 전송을 한 히스토그램으로 보던 보드는, Collector를 v0.159.0으로 올린 뒤 같은 이름인데 값이 달라집니다. 릴리스 노트 Bug fixes의 pkg/exporterhelper는 otelcol_exporter_queue_batch_send_size와 otelcol_exporter_queue_batch_send_size_bytes를 배치 후에 기록한다고 적습니다. 예전에는 Offer에서 재서 들어오는 요청 크기였습니다.
+
+exporterhelper documentation.md는 queue_batch_send_size를 Number of units in the batch이며 배칭이 켜져 있을 때만 기록하고 detailed level에서만 쓸 수 있다고 적습니다. enqueue_size는 Number of units in the request added to the sending queue이며 역시 detailed level입니다. 보드가 detailed telemetry를 안 켜면 두 메트릭이 보이지 않을 수 있습니다. 이름이 있다고 기본 레벨에 있다고 보지 않습니다.
+
+같은 v0.159.0은 Enhancements에서 pkg.exporterhelper.queueBatchEnabled 피처 게이트를 더했다고 적습니다. 켜면 NewDefaultQueueConfig가 돌려주는 배치 설정의 batch::enabled가 true입니다. RFC docs/rfcs/batching-migration.md는 이 게이트가 NewDefaultQueueConfig의 Batch 기본만 바꾸고 BlockOnOverflow와 WaitForResult는 false로 남는다고 적습니다. 메트릭 의미 변경과 게이트로 배치 기본을 켜는 일을 한 승인으로 묶지 않습니다.
+
+## 지금 결정할 것
+
+- Collector를 v0.159.0 이상으로 올리기 전에 queue_batch_send_size를 쓰는 보드·알림을 목록화할지
+- 배치 후 크기로 읽을지, enqueue 크기는 enqueue_size로 옮길지
+- detailed level telemetry를 켜서 두 히스토그램을 볼지
+- pkg.exporterhelper.queueBatchEnabled로 기본 배칭을 켤지. 게이트와 메트릭 의미는 별개다
+- batchprocessor와 exporterhelper 큐 배칭을 한 파이프라인에 겹칠지. RFC는 이중 배칭을 경고한다
+
+## 의사결정 기준
+
+### 배치 후 크기와 enqueue 크기를 한 시계열로 보지 않습니다
+
+릴리스 노트는 의미를 바꿨고, 예전 enqueue 측정은 새 메트릭으로 남겼습니다. 같은 패널에 두 이름을 섞지 않습니다. v0.159 미만 보드를 그대로 두면 값이 배치 후 크기로 바뀌는데도 enqueue 한도로 읽을 수 있습니다.
+
+### detailed level과 메트릭 존재를 한 완료로 보지 않습니다
+
+documentation.md는 두 히스토그램 모두 detailed level입니다. 레벨을 올리지 않으면 업그레이드 뒤에도 시계열이 비어 있을 수 있습니다. 이름만 보드에 넣고 수집 레벨을 안 보면 실패를 메트릭 부재로 오해합니다.
+
+### 피처 게이트와 히스토그램 수정을 한 변경으로 보지 않습니다
+
+게이트는 NewDefaultQueueConfig의 batch::enabled 기본입니다. 히스토그램 기록 시점 수정은 별도 Bug fixes입니다. 게이트를 안 켜도 배칭을 쓰는 익스포터는 메트릭 의미가 바뀝니다. 게이트를 켜는 일과 보드를 고치는 일을 같은 체크박스로 두지 않습니다.
+
+### batchprocessor와 exporterhelper 배칭을 한 단계로 합치지 않습니다
+
+RFC는 파이프라인에 batchprocessor가 있고 exporterhelper 기본 배칭이 켜지면 이중 배칭이 난다고 적습니다. 이 초안은 히스토그램 의미가 주 결정입니다. 프로세서 이전은 별도 창입니다.
+
+## 실무 체크리스트
+
+1. 실행 중 Collector 버전이 v0.159.0 이상인지 기록합니다.
+2. 대시보드·알림이 otelcol_exporter_queue_batch_send_size 또는 _bytes를 쓰는지 검색합니다.
+3. 배치 후 크기가 필요한 패널과 enqueue 크기가 필요한 패널을 나눕니다.
+4. enqueue 쪽은 otelcol_exporter_enqueue_size와 _bytes로 옮깁니다.
+5. 두 히스토그램을 보려면 detailed level이 켜져 있는지 확인합니다.
+6. pkg.exporterhelper.queueBatchEnabled를 켤지는 보드 수정과 분리해 적습니다.
+7. 같은 파이프라인에 batchprocessor와 exporterhelper 배칭이 겹치는지 RFC 경고를 대조합니다.
+8. 「이번 주 운영 확인」 PASS = v0.159.0에서 queue_batch_send_size 패널이 배치 후 크기를 읽고, enqueue 크기는 enqueue_size 패널로 분리되어 있다. FAIL = v0.159.0인데 같은 queue_batch_send_size를 예전 Offer/enqueue 크기로 임계값을 걸고 있다.
+
+## 제외 범위
+
+- Grafana Alloy 1.19 ServiceMonitor 파일 접근 글을 다시 쓰는 범위
+- Prometheus OTLP 라벨 충돌 글을 다시 쓰는 범위
+- 수집기 제품의 우열이나 가격 비교
+- 게이트를 켜면 배칭 품질이나 지연이 보장된다는 주장
+- CloudWatch PromQL 수집 경로 글을 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Collector 버전, 히스토그램을 쓰는 보드, telemetry level, 피처 게이트, batchprocessor 중첩을 현황화합니다.
+- 의사결정 산출물: 메트릭 의미 분리, detailed level, 게이트·프로세서 창을 담은 판단표를 만듭니다.
+- 운영 검증: 보드가 배치 후와 enqueue를 다른 이름으로 읽는지 확인합니다. 수집 완전성이나 알림 정확도를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+v0.159 큐·배치 메트릭 의미를 보드에서 가를지를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 관측 파이프라인 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- OpenTelemetry Collector, Release v1.65.0/v0.159.0. queue_batch_send_size를 배치 후 기록, enqueue_size 추가, pkg.exporterhelper.queueBatchEnabled. https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.159.0 (확인일: 2026-09-06)
+- OpenTelemetry Collector v0.159.0, exporter/exporterhelper/documentation.md. queue_batch_send_size와 enqueue_size 설명, detailed level, 게이트 From Version v0.158.0. https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/v0.159.0/exporter/exporterhelper/documentation.md (확인일: 2026-09-06)
+- OpenTelemetry Collector v0.159.0, docs/rfcs/batching-migration.md. queueBatchEnabled가 NewDefaultQueueConfig의 Batch 기본만 바꿈, 이중 배칭 경고. https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/v0.159.0/docs/rfcs/batching-migration.md (확인일: 2026-09-06)
+
+위 출처는 OpenTelemetry Collector 공개 릴리스와 저장소 문서를 설명합니다. 고객별 수집 완전성, 알림 정확도, 제품 우위를 보증하지 않습니다.

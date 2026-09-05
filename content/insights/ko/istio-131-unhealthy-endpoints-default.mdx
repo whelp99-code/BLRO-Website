@@ -1,0 +1,96 @@
+---
+contentId: insight-istio-131-unhealthy-endpoints-default
+title: "Istio 1.31: 비정상 엔드포인트 기본 전송을 정할 것"
+summary: "Istio 1.31이 비정상 엔드포인트를 기본으로 보내므로, 새 기본값을 유지할지 PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS=false 또는 compatibility profile로 끌지를 가르는 리뷰 초안"
+slug: istio-131-unhealthy-endpoints-default
+locale: ko
+status: review
+updatedAt: 2026-09-06
+audience: [customer, partner]
+tags: [infrastructure, istio, traffic-management, outlier-detection, upgrade]
+evidenceRefs:
+  - "https://istio.io/latest/news/releases/1.31.x/announcing-1.31/upgrade-notes/"
+  - "https://istio.io/latest/news/releases/1.31.x/announcing-1.31/change-notes/"
+  - "https://istio.io/latest/news/releases/1.31.x/announcing-1.31/"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+Istio 1.31에서 비정상 엔드포인트를 보내는 새 기본값을 유지할지, PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS=false 또는 compatibility profile로 끌지부터 정합니다.
+
+- 결정: 1.31.0 업그레이드 후 새 기본값을 수용할지, 플래그 또는 compatibility profile로 이전 동작에 가깝게 둘지
+- 전제: Upgrade Notes는 Service에 OutlierDetection.minHealthPercent가 있으면 이 기본 전송을 쓰지 않는다고 적는다
+- 출처: Change Notes Traffic Management도 같은 기본값과 같은 플래그를 적는다. 발표일은 2026-08-31이다
+- 범위: GCR·Helm scream tests가 아니라 unhealthy endpoints 기본값만 가른다
+
+## 문제 상황
+
+1.30.x에서는 비정상 엔드포인트를 보내지 않는다고 가정한 헬스 체크·아웃라이어 런북이 남아 있으면, 1.31로 올린 뒤 사이드카가 받는 엔드포인트 집합이 달라집니다. Upgrade Notes는 1.30.0에서 1.31.0으로 올릴 때 예상과 다른 동작으로 이 기본값 변경을 적습니다.
+
+문장은 짧습니다. 기본으로 비정상 엔드포인트를 보내며, Service에 OutlierDetection.minHealthPercent가 설정되면 그렇게 하지 않습니다. 끄려면 PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS를 false로 두거나 compatibility profile을 쓰라고 안내합니다. 이 초안은 특정 compatibility profile 이름을 만들지 않습니다. 발표 페이지는 업그레이드 전에 Upgrade Notes를 보라고 가리킵니다.
+
+Change Notes는 Enabled sending unhealthy endpoints by default unless OutlierDetection.minHealthPercent is configured라고 적고, 같은 플래그로 끌 수 있다고 반복합니다. minHealthPercent가 있는 Service와, 플래그로 전역 opt-out하는 메시를 한 설정으로 보지 않습니다.
+
+## 지금 결정할 것
+
+- 1.31.0으로 올리기 전에 새 기본값을 유지할지, 플래그 또는 compatibility profile로 끌지
+- 대상 Service에 OutlierDetection.minHealthPercent를 둘지
+- istiod Deployment yaml의 컨테이너 env에 PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS=false를 넣을지
+- 비정상 엔드포인트가 클러스터에 남는 것을 아웃라이어·재시도 정책과 같이 볼지
+- GCR 아티팩트 이전과 이 기본값 변경을 한 업그레이드 승인으로 묶지 말지
+
+## 의사결정 기준
+
+### 새 기본값과 명시적 false를 같은 상태로 보지 않습니다
+
+플래그를 쓰지 않으면 1.31은 비정상 엔드포인트를 보냅니다. 이전처럼 빼려면 env를 false로 두거나 compatibility profile을 적용합니다. 업그레이드만 하고 env를 안 보면 기본값이 바뀐 것입니다.
+
+### minHealthPercent가 있는 Service와 메시 전역 플래그를 한 스위치로 보지 않습니다
+
+Upgrade Notes는 Service에 OutlierDetection.minHealthPercent가 있으면 기본 전송을 쓰지 않는다고 적습니다. 일부 Service만 예외로 두고 메시 기본은 유지하는 경로와, istiod에서 전역으로 끄는 경로를 나눕니다. 한쪽만 보고 전체가 꺼졌다고 보지 않습니다.
+
+### 1.31의 다른 업그레이드 항목과 이 기본값을 한 창으로 묶지 않습니다
+
+같은 Upgrade Notes에 GCP 아티팩트 중단과 scream tests, WorkloadEntry HBONE 라벨, 제거된 PILOT_SPAWN_UPSTREAM_SPAN_FOR_GATEWAY가 있습니다. 이 초안은 unhealthy endpoints 기본값만 다룹니다. 아티팩트 이전은 이미 다른 글로 다룬 주제입니다.
+
+### 발표일과 업그레이드 노트를 같이 둡니다
+
+Announcing Istio 1.31.0은 2026-08-31입니다. 지원 Kubernetes는 1.32부터 1.36입니다. 업그레이드 체크리스트에 버전과 Upgrade Notes 항목을 같이 적습니다.
+
+## 실무 체크리스트
+
+1. 현재 Istio 버전과 1.31.0 대상 여부를 기록합니다.
+2. 새 기본값을 유지할지, 끌지를 승인 조건으로 적습니다.
+3. istiod Deployment yaml 컨테이너 env에서 PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS 값을 확인합니다.
+4. 끌 경우 값을 false로 두거나, 사용할 compatibility profile 이름을 공식 프로필 목록에서 고릅니다. 이 초안은 이름을 만들지 않습니다.
+5. OutlierDetection.minHealthPercent가 있는 Service를 목록화합니다.
+6. 비정상 엔드포인트가 남는 서비스의 재시도·아웃라이어 임계값을 같이 검토합니다.
+7. 같은 1.31 Upgrade Notes의 아티팩트 이전은 이 목록과 분리합니다.
+8. 「이번 주 운영 확인」 PASS = 1.31에서 새 기본값을 유지하려면 istiod Deployment yaml env에 PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS=false가 없고, 예외로 둘 Service에만 OutlierDetection.minHealthPercent가 있다. FAIL = 1.31인데 비정상 엔드포인트를 보내지 않으려는 운영인데 env가 false가 아니고 해당 Service에도 minHealthPercent가 없다.
+
+## 제외 범위
+
+- Istio GCR·Helm scream tests 글을 다시 쓰는 범위
+- prometheus.istio.io/scrape-targets 다중 스크레이프를 이 글에서 처리하는 범위
+- 서비스 메시 제품의 우열이나 가격 비교
+- 특정 compatibility profile 이름을 이 초안이 정하는 해석
+- 기본값을 바꾸면 장애가 사라지거나 트래픽이 보장된다는 주장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Istio 버전, istiod env, Service의 minHealthPercent, 업그레이드 창을 현황화합니다.
+- 의사결정 산출물: 기본값 유지·전역 opt-out·Service 예외를 담은 판단표를 만듭니다.
+- 운영 검증: istiod yaml env와 Service의 minHealthPercent를 확인합니다. 가용성이나 장애 제거를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+1.31에서 비정상 엔드포인트 기본 전송을 유지할지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 서비스 메시 업그레이드 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Istio 1.31 Upgrade Notes, Default behavior for sending unhealthy endpoints. 기본 전송, OutlierDetection.minHealthPercent, PILOT_AUTO_SEND_UNHEALTHY_ENDPOINTS=false, compatibility profiles. https://istio.io/latest/news/releases/1.31.x/announcing-1.31/upgrade-notes/ (확인일: 2026-09-06)
+- Istio 1.31.0 Change Notes, Traffic Management. Enabled sending unhealthy endpoints by default, 같은 플래그로 비활성. https://istio.io/latest/news/releases/1.31.x/announcing-1.31/change-notes/ (확인일: 2026-09-06)
+- Announcing Istio 1.31.0, 2026-08-31. 업그레이드 전 Upgrade Notes 안내, Kubernetes 1.32–1.36. https://istio.io/latest/news/releases/1.31.x/announcing-1.31/ (확인일: 2026-09-06)
+
+위 출처는 Istio 공개 릴리스 노트를 설명합니다. 고객별 트래픽 경로, 가용성, 업그레이드 결과를 보증하지 않습니다.

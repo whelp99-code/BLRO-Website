@@ -1,0 +1,98 @@
+---
+contentId: insight-aws-backup-s3-system-tag-over-1000
+title: "AWS Backup S3: 1000개 초과면 system-tag 규칙을 확인할 것"
+summary: "S3 버킷이 1000개를 넘으면 백업 역할에 s3:ListTagsForResource를 두어 AwsBackupManagedRule-BucketSystemTag를 쓰는지, ARN 규칙 한도에 남기는지를 가르는 리뷰 초안"
+slug: aws-backup-s3-system-tag-over-1000
+locale: ko
+status: review
+updatedAt: 2026-09-06
+audience: [customer, partner]
+tags: [backup, disaster-recovery, aws-backup, s3, eventbridge]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/09/aws-backup-more-than-1000-s3-buckets/"
+  - "https://docs.aws.amazon.com/aws-backup/latest/devguide/s3-backups.html"
+  - "https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html"
+relatedContent: ["service:backup-disaster-recovery", "insight:backup-dr-decision-checklist"]
+---
+
+## 한눈에 보기
+
+백업 역할에 s3:ListTagsForResource를 두어 AwsBackupManagedRule-BucketSystemTag를 쓸지, ARN 나열 규칙의 1000개 한도를 수용할지부터 정합니다.
+
+- 결정: 연속 백업 EventBridge를 system-tag 규칙으로 둘지, 역할에 ListTagsForResource가 없어 AwsBackupManagedRule-숫자 ARN 규칙으로 남을지
+- 전제: S3 백업 문서는 역할에 그 권한이 없으면 ARN 규칙으로 떨어지고 계정당 1000개까지라고 적는다
+- 공지: 2026-09-01 What's New는 계정의 S3 버킷 쿼터에 맞춰 일반 목적 버킷을 모두 보호할 수 있다고 적는다. 기본 관리형 정책을 쓰면 기존 플랜은 그대로 동작한다고 안내한다
+- 범위: S3 액세스 포인트 읽기 글이 아니라 1000개 초과 연속 백업의 EventBridge 구성
+
+## 문제 상황
+
+일반 목적 버킷이 계정당 1000개를 넘는데 연속 백업을 쓰면, EventBridge 규칙이 system-tag인지 ARN 나열인지에 따라 한도가 갈립니다. S3 백업 문서는 권장 경로를 system tag-based event configuration으로 적습니다. AWS Backup이 버킷에 aws:backup:enabled 시스템 태그를 달고, AwsBackupManagedRule-BucketSystemTag 규칙 하나가 그 태그를 필터합니다. 이 방법은 계정의 S3 버킷 쿼터와 같은 수의 일반 목적 버킷을 지원합니다.
+
+역할에 s3:ListTagsForResource가 없으면 버킷 ARN을 나열하는 AwsBackupManagedRule-숫자 규칙을 만들고, 이 방법은 계정당 1000개까지입니다. 권한이 없으면 1000개 초과를 자동으로 넘지 못합니다.
+
+What's New는 기본 AWS Backup 관리형 정책을 쓰면 기존 플랜을 바꿀 필요가 없다고 적습니다. 관리형 정책 페이지는 2026-08-27에 AWSBackupServiceRolePolicyForS3Backup에 s3:ListTagsForResource를 더했다고 적습니다. 목적은 EventBridge 알림을 구성할 때 aws:backup:enabled 시스템 태그를 확인하는 것입니다. 사용자 정의 역할을 쓰면 이 Action을 직접 넣어야 합니다.
+
+버킷의 Amazon EventBridge 알림이 꺼져 있으면 S3가 객체 이벤트를 기본 버스에 올리지 않습니다. 관리형 규칙은 켜져 있어도 그 버킷 이벤트를 받지 않고, AWS Backup은 알림·경보·백업 작업 실패를 내지 않습니다. 규칙 이름만 보고 연속 창이 유지된다고 보지 않습니다.
+
+## 지금 결정할 것
+
+- 보호할 일반 목적 버킷이 계정당 1000개를 넘는지
+- 백업 역할에 AWSBackupServiceRolePolicyForS3Backup을 쓸지, 사용자 정의 역할에 s3:ListTagsForResource를 넣을지
+- EventBridge Rules에서 AwsBackupManagedRule-BucketSystemTag를 확인할지
+- 각 버킷 Properties → Event notifications에서 Amazon EventBridge가 On인지 볼지
+- Directory bucket은 지원하지 않는다는 S3 백업 문서 한계를 수용할지
+
+## 의사결정 기준
+
+### system-tag 규칙과 ARN 나열 규칙을 같은 한도로 보지 않습니다
+
+BucketSystemTag는 쿼터까지 갑니다. ARN 규칙은 1000개에서 멈춥니다. 1000개를 넘기려면 역할에 ListTagsForResource가 있는지를 먼저 봅니다. 백업 플랜만 있고 규칙 유형을 안 보면 한도를 넘지 못한 채 남을 수 있습니다.
+
+### 관리형 정책과 사용자 정의 역할을 한 완료로 보지 않습니다
+
+What's New는 기본 관리형 정책이면 플랜 변경이 없다고 적습니다. 관리형 정책 페이지는 2026-08-27 갱신으로 그 Action을 넣었습니다. 사용자 정의 역할은 같은 Action을 명시해야 합니다. 역할 이름만 보고 권한이 있다고 보지 않습니다.
+
+### EventBridge 규칙 존재와 버킷 알림 On을 한 상태로 보지 않습니다
+
+S3 백업 문서는 버킷 알림이 꺼지면 관리형 규칙이 켜져 있어도 이벤트가 없고, 이 실패는 조용하다고 적습니다. 콘솔에서 버킷 Properties의 Event notifications, CLI는 aws s3api get-bucket-notification-configuration을 보라고 안내합니다. 규칙 목록만으로 연속 백업이 살아 있다고 보지 않습니다.
+
+### 시스템 태그와 사용자 태그를 한 한도로 세지 않습니다
+
+문서는 aws:backup:enabled를 AWS Backup이 붙이고 떼며, 백업 역할에 추가 태그 권한이 필요 없다고 적습니다. 이 시스템 태그는 버킷당 사용자 태그 50개 한도에 들어가지 않습니다. 사용자 태그 할당과 시스템 태그를 같은 용량으로 보지 않습니다.
+
+## 실무 체크리스트
+
+1. 계정에서 백업 대상 일반 목적 버킷 수가 1000개를 넘는지 기록합니다. Directory bucket은 대상이 아닙니다.
+2. 백업 역할이 AWSBackupServiceRolePolicyForS3Backup인지, 사용자 정의인지 나눕니다.
+3. 사용자 정의면 Action s3:ListTagsForResource가 있는지 IAM에서 확인합니다.
+4. EventBridge 콘솔 Rules에서 AwsBackupManagedRule-BucketSystemTag가 있는지 봅니다.
+5. AwsBackupManagedRule-숫자 ARN 규칙만 있으면 1000개 한도 경로입니다. 권한이 빠진 것은 아닌지 봅니다.
+6. 연속 백업 버킷마다 Properties → Event notifications에서 Amazon EventBridge가 On인지 확인합니다. CLI는 aws s3api get-bucket-notification-configuration입니다.
+7. 시스템 태그 aws:backup:enabled가 백업 대상 버킷에 있는지 필요하면 기록합니다. 한도 50개에 넣지 않습니다.
+8. 「이번 주 운영 확인」 PASS = EventBridge Rules에 AwsBackupManagedRule-BucketSystemTag가 있고 백업 역할에 s3:ListTagsForResource가 있다. FAIL = AwsBackupManagedRule-숫자 ARN 규칙만 있는데 보호해야 할 일반 목적 버킷이 1000개를 넘는다.
+
+## 제외 범위
+
+- AWS Backup S3 액세스 포인트 읽기 글을 다시 쓰는 범위
+- FSx ONTAP 교차 리전·계정, EKS 논리 격리 볼트 글을 다시 쓰는 범위
+- 백업 제품의 우열이나 가격 비교
+- 규칙만 있으면 연속 복구 창과 랜섬웨어 대응이 보장된다는 주장
+- 고객별 복구 성공, 규제 적합의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 버킷 수, 역할 Action, EventBridge 규칙 이름, 버킷 알림 On을 현황화합니다.
+- 의사결정 산출물: system-tag 경로 여부, 사용자 정의 역할 보완, 조용한 실패 점검을 담은 판단표를 만듭니다.
+- 운영 검증: BucketSystemTag 규칙과 ListTagsForResource, 버킷 EventBridge On을 확인합니다. 복구 시간이나 백업 완전성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+S3 1000개 초과 백업을 system-tag 규칙으로 둘지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 백업과 재해복구 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, AWS Backup now supports protecting more than 1,000 Amazon S3 buckets per account, 2026-09-01. 계정 S3 쿼터에 맞춘 일반 목적 버킷, 기본 관리형 정책이면 플랜 변경 없음. https://aws.amazon.com/about-aws/whats-new/2026/09/aws-backup-more-than-1000-s3-buckets/ (확인일: 2026-09-06)
+- AWS Backup Developer Guide, Amazon S3 backups. AwsBackupManagedRule-BucketSystemTag, s3:ListTagsForResource, ARN 규칙 1000개, 버킷 EventBridge On. https://docs.aws.amazon.com/aws-backup/latest/devguide/s3-backups.html (확인일: 2026-09-06)
+- AWS Backup Developer Guide, Managed policies for AWS Backup. 2026-08-27 AWSBackupServiceRolePolicyForS3Backup에 s3:ListTagsForResource 추가. https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html (확인일: 2026-09-06)
+
+위 출처는 AWS 공개 공지와 운영 문서를 설명합니다. 고객별 백업 성공, 복구 결과, 공급자 우위를 보증하지 않습니다.
