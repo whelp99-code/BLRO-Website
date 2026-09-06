@@ -1,0 +1,106 @@
+---
+contentId: insight-azure-local-rack-aware-add-server-pairs
+title: "랙 인지 Azure Local에 노드 하나를 혼자 추가하지 말 것"
+summary: "azloc-2606 랙 인지 클러스터는 노드를 두 대씩 Add-Server로 넣고 1+1에는 추가할 수 없다. 2+2→3+3 또는 3+3→4+4만 승인하는 리뷰 초안"
+slug: azure-local-rack-aware-add-server-pairs
+locale: ko
+status: review
+updatedAt: 2026-09-07
+audience: [customer, partner]
+tags: [hci, azure-local, rack-aware, add-server, azloc-2606]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-add-server?view=azloc-2606"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-overview?view=azloc-2606"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-requirements?view=azloc-2606"
+  - "https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-reference-architecture?view=azloc-2606"
+relatedContent: ["insight:hci-readiness-checklist"]
+---
+
+## 한눈에 보기
+
+랙 인지 Azure Local에서 노드를 한 대만 Add-Server로 넣으려 하면, 이번 주에는 그 작업을 멈추고 노드 두 대를 LocalAvailabilityZone 쌍으로 넣거나 1+1은 추가 불가로 남깁니다.
+
+- 결정: 랙 인지 클러스터에 서버를 넣을 때 한 노드를 혼자 추가하지 말고 Add-Server로 두 노드와 zone 쌍만 허용할지
+- 전제: 지원 확장은 2+2에서 3+3, 3+3에서 4+4다. 1+1에는 노드를 추가할 수 없다
+- 운영: Add-Server 후 Get-ClusterFaultDomain과 Azure Local 리소스의 Infrastructure, Machines에서 zone과 노드를 본다
+- 범위: Repair a node OS 이미지 일치 글의 재작성이 아니다. 확인일 기준 열지 않은 network-design 경로는 근거로 쓰지 않는다
+
+## 문제 상황
+
+노드를 추가했다고 보고하면, 한 대 추가와 두 대 쌍 추가, 1+1과 2+2 확장이 한 완료로 섞입니다.
+
+Add or repair a node to a rack aware cluster, view=azloc-2606는 This is only supported for 2+2 to 3+3, and 3+3 to 4+4 rack aware cluster라고 적습니다. You can't add nodes to a 1+1 rack aware cluster. For a rack aware cluster, you must add two nodes at a time by using the Add-Server command. 매개변수는 Name, HostIpv4, LocalAvailabilityZone, LocalAdminCredential입니다. Name과 HostIpv4는 노드 두 개의 배열이고 순서를 같게 둡니다. LocalAvailabilityZone은 넣는 노드 순서의 zone 배열입니다. 예는 Node1이 ZoneA, Node2가 ZoneB이면 ["ZoneA", "ZoneB"]입니다. 같은 자격 증명을 두 노드에 씁니다.
+
+검증은 Get-ClusterFaultDomain입니다. 두 노드가 목록에 있고 올바른 zone에 있어야 합니다. Azure portal에서는 Azure Local 리소스 페이지의 Infrastructure에서 Machines를 선택해 zone과 노드를 볼 수 있다고 적습니다.
+
+Overview는 두 물리 랙을 두 방 또는 건물에 두고, 각 랙이 local availability zone이라고 적습니다. To support the synchronous replications between racks, a dedicated storage network intent is required. The required round-trip latency between the two racks should be 1 ms or less. 이 글은 신규 배포에만 적용됩니다.
+
+Requirements는 존당 최대 4대, 두 존의 대수가 같아야 하고, 한 머신은 한 존에만 속한다고 적습니다. Deployment type은 Only new deployments are supported. Conversion from standard clusters deployments to rack aware clusters isn't supported. Round-trip latency between racks must be 1 millisecond or less. Dedicated storage network is required. You can scale the cluster by adding a pair of nodes. The 2+2 configuration can be expanded to 3+3, and 3+3 to 4+4. However, adding nodes to a 1+1 rack aware cluster isn't supported in this release.
+
+Reference architecture는 최대 4+4, 방 사이 지연이 1 ms 이하, RDMA가 spine으로 가지 않고 TOR에 남는다고 적습니다. Storage VLAN 711, 712는 Layer 2 broadcast domain이라고 적습니다. 확인일 기준 GET 200이므로 이 문장만 씁니다.
+
+## 지금 결정할 것
+
+- 대상이 랙 인지 클러스터인지, 표준 클러스터인지
+- 현재 구성이 1+1인지 2+2인지 3+3인지 4+4인지
+- 이번 창에 노드 두 대를 Add-Server로 넣을지, 한 대를 넣으려는 작업을 멈출지
+- LocalAvailabilityZone 순서가 물리 랙과 맞는지
+- 랙 사이 RTT 1 ms와 dedicated storage network intent를 전제로 둘지
+
+## 의사결정 기준
+
+### 한 노드 추가를 랙 인지 확장으로 보지 않습니다
+
+add-server 문서는 한 번에 두 노드를 넣으라고 적습니다. 한 대를 넣고 나중에 맞춘다고 완료로 보지 않습니다.
+
+### 1+1과 2+2 확장을 같은 작업으로 보지 않습니다
+
+1+1에는 추가가 이 릴리스에서 지원되지 않습니다. 지원되는 확장은 2+2→3+3과 3+3→4+4뿐입니다. 1+1을 2+2로 늘리는 계획을 같은 명령으로 승인하지 않습니다.
+
+### zone 쌍과 이름 순서를 한 목록으로 보지 않습니다
+
+LocalAvailabilityZone은 Name 배열과 같은 순서여야 합니다. 노드 이름만 넣고 zone을 나중에 고친다고 Get-ClusterFaultDomain 검증을 건너뛰지 않습니다.
+
+### 표준 클러스터 변환을 확정된 경로로 적지 않습니다
+
+Requirements는 표준 배포에서 랙 인지로 변환을 지원하지 않는다고 적습니다. 기존 클러스터를 랙 인지로 바꿨다고 추가 절차가 열렸다고 보지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상 Azure Local이 랙 인지인지, 표준 클러스터인지 기록합니다.
+2. 현재 존 대수를 1+1, 2+2, 3+3, 4+4로 표시합니다.
+3. 1+1이면 이번 창의 노드 추가를 제외하고, 2+2 또는 3+3만 Add-Server 대상으로 남깁니다.
+4. Add-Server에 Name 두 개, HostIpv4 두 개, LocalAvailabilityZone 두 개를 같은 순서로 적습니다.
+5. 두 노드를 서로 다른 zone에 넣는지 물리 랙과 대조합니다.
+6. 실행 후 Get-ClusterFaultDomain에서 두 노드와 ParentName zone을 읽습니다.
+7. Azure Local 리소스의 Infrastructure, Machines에서도 같은 zone을 확인합니다.
+8. 랙 사이 RTT 1 ms와 dedicated storage network intent를 전제로 남깁니다.
+
+## 제외 범위
+
+- azure-local-repair-server-os-image-match 글의 재작성
+- 확인일 기준 열지 않은 network-design URL
+- 표준 클러스터를 랙 인지로 변환하는 절차
+- 고객 클러스터의 성능, 장애 시간, 무중단 보장
+- HCI 제품 우열, 가격 비교
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 랙 인지 여부, 1+1·2+2·3+3·4+4, Add-Server 쌍, Get-ClusterFaultDomain zone을 현황화합니다.
+- 의사결정 산출물: 두 노드 추가, 1+1 제외, zone 순서, 1 ms 전제를 담은 판단표를 만듭니다.
+- 운영 검증: Get-ClusterFaultDomain과 Machines 화면의 zone을 확인합니다. 장애 허용이나 성능을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+랙 인지 Azure Local의 노드 쌍 추가를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Add or repair a node to a rack aware cluster, view=azloc-2606. 2+2→3+3, 3+3→4+4, 1+1 추가 불가, Add-Server 두 노드, LocalAvailabilityZone, Get-ClusterFaultDomain, Infrastructure Machines. https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-add-server?view=azloc-2606 (확인일: 2026-09-07)
+- Microsoft Learn, Azure Local rack aware clustering overview, view=azloc-2606. 신규 배포, dedicated storage network intent, 랙 사이 RTT 1 ms 이하. https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-overview?view=azloc-2606 (확인일: 2026-09-07)
+- Microsoft Learn, Requirements and supported configurations for rack aware clusters, view=azloc-2606. 존당 최대 4대, 대수 동일, 변환 미지원, 1+1 추가 미지원. https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-requirements?view=azloc-2606 (확인일: 2026-09-07)
+- Microsoft Learn, Azure Local rack aware cluster network reference patterns, view=azloc-2606. 최대 4+4, 방 사이 1 ms 이하, Storage VLAN 711·712. https://learn.microsoft.com/en-us/azure/azure-local/concepts/rack-aware-cluster-reference-architecture?view=azloc-2606 (확인일: 2026-09-07)
+
+이번 주 운영 확인: Add-Server에 노드 두 개와 LocalAvailabilityZone 쌍이 있고 Get-ClusterFaultDomain에 두 노드가 서로 다른 zone에 보이면 PASS, 노드 하나를 단독 추가했거나 1+1에 추가를 시도하면 FAIL.
+
+위 출처는 Microsoft Learn azloc-2606 공개 문서를 설명합니다. 고객별 확장 성공이나 무중단을 보증하지 않습니다.

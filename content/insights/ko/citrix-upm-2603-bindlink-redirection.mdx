@@ -1,0 +1,102 @@
+---
+contentId: insight-citrix-upm-2603-bindlink-redirection
+title: "24H2 프로필 컨테이너에서 BindLink를 Off로 둘지 정할 것"
+summary: "Profile Management 2603의 Enable BindLink redirection은 기본 Off다. Win11 24H2·Server 2025 10.0.25314.0 이상에서 Off를 유지할지 On으로 켤지 가르는 리뷰 초안"
+slug: citrix-upm-2603-bindlink-redirection
+locale: ko
+status: review
+updatedAt: 2026-09-07
+audience: [customer, partner]
+tags: [vdi, citrix, profile-management, bindlink, upm-2603]
+evidenceRefs:
+  - "https://docs.citrix.com/en-us/profile-management/current-release/whats-new.html"
+  - "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/policies/policies-changes.html"
+  - "https://docs.citrix.com/en-us/profile-management/current-release/policies/descriptions-and-defaults"
+relatedContent: ["insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Win11 24H2 또는 Windows Server 2025 버전 10.0.25314.0 이상의 프로필 컨테이너에서 Enable BindLink redirection을 기본 Off로 둘지, 이번 주 On으로 켤지를 Citrix Studio 또는 Web Studio 정책에서 가릅니다.
+
+- 결정: 대상 배달 그룹의 Enable BindLink redirection을 Off로 남길지 On으로 켤지
+- 전제: 정책은 disabled by default다. Windows 11 24H2와 Windows Server 2025 이상, 버전 10.0.25314.0 이상에서만 지원한다
+- 운영: Profile Management > Profile container settings > Enable BindLink redirection 값을 읽는다
+- 범위: EDT MTU Rediscovery, Entra SSO, PVS Secure Boot, Web sign-in 글의 재작성이 아니다. 확인일 기준 GET 404였던 enable-bindlink-redirection.html 경로는 근거로 쓰지 않는다
+
+## 문제 상황
+
+프로필 컨테이너를 켰다고 보고하면, BindLink 정책과 OS 하한, 기본 Off와 이번 주 On이 한 완료로 섞입니다.
+
+Profile Management 2603 What’s new의 New policy: Enable BindLink redirection은 A new Enable BindLink redirection policy lets you use the Microsoft BindLink API to handle file system redirections within profile containers라고 적습니다. This policy is disabled by default and is supported only on Windows 11 24H2 and Windows Server 2025 or later (version 10.0.25314.0 or later). BindLink improves profile container compatibility and redirection reliability, offers more precise container inclusion and exclusion control, and reduces configuration effort.
+
+Citrix Virtual Apps and Desktops 7 2603 Policy changes는 Profile Management > Profile container settings > Enable BindLink redirection을 New policy for enabling BindLink redirection이라고 적습니다.
+
+Profile Management policy descriptions and defaults는 Enable BindLink redirection을 Specifies whether to use the Microsoft BindLink API to handle file system redirections within profile containers라고 적습니다. This feature is disabled by default and is only supported on Windows 11 24H2, Windows Server 2025, or later (version 10.0.25314.0 or later).
+
+What’s new가 가리키는 Enable BindLink redirection 상세 문서는 확인일 기준 같은 페이지 앵커만 열렸고, configure/enable-bindlink-redirection.html은 GET 404입니다. 404 경로의 클릭 순서를 만들지 않습니다.
+
+## 지금 결정할 것
+
+- 대상 세션 호스트가 Windows 11 24H2 또는 Windows Server 2025, 버전 10.0.25314.0 이상인지
+- 프로필 컨테이너를 쓰는지
+- Enable BindLink redirection을 Off로 둘지 On으로 켤지
+- Off 기본값을 이번 주 승인으로 남길지
+- 10.0.25314.0 미만 호스트를 정책 적용 범위에서 뺄지
+
+## 의사결정 기준
+
+### 기본 Off를 미결정으로 두지 않습니다
+
+세 문서는 기본이 disabled라고 적습니다. 정책을 열지 않았다고 Off를 승인했다고 보지 않습니다. Off를 유지할지 On으로 켤지를 이번 주 기록에 남깁니다.
+
+### OS 하한 없이 On을 켜지 않습니다
+
+지원은 Windows 11 24H2, Windows Server 2025 또는 그 이후, 버전 10.0.25314.0 이상입니다. 하한 미만 호스트에 On을 켜고 호환성이 좋아졌다고 보지 않습니다.
+
+### 프로필 컨테이너가 아닌 구성에 BindLink를 적용하지 않습니다
+
+설명은 file system redirections within profile containers입니다. 파일 기반 프로필만 있는 배달 그룹에 같은 정책을 켠 것을 완료로 보지 않습니다.
+
+### 다른 Citrix 글의 정책을 이 스위치로 보지 않습니다
+
+EDT MTU Rediscovery, Entra SSO, PVS Secure Boot, Web sign-in은 다른 결정입니다. BindLink On을 그 작업의 대체로 적지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상 배달 그룹이 프로필 컨테이너를 쓰는지 기록합니다.
+2. 세션 호스트 OS가 Windows 11 24H2 또는 Windows Server 2025인지, 버전 문자열이 10.0.25314.0 이상인지 확인합니다.
+3. Citrix Studio 또는 Web Studio에서 Profile Management > Profile container settings > Enable BindLink redirection 값을 읽습니다.
+4. 값이 비어 있거나 Disabled면 기본 Off로 보고, 이번 주 Off 유지인지 On 변경인지를 승인합니다.
+5. 10.0.25314.0 미만 호스트는 On 적용 범위에서 뺍니다.
+6. 파일 기반 프로필만 있는 그룹을 BindLink 대상에서 제외합니다.
+7. 확인일 기준 404인 enable-bindlink-redirection.html을 운영 절차 URL로 넣지 않습니다.
+8. 적용 후 같은 정책 경로의 Off 또는 On이 승인과 같은지 다시 읽습니다.
+
+## 제외 범위
+
+- Citrix EDT MTU Rediscovery 글의 재작성
+- Entra SSO, PVS Secure Boot CA, Web sign-in preview 글의 재작성
+- 확인일 기준 GET 404인 enable-bindlink-redirection.html 경로
+- 로그온 시간, 프로필 호환성, 사용자 체감의 사전 보장
+- VDI 제품 우열, 가격 비교
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 프로필 컨테이너 사용, OS 버전 10.0.25314.0, Studio의 Enable BindLink redirection 값을 현황화합니다.
+- 의사결정 산출물: Off 유지 또는 On, 하한 미만 제외를 담은 판단표를 만듭니다.
+- 운영 검증: 정책 경로의 Off 또는 On을 확인합니다. 리다이렉션 품질을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Enable BindLink redirection을 Off로 둘지 On으로 켤지를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Citrix, What’s new, Profile Management 2603. Enable BindLink redirection 신규 정책, 기본 disabled, Win11 24H2와 Server 2025, 버전 10.0.25314.0 이상. https://docs.citrix.com/en-us/profile-management/current-release/whats-new.html (확인일: 2026-09-07)
+- Citrix, Policy changes, Citrix Virtual Apps and Desktops 7 2603. Profile Management > Profile container settings > Enable BindLink redirection 신규 정책. https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/policies/policies-changes.html (확인일: 2026-09-07)
+- Citrix, Profile Management policy descriptions and defaults. Enable BindLink redirection, 기본 disabled, Win11 24H2·Server 2025, 버전 10.0.25314.0 이상. https://docs.citrix.com/en-us/profile-management/current-release/policies/descriptions-and-defaults (확인일: 2026-09-07)
+
+이번 주 운영 확인: Citrix Studio 또는 Web Studio의 Profile Management > Profile container settings > Enable BindLink redirection이 승인된 Off 또는 On이고 대상 OS 버전이 10.0.25314.0 이상이면 PASS, 10.0.25314.0 미만에서 On이거나 정책 값을 읽지 않은 채 켰다고 보고하면 FAIL.
+
+위 출처는 Citrix Profile Management 2603 공개 문서를 설명합니다. 고객별 로그온 품질이나 무중단을 보증하지 않습니다.
