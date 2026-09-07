@@ -1,0 +1,100 @@
+---
+contentId: insight-artifact-registry-cleanup-policy-dry-run
+title: "Artifact Registry: cleanup policy는 dry-run 뒤에만 적용할 것"
+summary: "Artifact Registry cleanup policy는 --dry-run으로 영향 범위를 확인한 뒤에만 실제 삭제를 적용하는 리뷰 초안"
+slug: artifact-registry-cleanup-policy-dry-run
+locale: ko
+status: review
+updatedAt: 2026-09-08
+audience: [customer, partner]
+tags: [infrastructure, artifact-registry, cleanup-policy, dry-run]
+evidenceRefs:
+  - "https://docs.cloud.google.com/artifact-registry/docs/repositories/cleanup-policy"
+  - "https://docs.cloud.google.com/sdk/gcloud/reference/artifacts/repositories/set-cleanup-policies"
+  - "https://docs.cloud.google.com/artifact-registry/docs/protect-artifacts"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+이번 주에는 Repositories에서 대상 저장소를 고른 뒤 Edit Repository → Cleanup policies의 Dry run 선택과, gcloud artifacts repositories set-cleanup-policies --dry-run 기록을 먼저 확인한다.
+
+- 결정: cleanup policy를 --dry-run으로 영향 확인한 뒤에만 실제 삭제를 적용할지
+- 전제: 콘솔은 Dry run으로 시험한 뒤 Delete artifacts로 적용하라고 적는다
+- 검증: dry-run 삭제는 BatchDeleteVersions의 validateOnly가 true이고, 백그라운드 작업은 약 하루 뒤에 반영된다
+- 범위: 다운로드 규칙이나 CMEK가 아니라 cleanup policy의 dry-run과 적용 순서
+
+## 문제 상황
+
+오래된 이미지를 지우겠다고 하면, 정책 JSON을 바로 적용하는 작업과 dry-run 검증이 한 완료로 섞입니다.
+
+Configure cleanup policies는 콘솔 Cleanup policies에서 Dry run을 골라 삭제를 확정하기 전에 시험하라고 적습니다. 의도가 맞으면 저장소 설정을 다시 열어 Delete artifacts를 고릅니다. gcloud는 gcloud artifacts repositories set-cleanup-policies에 --policy와 --dry-run을 둡니다. 실제 적용은 --no-dry-run입니다. --no-dry-run은 저장소의 dry-run 기능을 끈다고 적습니다.
+
+dry-run과 실제 실행은 주기적 백그라운드 작업입니다. 변경은 대략 하루 안에 효력이 납니다. dry-run 직후 로그가 비어 있다고 영향이 없다고 보지 않습니다. 문서는 하루를 기다린 뒤 Data Access 감사 로그를 보라고 적습니다. 삭제 후보를 보려면 Artifact Registry DATA_WRITE 로그를 켜야 합니다.
+
+keep 정책만으로는 dry-run 결과를 보기 어렵습니다. 콘솔은 keep 결과를 보려면 delete 정책이 하나 이상 있어야 한다고 적습니다. 표준 저장소에만 적용할 수 있습니다.
+
+protect-artifacts는 쓰지 않는 컨테이너 이미지를 제거해 저장 비용과 오래된 소프트웨어 위험을 줄이라고 적습니다. 그 안내를 dry-run 생략의 근거로 쓰지 않습니다.
+
+## 지금 결정할 것
+
+- 대상 저장소에 cleanup policy를 둘지, 이번 창에는 두지 않을지
+- Dry run 또는 --dry-run만 승인하고 실제 삭제는 별도 승인으로 남길지
+- Conditional delete, Conditional keep, Keep most recent versions를 어떻게 조합할지
+- DATA_WRITE 감사 로그를 켜고 하루 뒤 validateOnly true 로그를 볼지
+- 불변 태그가 켜진 저장소에서 tagged 삭제가 막히는 전제를 수용할지
+
+## 의사결정 기준
+
+### dry-run과 Delete artifacts를 한 적용으로 보지 않습니다
+
+콘솔 Dry run과 CLI --dry-run은 시험입니다. Delete artifacts와 --no-dry-run이 실제 삭제입니다. 정책 파일만 있고 dry-run 기록이 없으면 영향 확인을 건너뛴 것입니다.
+
+### 명령 직후와 하루 뒤 로그를 한 시점으로 보지 않습니다
+
+백그라운드 작업은 주기적으로 돕니다. validateOnly true인 BatchDeleteVersions를 하루 뒤에 조회하라고 적습니다. 명령을 실행했다는 기록만으로 후보 목록이 나왔다고 보지 않습니다.
+
+### keep만 있는 정책을 삭제 시험으로 보지 않습니다
+
+keep은 delete와 겹치면 유지입니다. 콘솔은 keep 결과를 보려면 delete 정책이 필요하다고 적습니다. Keep most recent versions와 Conditional keep을 같은 keep에 넣지 못합니다.
+
+### 이미지 정리 권고와 즉시 적용을 한 승인으로 묶지 않습니다
+
+protect-artifacts는 미사용 이미지 제거를 권고합니다. cleanup-policy 문서는 Dry run 뒤에 Delete artifacts라고 적습니다. 비용 절감을 이유로 dry-run을 빼지 않습니다.
+
+## 실무 체크리스트
+
+1. 대상이 표준 저장소인지 기록합니다. cleanup policy를 쓸 수 없는 모드면 제외합니다.
+2. delete와 keep 조건을 JSON 또는 콘솔 Cleanup policies에 적습니다.
+3. 콘솔 Edit Repository → Cleanup policies에서 Dry run을 선택하거나 CLI에 --dry-run을 넣습니다.
+4. Artifact Registry DATA_WRITE 감사 로그를 켭니다.
+5. 하루 뒤 gcloud logging read에서 validateOnly true인 BatchDeleteVersions를 조회합니다.
+6. 후보 목록을 승인한 뒤에만 Delete artifacts 또는 --no-dry-run을 별도 변경으로 올립니다.
+7. 불변 태그가 켜진 저장소는 tagged 삭제가 안 된다고 전제에 남깁니다.
+8. 「이번 주 운영 확인」 PASS = set-cleanup-policies --dry-run 또는 콘솔 Dry run 기록이 있고 실제 적용은 별도 승인이다. FAIL = dry-run 없이 --no-dry-run 또는 Delete artifacts로 삭제를 시작했다.
+
+## 제외 범위
+
+- 다운로드 규칙, CMEK, Binary Authorization을 이 글에서 확정하는 범위
+- 저장소 상품의 우열이나 가격 비교
+- dry-run 로그가 비면 삭제 대상이 없다고 단정하는 해석
+- 정책을 적용하면 저장 비용과 보안이 보장된다는 주장
+- 고객별 아티팩트 복구의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 저장소 모드, Dry run 여부, delete·keep 조합, validateOnly 로그를 현황화합니다.
+- 의사결정 산출물: dry-run 승인, 실제 삭제 승인, 제외 패키지를 담은 판단표를 만듭니다.
+- 운영 검증: Cleanup policies Dry run과 --dry-run 기록, 하루 뒤 감사 로그를 확인합니다. 삭제 완전성이나 복구를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+cleanup policy를 dry-run 뒤에만 적용할지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 아티팩트 정리 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Google Artifact Registry, Configure cleanup policies. 콘솔 Cleanup policies Dry run, Delete artifacts, gcloud artifacts repositories set-cleanup-policies --dry-run과 --no-dry-run, validateOnly, 약 하루 백그라운드 작업. https://docs.cloud.google.com/artifact-registry/docs/repositories/cleanup-policy (확인일: 2026-09-08)
+- Google Cloud SDK, gcloud artifacts repositories set-cleanup-policies. --dry-run, --policy. https://docs.cloud.google.com/sdk/gcloud/reference/artifacts/repositories/set-cleanup-policies (확인일: 2026-09-08)
+- Google Artifact Registry, Control access and protect artifacts. 미사용 이미지 제거 권고. https://docs.cloud.google.com/artifact-registry/docs/protect-artifacts (확인일: 2026-09-08)
+
+위 출처는 Google Cloud 공개 운영 문서와 gcloud 참조를 설명합니다. 고객별 삭제 결과나 복구를 보증하지 않습니다.

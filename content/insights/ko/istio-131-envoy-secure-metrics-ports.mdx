@@ -1,0 +1,98 @@
+---
+contentId: insight-istio-131-envoy-secure-metrics-ports
+title: "Istio 1.31: Envoy 지표를 mTLS 포트로 긁을지 평문을 유지할지"
+summary: "Istio 1.31 sidecar에서 ENVOY_SECURE_METRICS_PORT와 ENVOY_SECURE_MERGED_METRICS_PORT로 mTLS scrape를 켤지 평문 포트를 유지할지 가르는 리뷰 초안"
+slug: istio-131-envoy-secure-metrics-ports
+locale: ko
+status: review
+updatedAt: 2026-09-08
+audience: [customer, partner]
+tags: [observability, istio, envoy, prometheus, mtls]
+evidenceRefs:
+  - "https://istio.io/latest/news/releases/1.31.x/announcing-1.31/"
+  - "https://istio.io/latest/news/releases/1.31.x/announcing-1.31/change-notes/"
+  - "https://istio.io/latest/docs/reference/commands/pilot-agent/"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+이번 주에는 Istio 1.31 sidecar의 ENVOY_SECURE_METRICS_PORT와 ENVOY_SECURE_MERGED_METRICS_PORT 값, 그리고 Prometheus scrape 대상 포트가 그 값과 같은지를 확인한다. 두 변수의 기본값은 0이다.
+
+- 결정: 1.31에서 ENVOY_SECURE_*로 mTLS scrape를 켤지, 평문 포트를 유지할지
+- 전제: Change Notes는 두 변수를 opt-in이라고 적는다. 값이 있으면 sidecar가 mTLS를 요구하는 정적 리스너를 연다
+- 기본: pilot-agent는 ENVOY_SECURE_METRICS_PORT 0, ENVOY_SECURE_MERGED_METRICS_PORT 0, ENVOY_PROMETHEUS_PORT 15090
+- 범위: unhealthy endpoints 기본값이나 scrape-targets 다중 스크레이프가 아니라 secure metrics 포트
+
+## 문제 상황
+
+지표를 보안 scrape 했다고 보고하면, 평문 15090만 긁는 구성과 ENVOY_SECURE_*를 0으로 둔 구성이 한 완료로 섞입니다.
+
+Announcing Istio 1.31.0 Telemetry는 Secure metrics ports로 ENVOY_SECURE_METRICS_PORT와 ENVOY_SECURE_MERGED_METRICS_PORT를 적습니다. 모든 sidecar proxy에 mTLS로 보호된 Prometheus scrape 엔드포인트를 연다고 안내합니다. 같은 절은 PILOT_AGENT_MERGE_ENVOY_STATS를 false로 두면 에이전트 통계 엔드포인트에 Envoy 통계를 합치지 않는다고 적습니다. prometheus.istio.io/scrape-targets는 다중 애플리케이션 엔드포인트 선언이며 이 초안에서는 부가 항목입니다.
+
+Change Notes Telemetry는 두 변수를 opt-in이라고 다시 적습니다. When set, the sidecar adds static bootstrap listeners on the configured ports that require mutual TLS, allowing Prometheus to scrape metrics securely without relying on pod-network-level access controls. 포트 번호를 권장값으로 적지는 않습니다. 이 초안도 포트 숫자를 만들지 않습니다.
+
+pilot-agent 참조는 ENVOY_SECURE_METRICS_PORT를 Envoy stats only, 기본 0이라고 적습니다. ENVOY_SECURE_MERGED_METRICS_PORT는 Envoy + app + agent stats, 기본 0입니다. ENVOY_PROMETHEUS_PORT 기본값은 15090입니다. PILOT_AGENT_MERGE_ENVOY_STATS 기본값은 true입니다. 0이거나 미설정인데 보안 scrape 완료로 표시하지 않습니다.
+
+## 지금 결정할 것
+
+- 1.31 sidecar에서 ENVOY_SECURE_*를 0이 아닌 값으로 켤지, 평문 ENVOY_PROMETHEUS_PORT 15090을 유지할지
+- 켤 경우 Envoy stats only 포트와 merged 포트 중 무엇을 scrape할지
+- Prometheus scrape 대상이 그 포트인지
+- PILOT_AGENT_MERGE_ENVOY_STATS를 기본 true로 둘지 false로 둘지
+- scrape-targets 다중 스크레이프와 이 결정을 한 창으로 묶지 말지
+
+## 의사결정 기준
+
+### 기본 0과 설정값을 한 상태로 보지 않습니다
+
+두 변수는 opt-in이고 기본은 0입니다. 0이거나 키가 없으면 mTLS 리스너를 연 것이 아닙니다. 1.31로 올렸다고 보안 scrape가 켜진 것은 아닙니다.
+
+### Envoy only 포트와 merged 포트를 한 엔드포인트로 보지 않습니다
+
+ENVOY_SECURE_METRICS_PORT는 Envoy 통계만입니다. ENVOY_SECURE_MERGED_METRICS_PORT는 Envoy와 앱과 에이전트 통계입니다. 한쪽만 켜고 다른쪽을 scrape하면 의도와 다릅니다. PILOT_AGENT_MERGE_ENVOY_STATS false는 에이전트 엔드포인트 병합을 끕니다. 그 플래그와 secure 포트 개설을 한 스위치로 보지 않습니다.
+
+### 평문 15090 scrape와 보안 포트 scrape를 한 완료로 보지 않습니다
+
+ENVOY_PROMETHEUS_PORT 기본 15090은 기존 평문 경로입니다. 보안 scrape를 완료로 표시하려면 scrape 설정이 ENVOY_SECURE_* 포트여야 합니다. 평문만 긁으면서 보안 완료로 두지 않습니다.
+
+### scrape-targets와 unhealthy endpoints를 이 결정에 넣지 않습니다
+
+scrape-targets는 애플리케이션 메트릭 다중 대상입니다. unhealthy endpoints 기본값은 이미 다른 글에서 다룹니다. 이 초안은 secure metrics 포트만 가릅니다.
+
+## 실무 체크리스트
+
+1. 메시 Istio 버전이 1.31인지 기록합니다. 아니면 이 목록에서 뺍니다.
+2. sidecar istio-proxy env에서 ENVOY_SECURE_METRICS_PORT와 ENVOY_SECURE_MERGED_METRICS_PORT를 읽습니다.
+3. 둘 다 0이거나 없으면 평문 유지입니다. 켤 포트와 값을 승인 조건에 적습니다. 숫자는 공식 권고가 없으므로 이 초안이 정하지 않습니다.
+4. Prometheus scrape job의 대상 포트가 그 ENVOY_SECURE_* 값인지 대조합니다.
+5. ENVOY_PROMETHEUS_PORT가 15090인 평문 경로를 남길지 적습니다.
+6. PILOT_AGENT_MERGE_ENVOY_STATS가 true인지 false인지 기록합니다.
+7. scrape-targets와 unhealthy endpoints 기본값은 이 목록에서 뺍니다.
+8. 「이번 주 운영 확인」 PASS = 1.31 sidecar에 ENVOY_SECURE_* 의도 값이 있고 scrape가 그 포트다. FAIL = 1.31인데 평문만 scrape하고 ENVOY_SECURE_*가 0이거나 없는데 보안 scrape 완료로 표시한다.
+
+## 제외 범위
+
+- istio-131-unhealthy-endpoints-default, istio-gcr-helm-scream-tests 글의 재작성
+- prometheus.istio.io/scrape-targets를 이 글에서 확정하는 범위
+- 서비스 메시 제품의 우열이나 가격 비교
+- 권장 secure 포트 숫자를 이 초안이 정하는 해석
+- mTLS scrape를 켜면 지표 유출이 사라진다는 주장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Istio 버전, ENVOY_SECURE_* 값, scrape 포트, PILOT_AGENT_MERGE_ENVOY_STATS를 현황화합니다.
+- 의사결정 산출물: mTLS 포트 사용, 평문 유지, merged와 Envoy only 선택을 담은 판단표를 만듭니다.
+- 운영 검증: sidecar env와 scrape 대상 포트를 확인합니다. 관측 완전성이나 보안 효과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+1.31에서 Envoy 지표를 mTLS 포트로 긁을지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 서비스 메시 관측 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Announcing Istio 1.31.0, Telemetry. ENVOY_SECURE_METRICS_PORT, ENVOY_SECURE_MERGED_METRICS_PORT, PILOT_AGENT_MERGE_ENVOY_STATS, scrape-targets는 부가. https://istio.io/latest/news/releases/1.31.x/announcing-1.31/ (확인일: 2026-09-08)
+- Istio 1.31.0 Change Notes, Telemetry. opt-in ENVOY_SECURE_* , mTLS 정적 리스너. https://istio.io/latest/news/releases/1.31.x/announcing-1.31/change-notes/ (확인일: 2026-09-08)
+- Istio Docs, pilot-agent. ENVOY_SECURE_METRICS_PORT 기본 0 Envoy stats only, ENVOY_SECURE_MERGED_METRICS_PORT 기본 0 merged, ENVOY_PROMETHEUS_PORT 15090, PILOT_AGENT_MERGE_ENVOY_STATS 기본 true. https://istio.io/latest/docs/reference/commands/pilot-agent/ (확인일: 2026-09-08)
+
+위 출처는 Istio 공개 릴리스 노트와 pilot-agent 참조를 설명합니다. 고객별 scrape 성공, 보안 효과, 업그레이드 결과를 보증하지 않습니다.
