@@ -364,7 +364,7 @@
 
 .blro-site-footer h2 {
   margin: 0 0 var(--space-4);
-  color: var(--color-accent);
+  color: #d8efe4;
   font: var(--type-eyebrow);
   letter-spacing: 0.12em;
   text-transform: uppercase;

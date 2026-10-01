@@ -47,7 +47,7 @@ export default function ContactPage() {
       <Section aria-labelledby="contact-preparation-heading" spacing="default" tone="surface">
         <Container className="contact-page__preparation">
           <div>
-            <Eyebrow>PREPARE THE FIRST CONVERSATION</Eyebrow>
+            <Eyebrow>첫 논의를 준비합니다</Eyebrow>
             <Heading id="contact-preparation-heading" level={2}>첫 논의에서 확인할 내용</Heading>
           </div>
           <ol>
@@ -69,7 +69,7 @@ export default function ContactPage() {
 
       <Section aria-labelledby="contact-status-heading" spacing="default" tone="alternate">
         <Container className="contact-page__status">
-          <Eyebrow>SECURE INQUIRY INTEGRATION</Eyebrow>
+          <Eyebrow>상담 접수</Eyebrow>
           <Heading id="contact-status-heading" level={2}>전환 진단 범위를 확인하세요.</Heading>
           <Text>입력한 정보는 상담 요청 처리와 회신을 위해서만 사용하며, 제출 전 동의가 필요합니다.</Text>
           <Suspense fallback={null}><InquiryForm /></Suspense>

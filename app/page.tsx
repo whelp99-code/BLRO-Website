@@ -1,11 +1,8 @@
 import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
-import { TodoNote } from "@/components/redesign/todo-note"
 
 export const HOME_HEADING = "기업 IT의 도입, 전환, 구축, 운영, 기술 지원을 역할에 맞게 연결합니다."
-
-export const HOME_SUPPLY_LINE = "제품 공급과 전환 검증을 한 경로로 맡깁니다."
 
 const LIFE_STEPS = [
   ["도입", "상황과 범위를 적습니다. 제품이 정해지지 않아도 됩니다."],
@@ -25,7 +22,6 @@ export default function Home() {
             <h1 className="blro-heading blro-heading--display" id="home-heading">
               {HOME_HEADING}
             </h1>
-            <p className="rd-lead">{HOME_SUPPLY_LINE}</p>
             <div className="rd-actions">
               <TrackableLink
                 className="rd-btn rd-btn-primary home-action home-action--primary"
@@ -50,7 +46,6 @@ export default function Home() {
               BLRO는 제품 이름만 나열하는 카탈로그가 아닙니다. 기업 고객은 지금 상황부터, 국내 파트너는 누가 무엇을 맡는지부터, 기술 엔지니어는 설치·장애·호환 자료부터 들어옵니다. 세 경험은 한 상담 페이지로 합치지 않습니다.
             </p>
             <p>오른쪽 그림은 회사가 수행하는 일의 순서입니다. 좁은 화면에서는 글 바로 아래에 있습니다. 방문자의 다음 행동을 대신하지 않습니다. 고객 수, 응답 시간, 절감률은 확인된 공개 사실이 없어 적지 않습니다.</p>
-            <TodoNote>홈 정본 문장은 아직 닫히지 않았습니다. 역할 연결 제목과 공급·전환 문장을 둘 다 두었고, 셋째 문장은 만들지 않았습니다.</TodoNote>
           </div>
           <LifecycleFigure />
         </div>
@@ -60,7 +55,7 @@ export default function Home() {
               <li className="rd-step" data-reveal data-stagger={String(Math.min(index, 3))} key={name}>
                 <span className="rd-idx">{String(index + 1).padStart(2, "0")}</span>
                 <div>
-                  <h3>{name}</h3>
+                  <p className="rd-step-name">{name}</p>
                   <p>{detail}</p>
                 </div>
               </li>
@@ -71,7 +66,7 @@ export default function Home() {
 
       <section aria-labelledby="roles-heading" className="rd-band">
         <div className="rd-wrap">
-          <h2 id="roles-heading">다섯 초 안에 역할을 고릅니다.</h2>
+          <h2 id="roles-heading">역할을 고릅니다.</h2>
           <div className="rd-roles">
             <article className="rd-role customer" data-reveal>
               <p className="rd-who">기업 고객</p>

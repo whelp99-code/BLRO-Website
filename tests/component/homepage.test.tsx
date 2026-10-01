@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import Home, { HOME_HEADING, HOME_SUPPLY_LINE } from "@/app/page"
+import Home, { HOME_HEADING } from "@/app/page"
 
 const HOME_ACTIONS = [
   ["도입·운영 상담하기", "/contact?type=customer-project&role=customer"],
@@ -9,13 +9,14 @@ const HOME_ACTIONS = [
 ] as const
 
 describe("BLRO motion homepage", () => {
-  it("publishes the two open headlines and keeps the three roles apart", () => {
+  it("publishes the v2 headline and keeps the three roles apart", () => {
     render(<Home />)
 
     expect(screen.getByRole("heading", { level: 1, name: HOME_HEADING })).toBeVisible()
-    expect(screen.getByText(HOME_SUPPLY_LINE)).toBeVisible()
+    expect(screen.queryByText("제품 공급과 전환 검증을 한 경로로 맡깁니다.")).not.toBeInTheDocument()
+    expect(screen.queryByText(/TODO/u)).not.toBeInTheDocument()
     expect(screen.getByText("주식회사 베를로")).toBeVisible()
-    expect(screen.getByRole("heading", { level: 2, name: "다섯 초 안에 역할을 고릅니다." })).toBeVisible()
+    expect(screen.getByRole("heading", { level: 2, name: "역할을 고릅니다." })).toBeVisible()
     expect(screen.getByText("기업 고객")).toBeVisible()
     expect(screen.getByText("국내 파트너")).toBeVisible()
     expect(screen.getByText("기술 엔지니어")).toBeVisible()

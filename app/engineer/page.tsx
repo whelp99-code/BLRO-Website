@@ -28,7 +28,7 @@ export default function EngineerPage() {
             <p className="rd-lead">설치·구축 자료는 준비물, 순서, 확인 지점을 다룹니다. 운영·장애 대응은 증상, 수집할 로그, 에스컬레이션 대상을 다룹니다.</p>
             <p>승인된 다운로드와 릴리스 노트는 제조사 공식 경로 또는 BLRO가 배포를 승인한 파일만 연결합니다. 새 제품에 가짜 검색 결과를 만들지 않습니다.</p>
             <p>
-              공개된 기술 글은 <Link href="/insights">인사이트</Link>에 있습니다. 대표 제품 예시는 <Link href="/solutions/hci">Sangfor HCI</Link>입니다. 21개 상세 전체가 이 미리보기에 구현된 것은 아닙니다.
+              공개된 기술 글은 <Link href="/insights">인사이트</Link>에 있습니다. 대표 제품 예시는 <Link href="/solutions/hci">Sangfor HCI</Link>입니다. 제품 상세를 이 미리보기에서 모두 다시 쓴 것은 아닙니다.
             </p>
             <TodoNote>이 저장소에는 /engineer/resources, Q&A, 작업대 라우트가 없습니다. 그 경로가 다른 트리에만 있다면 승인된 주소만 나중에 연결합니다.</TodoNote>
           </div>

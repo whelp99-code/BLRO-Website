@@ -9,7 +9,7 @@
   --line: #d7d0c4;
   --signal: #1f7a4d;
   --action: #1d4ed8;
-  --copper: #8a5a32;
+  --copper: #5c3a1e;
   --customer: #0b4f4c;
   --customer-wash: #0b4f4c14;
   --partner: #6e4524;
@@ -309,6 +309,18 @@
 .rd-role-switch a[aria-current="page"] {
   color: #fffcf7;
   background: var(--ink);
+}
+
+.rd-role-switch a:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+}
+
+.rd-step-name {
+  margin: 0 0 0.35rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .rd-checklist,

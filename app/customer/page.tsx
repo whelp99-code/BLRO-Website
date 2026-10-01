@@ -62,7 +62,7 @@ export default function CustomerPage() {
         <div className="rd-wrap rd-split">
           <div data-reveal>
             <h2>솔루션과 서비스</h2>
-            <p>2차 범위는 Sangfor 15개 제품·서비스, Cisco·Juniper 스위치, Fortinet 방화벽, GIGABYTE·KAYTUS 서버, HIWARE 서버접근제어, 합계 21개 상세 대상입니다. 하드웨어 모델 수가 아닙니다. 이 미리보기는 그중 HCI 한 페이지만 새로 적습니다.</p>
+            <p>이번 미리보기는 HCI 상세만 새로 적습니다. 이미 공개된 검토 영역은 <Link href="/solutions">솔루션 목록</Link>에 있습니다.</p>
             <p>백업·DR과 업무 자동화 같은 기존 서비스 필요는 제품 목록 때문에 삭제하지 않습니다.</p>
             <Link className="rd-btn rd-btn-primary" href="/solutions/hci">Sangfor HCI 상세</Link>
           </div>

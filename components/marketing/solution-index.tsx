@@ -20,7 +20,7 @@ export function SolutionIndex({ solutions }: SolutionIndexProps) {
     <div className="solution-page">
       <Section aria-labelledby="solutions-heading" className="solution-hero" spacing="generous">
         <Container>
-          <Eyebrow>SOLUTIONS · APPROVED SCOPE</Eyebrow>
+          <Eyebrow>솔루션 · 공개된 범위</Eyebrow>
           <Heading className="solution-hero__title" id="solutions-heading" level={1}>
             운영 조건에서 시작하는 <span className="blro-nowrap">다섯 가지 솔루션</span>
           </Heading>
@@ -34,7 +34,7 @@ export function SolutionIndex({ solutions }: SolutionIndexProps) {
         <Container>
           <div className="solution-section-heading">
             <div>
-              <Eyebrow>CAPABILITY ROUTES</Eyebrow>
+              <Eyebrow>검토 경로</Eyebrow>
               <Heading id="solution-index-heading" level={2}>검토할 영역을 선택하세요.</Heading>
             </div>
             <Text>다섯 영역은 독립적으로 시작할 수 있고, 실제 프로젝트에서는 운영 조건에 따라 함께 설계할 수 있습니다.</Text>
@@ -61,7 +61,7 @@ export function SolutionIndex({ solutions }: SolutionIndexProps) {
 
       <Section aria-labelledby="solution-next-heading" className="solution-next" spacing="generous" tone="navy">
         <Container>
-          <Eyebrow>START FROM THE CURRENT STATE</Eyebrow>
+          <Eyebrow>현재 상태에서 시작</Eyebrow>
           <Heading id="solution-next-heading" level={2}>아직 제품을 정하지 않아도 괜찮습니다.</Heading>
           <Text variant="inverse">현재 환경과 목표에서 시작해 필요한 검토 영역과 다음 증거를 정리합니다.</Text>
           <Link className="solution-next__link" href="/solutions/hci">HCI 상세 미리보기 <span aria-hidden="true">↗</span></Link>

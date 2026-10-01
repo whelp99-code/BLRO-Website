@@ -30,7 +30,7 @@ for (const viewport of VIEWPORTS) {
         name: HOME_HEADING,
       }),
     ).toBeVisible()
-    await expect(page.getByRole("heading", { level: 2, name: "다섯 초 안에 역할을 고릅니다." })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "역할을 고릅니다." })).toBeVisible()
     await expect(page.getByRole("heading", { level: 2, name: "그림은 일을 설명해야 합니다." })).toBeVisible()
 
     const homeActions = page.locator(".home-hero")

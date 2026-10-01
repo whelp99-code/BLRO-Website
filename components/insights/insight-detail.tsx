@@ -75,7 +75,7 @@ export function InsightDetail({ insight }: InsightDetailProps) {
       <Container className="insight-detail__breadcrumb"><Breadcrumb pathname={pathname} /></Container>
       <Section aria-labelledby="insight-detail-heading" className="insight-detail__hero" spacing="generous">
         <Container>
-          <Eyebrow>INSIGHT · {insight.meta.tags.join(" · ").toUpperCase()}</Eyebrow>
+          <Eyebrow>인사이트</Eyebrow>
           <Heading className="insight-detail__title" id="insight-detail-heading" level={1}>
             {formatSolutionCopy(insight.meta.title, PROTECTED_INSIGHT_TITLE_PHRASES)}
           </Heading>
@@ -108,7 +108,7 @@ export function InsightDetail({ insight }: InsightDetailProps) {
       ) : null}
       <Section aria-labelledby="insight-next-heading" className="insight-next" spacing="generous" tone="navy">
         <Container>
-          <Eyebrow>NEXT DECISION</Eyebrow>
+          <Eyebrow>다음 결정</Eyebrow>
           <Heading id="insight-next-heading" level={2}>현재 환경에 맞는 검증 범위를 정리합니다.</Heading>
           <Text variant="inverse">이 자료의 질문을 바탕으로, 업무 영향과 운영 제약을 함께 확인할 수 있습니다.</Text>
           <div className="insight-next__actions">

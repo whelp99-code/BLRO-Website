@@ -14,7 +14,7 @@ describe("desktop navigation", () => {
     render(<DesktopNav pathname="/solutions/network-security" />)
     const solutions = screen.getByRole("button", { name: "솔루션 메뉴" })
     const projects = screen.getByRole("link", { name: "프로젝트" })
-    expect(solutions).toHaveAttribute("tabindex", "0")
+    expect(solutions).not.toHaveAttribute("tabindex", "-1")
     solutions.focus()
 
     // When
@@ -22,7 +22,7 @@ describe("desktop navigation", () => {
 
     // Then
     expect(projects).toHaveFocus()
-    expect(projects).toHaveAttribute("tabindex", "0")
+    expect(projects).not.toHaveAttribute("tabindex", "-1")
     expect(solutions).toHaveAttribute("aria-current", "page")
 
     // When

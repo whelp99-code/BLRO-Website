@@ -30,7 +30,7 @@ export default function HciPage() {
       <section className="rd-hero life-scroll">
         <div className="rd-wrap rd-hero-grid">
           <div>
-            <p className="rd-kicker">제품 상세 · 시안 1/21</p>
+            <p className="rd-kicker">제품 상세</p>
             <h1 className="blro-heading blro-heading--h1">Sangfor HCI</h1>
             <p className="rd-lead">업무 시스템을 실행하는 통합 인프라를 검토할 때 여는 페이지입니다. 제조사 사양을 BLRO의 공급·수행 약속으로 바꾸지 않습니다.</p>
             <p>
@@ -73,7 +73,7 @@ export default function HciPage() {
             <h2>관련 제품</h2>
             <p>aSV는 가상화 계층입니다. HCI와 같이 볼 조건이 있고, 같은 문장이 아닙니다. Sangfor SCP는 관리할 자원과 운영 담당의 플랫폼입니다. 관리 화면이 HCI 안에 보인다고 해서 SCP 검토가 끝난 것은 아닙니다. aDesk VDI는 사용자와 단말의 업무 화면입니다. aStor는 별도 스토리지 질문입니다.</p>
             <h2>적용 한계</h2>
-            <p>이 페이지는 특정 모델의 기능 보증이 아닙니다. 포트, 호환, 버전 동작은 공식 출처의 현재 문서로 확인해야 합니다. HCI를 도입한다고 방화벽, 스위치, 서버 접근 제어가 포함되지 않습니다. BLRO의 24시간 관제나 SLA를 의미하지 않습니다. 공급이 미확정이면 미확정이라고 적습니다.</p>
+            <p>이 페이지는 특정 모델의 기능 보증이 아닙니다. 포트, 호환, 버전 동작은 공식 출처의 현재 문서로 확인해야 합니다. 외부 물리 장비(방화벽·스위치) 공급은 별도입니다. 제품 내 가상 네트워크·보안 기능은 그 공급과 같은 말이 아니며, 포함 범위는 공식 문서 확인 전이라 여기서 단정하지 않습니다. 서버 접근 제어도 HCI 도입에 자동으로 포함된다고 쓰지 않습니다. BLRO의 24시간 관제나 SLA를 의미하지 않습니다. 공급이 미확정이면 미확정이라고 적습니다.</p>
           </div>
         </div>
       </section>

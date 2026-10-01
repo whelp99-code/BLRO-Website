@@ -92,6 +92,8 @@ Imagery: CSS/SVG diagrams (lifecycle, R&R, HCI layers, material flow). No genera
 - Current Sangfor HCI specs (official page was blocked on 2026-09-30).
 - Whether AGENTS motion rule may relax for explanatory diagrams.
 - Whether to generate the five atmosphere images in `v2/images/PROMPTS.md` (not evidence of real work).
+- Which home sentence is canonical. Until the owner chooses, the preview shows only the v2 role-connection title. The v1 line "제품 공급과 전환 검증을 한 경로로 맡깁니다." stays in this brief and is not shown on the page.
+- Whether "21" is the actual offering list or only a design target. The v2 proposal summarizes a design target (Sangfor 15 product/services, Cisco·Juniper switches, Fortinet firewall, GIGABYTE·KAYTUS servers, HIWARE server access control) in `docs/redesign-2026-09-motion/v2/BLRO-REDESIGN-PROPOSAL-V2-KO.md`. This repo does not contain a 21-row catalog. Do not print the count on the site until the owner confirms the list and what it means.
 
 Known company facts already recorded (do not replace with invented ones): 주식회사 베를로, 박재민, 사업자등록번호 420-87-02727, 010-8896-1260, jm.park@blro.co.kr. Address text lives in workspace `START-HERE.md` history; confirm before reprinting if this repo's content files differ.
 
