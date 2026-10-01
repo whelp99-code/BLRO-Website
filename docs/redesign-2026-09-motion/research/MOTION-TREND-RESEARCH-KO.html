@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>모션 트렌드 조사 — BLRO</title>
+<style>
+  :root {
+    --ink: #102033;
+    --ink-soft: #3d4d63;
+    --paper: #f4f1ea;
+    --paper-2: #ebe6dc;
+    --card: #fffcf7;
+    --line: #d7d0c4;
+    --signal: #1f7a4d;
+    --action: #1d4ed8;
+    --copper: #8a5a32;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 72px;
+    --radius-s: 8px;
+    --radius-m: 16px;
+    --font-display: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --step-title: clamp(28px, 3vw, 40px);
+    --step-body: 17px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: var(--step-body);
+    line-height: 1.55;
+  }
+  a { color: var(--action); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--action); outline-offset: 3px; }
+  .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+  header.top {
+    padding: var(--space-7) 0 var(--space-6);
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin: 0 0 var(--space-3);
+  }
+  h1 {
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1.15;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-4);
+    max-width: 16ch;
+  }
+  .lede { max-width: 62ch; color: var(--ink-soft); margin: 0; }
+  nav.jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+  }
+  nav.jump a {
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--card);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+  }
+  main { padding: var(--space-8) 0; }
+  section { margin: 0 0 var(--space-8); }
+  h2 {
+    font-size: var(--step-title);
+    line-height: 1.2;
+    margin: 0 0 var(--space-4);
+    letter-spacing: -0.02em;
+  }
+  h3 { font-size: 22px; margin: var(--space-6) 0 var(--space-3); }
+  p { max-width: 68ch; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    background: var(--card);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  th { font-size: 12px; font-family: var(--font-mono); font-weight: 500; color: var(--ink-soft); }
+  .note {
+    background: var(--paper-2);
+    border-radius: var(--radius-m);
+    padding: var(--space-4) var(--space-5);
+    max-width: 72ch;
+  }
+  .rule {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius-m);
+    padding: var(--space-6);
+    max-width: 72ch;
+  }
+  .rule p { color: var(--paper); margin: 0; }
+  .kicker { font-family: var(--font-mono); font-size: 12px; color: var(--signal); margin: 0 0 var(--space-2); }
+  figure { margin: var(--space-5) 0; }
+  figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-s);
+    background: var(--paper-2);
+  }
+  figcaption {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: var(--space-2);
+    max-width: 78ch;
+  }
+  .shots {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr;
+    gap: var(--space-3);
+  }
+  .shots .side { display: grid; gap: var(--space-3); }
+  .rank { display: grid; grid-template-columns: 72px 1fr; gap: var(--space-4); margin: var(--space-6) 0; }
+  .idx {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--signal);
+    padding-top: 6px;
+  }
+  footer {
+    border-top: 1px solid var(--line);
+    padding: var(--space-6) 0 var(--space-8);
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  @media (max-width: 800px) {
+    .shots, .rank { grid-template-columns: 1fr; }
+    h1 { max-width: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">BLRO · redesign-2026-09-motion · research · 2026-09-30</p>
+    <h1>모션은 유행이 아니라 업무 순서다</h1>
+    <p class="lede">2025–2026 웹 모션 트렌드와 IT·인프라 사이트 16곳을 실제로 열어 본 조사다. 권고는 BLRO의 세 청중(기업 고객, 국내 파트너, 기술 엔지니어)과 현행 절제 규칙에 맞춰 걸러 두었다. 이 페이지는 규칙을 바꾸지 않는다.</p>
+    <nav class="jump" aria-label="문서 목차">
+      <a href="#trends">트렌드</a>
+      <a href="#sites">방문 사이트</a>
+      <a href="#shortlist">BLRO 순위</a>
+      <a href="#rule">승인용 문장</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <section id="trends">
+    <h2>지금 유행하는 것, 시드는 것</h2>
+    <p>중심은 효과가 많아지는 쪽이 아니다. 스크롤이 재생 머리가 되고, 모션은 INP와 <code>prefers-reduced-motion</code>으로 걸러진다. CSS <code>animation-timeline: scroll()</code> / <code>view()</code>는 Chrome 115(2023-07)에서 시작됐고, Chrome 문서(Bramus, 2023-05-05)가 기준 설명이다. 2026-07-21 CSS 가이드는 주요 브라우저 안정 지원을 전제로 진행 바·시차·등장을 JS 없이 처리하라고 적는다.</p>
+    <table>
+      <thead><tr><th>패턴</th><th>2026 위치</th><th>BLRO</th></tr></thead>
+      <tbody>
+        <tr><td>스크롤 연동 CSS</td><td>주류. 합성기 스레드</td><td>채택. 경로 드로잉</td></tr>
+        <tr><td>스티키 스크롤리텔링</td><td>제품 설명의 기본 문법</td><td>채택. 청중당 한 장면</td></tr>
+        <tr><td>제품 UI가 스스로 움직임</td><td>Linear, Stripe, Vercel의 실무 표준</td><td>채택. 가짜 숫자 대시보드는 제외</td></tr>
+        <tr><td>벤토 + 작은 그림</td><td>기능 나열의 기본</td><td>부분 채택. 균등 카드 벽은 금지</td></tr>
+        <tr><td>WebGL / 3D 히어로</td><td>Awwwards 창작 부문에서 우세라는 에이전시 주장</td><td>기각</td></tr>
+        <tr><td>커서 추종, 스무스 스크롤</td><td>에이전시 잔존. 미움받는 실패 패턴</td><td>기각</td></tr>
+        <tr><td>GSAP</td><td>2025-04 전 플러그인 무료라는 2차 보고. 복잡한 20%</td><td>보류. CSS로 충분</td></tr>
+        <tr><td>숫자 카운트업, 무한 마키</td><td>아직 흔함</td><td>기각. 미검증 숫자·무한 모션</td></tr>
+        <tr><td>View Transitions</td><td>페이지 전환의 표준 후보</td><td>역할 홈 사이 크로스페이드만</td></tr>
+      </tbody>
+    </table>
+    <p>Digital Strategy Force(2026-03-12)는 “2026년 1분기 Awwwards SOTD의 61%가 몰입형 3D”라고 썼다. 공식 수상 통계가 아니라 에이전시 주장이다. MotionKit(2026-07-18)은 WebGL을 가장 남용하기 쉬운 트렌드로, 스무스 스크롤을 잘못하면 가장 미움받는 패턴으로 적는다. INP 43% 실패 수치도 그 글이 Digital Applied를 인용한 것이며, 여기서 재측정하지 않았다.</p>
+    <div class="note">
+      <p class="kicker">출처</p>
+      <p><a href="https://developer.chrome.com/docs/css-ui/scroll-driven-animations">Chrome scroll-driven animations</a> · <a href="https://cssawwwards.com/blog/css-scroll-driven-animations-guide-2026">CSS 가이드 2026-07-21</a> · <a href="https://motionkit.io/blog/web-animation-trends-2026">MotionKit 2026-07-18</a> · <a href="https://www.inspirefusion.com/web-design-inspiration-trends-2026/">InspireFusion</a> · <a href="https://digitalstrategyforce.com/journal/why-are-immersive-experiences-dominating-the-2026-awwwards/">DSF 2026-03-12</a> · <a href="https://reallygooddesigns.com/web-design-trends-2026/">Really Good Designs</a> · <a href="https://webflow.com/blog/gsap-becomes-free">Webflow GSAP 글</a> (본문은 JS 렌더라 날짜 문장을 직접 확인하지 못함) · <a href="https://developer.chrome.com/docs/web-platform/view-transitions">View Transitions</a></p>
+    </div>
+  </section>
+
+  <section id="sites">
+    <h2>IT 사이트를 열어 본 기록</h2>
+    <p>headless Chrome 1440×900, 상단 · 약 0.92뷰포트 · 약 1.85뷰포트, 모바일 390 상단. 기법 열은 canvas/video/Web Animations 개수와 화면을 보고 한 추정이다. Lighthouse와 reduced-motion 에뮬레이션은 하지 않았다. 캡처는 <code>captures/</code>에 있다.</p>
+
+    <h3>설명이 되는 모션</h3>
+    <figure>
+      <div class="shots">
+        <img src="captures/linear-d-top.png" alt="Linear 홈 상단. 제품 이슈 화면이 히어로">
+        <div class="side">
+          <img src="captures/linear-d-mid.png" alt="Linear 홈을 한 화면 내린 위치. 다른 제품 화면과 고객 로고">
+          <img src="captures/linear-m-top.png" alt="Linear 모바일 390 상단">
+        </div>
+      </div>
+      <figcaption>Linear. 히어로가 앱 그 자체다. Web Animations 85, canvas 0. 스크롤하면 화면이 바뀌며 제품 상태를 설명한다. 인프라 토폴로지는 없지만, “움직이는 업무 화면”은 BLRO가 가져갈 문법이다. linear.app</figcaption>
+    </figure>
+    <figure>
+      <div class="shots">
+        <img src="captures/stripe-d-top.png" alt="Stripe 홈. 그라디언트와 인프라 헤드라인">
+        <div class="side">
+          <img src="captures/stripe-d-mid.png" alt="Stripe 결제와 청구 목업">
+          <img src="captures/stripe-d-low.png" alt="Stripe 기능 카드 세 장">
+        </div>
+      </div>
+      <figcaption>Stripe. 그라디언트와 GDP 카운터는 신뢰 연출이다. 아래 목업은 결제라는 일을 보여 준다. canvas 2. 미검증 숫자 카운터는 BLRO에 가져오지 않는다. stripe.com</figcaption>
+    </figure>
+    <figure>
+      <img src="captures/cloudflare-d-mid.png" alt="Cloudflare Region Earth 점묘 지구">
+      <figcaption>Cloudflare 중단. “Region: Earth” 한 장이 가까운 네트워크를 말한다. 히어로(captures/cloudflare-d-top.png)는 거의 정지한 오렌지 면이다. canvas 1, video 1, 애니메이션 230 — 숫자는 과할 수 있다. 하단 로고 마키에는 일시정지가 있으나 무한 모션이다. cloudflare.com</figcaption>
+    </figure>
+    <figure>
+      <div class="shots">
+        <img src="captures/vercel-d-top.png" alt="Vercel 히어로. Agentic Infrastructure와 삼각형">
+        <img src="captures/vercel-d-mid.png" alt="Vercel 스크롤 후 에이전트 채팅 목업">
+      </div>
+      <figcaption>Vercel. 삼각형은 장식(canvas 1). 스크롤 뒤 채팅 목업이 인프라 위의 일을 설명한다. 체감상 가장 가벼웠다. vercel.com</figcaption>
+    </figure>
+    <figure>
+      <img src="captures/supabase-d-top.png" alt="Supabase 홈. Postgres와 기능 카드">
+      <figcaption>Supabase. 벤토에 작은 그림. 애니메이션 15. 밀도는 엔터프라이즈에 가깝다. 균등 카드 벽으로 늘리면 BLRO 금지 패턴이 된다. supabase.com</figcaption>
+    </figure>
+
+    <h3>분위기만 있거나, 일을 가리는 모션</h3>
+    <figure>
+      <div class="shots">
+        <img src="captures/raycast-d-top.png" alt="Raycast 레드 모션 배경 히어로">
+        <img src="captures/framer-d-top.png" alt="Framer 디자인 에이전트 채팅 히어로">
+      </div>
+      <figcaption>Raycast는 canvas 배경이 계속 산다(애니메이션 44). Framer는 제품 채팅이 히어로지만 video 4. 둘 다 BLRO 히어로의 반례다.</figcaption>
+    </figure>
+    <figure>
+      <div class="shots">
+        <img src="captures/datadog-d-top.png" alt="Datadog 한국어 홈. 기울어진 대시보드">
+        <img src="captures/nvidia-dc-d-top.png" alt="NVIDIA 데이터센터 페이지. 쿠키 모달이 본문을 가림">
+      </div>
+      <figcaption>Datadog는 video 11의 가짜 차트 정물. NVIDIA 데이터센터는 랙 사진이 좋으나 쿠키 모달이 첫 화면을 덮었다. 모달 뒤는 미확인.</figcaption>
+    </figure>
+    <figure>
+      <div class="shots">
+        <img src="captures/crowdstrike-d-top.png" alt="CrowdStrike Fal.Con 이벤트 히어로">
+        <img src="captures/nutanix-d-top.png" alt="Nutanix 매직 쿼드런트 카드와 쿠키 모달">
+      </div>
+      <figcaption>보안·HCI 경쟁 구도. CrowdStrike는 행사 히어로, Nutanix는 애널리스트 카드. 둘 다 아키텍처를 첫 화면에서 설명하지 않는다. 애니메이션 0.</figcaption>
+    </figure>
+
+    <h3>한국 엔터프라이즈 IT</h3>
+    <figure>
+      <div class="shots">
+        <img src="captures/navercloud-d-top.png" alt="네이버 클라우드 파티클 히어로">
+        <img src="captures/navercloud-d-mid.png" alt="네이버 클라우드 서비스 아이콘 레일">
+      </div>
+      <figcaption>네이버 클라우드. video 2 파티클은 분위기다. 아래 아이콘 레일이 실제 목록이다. 토폴로지는 없다. ncloud.com</figcaption>
+    </figure>
+    <figure>
+      <div class="shots">
+        <img src="captures/ktcloud-d-top.png" alt="kt cloud 보라 캠페인 배너와 공지">
+        <img src="captures/samsungsds-d-top.png" alt="삼성SDS 홈. 이메일 수집 거부 모달">
+      </div>
+      <figcaption>kt cloud는 이벤트 배너와 공지가 홈이다. 삼성SDS는 슬로건 히어로가 법적 모달에 가려졌다. 모션으로 일을 설명하지 않는다.</figcaption>
+    </figure>
+    <figure>
+      <div class="shots">
+        <img src="captures/lgcns-d-top.png" alt="LG CNS 뉴스 히어로">
+        <img src="captures/nhncloud-d-top.png" alt="NHN Cloud 공지 모달">
+      </div>
+      <figcaption>LG CNS는 뉴스 포털. 중단 캡처(lgcns-d-mid.png)는 거절 클릭이 법적 고지로 이동한 결과라 홈 모션 근거로 쓰지 않는다. NHN Cloud는 공지 모달이 곡선 배경을 가린다.</figcaption>
+    </figure>
+    <figure>
+      <img src="captures/sangfor-d-top.png" alt="Sangfor 접속이 Cloudflare에 차단된 화면">
+      <figcaption>Sangfor 글로벌은 이 환경에서 Cloudflare에 차단됐다. Wayback 2026-07-24 스냅샷 헤더는 있었으나 본문은 확인하지 못했다. 비교 불가.</figcaption>
+    </figure>
+    <p>공통. 한국 클라우드 홈은 캠페인·공지·모달이고, 글로벌 제품 회사는 움직이는 제품 화면이다. BLRO는 후자의 설명 방식만 가져온다. VMware/Broadcom은 이번 방문 목록에 없다.</p>
+  </section>
+
+  <section id="shortlist">
+    <h2>BLRO에 쓸 일곱 가지</h2>
+    <p>구현 기본은 CSS scroll-driven과 작은 JS다. GSAP, Lottie, Rive, WebGL은 기본 스택에 넣지 않는다. 경로 모핑이 CSS로 안 되는 섹션이 생기면 그때 한곳만 GSAP를 검토한다. 지금은 그 필요가 없다.</p>
+
+    <article class="rank">
+      <div class="idx">01</div>
+      <div>
+        <h3>스크롤에 묶인 업무 경로</h3>
+        <p>참고: Cloudflare의 한 그림 한 문장. 지구를 베끼지 말고 도입 → 전환 → 구축 → 운영 → 기술지원 노드를 그린다. 고객은 순서, 파트너는 자기 구간, 엔지니어는 산출물 이름을 본다. <code>view()</code>와 stroke/opacity만. reduced motion이면 완성 경로.</p>
+      </div>
+    </article>
+    <article class="rank">
+      <div class="idx">02</div>
+      <div>
+        <h3>스티키 한 장면</h3>
+        <p>참고: Linear가 화면을 갈아 끼우는 방식. BLRO는 앱 위조가 아니라 R&R, 역할 맵, 체크리스트를 둔다. 스크롤 소유자는 문서. 섹션당 스테이지 하나. 스크롤을 멈추면 장면도 멈춘다.</p>
+      </div>
+    </article>
+    <article class="rank">
+      <div class="idx">03</div>
+      <div>
+        <h3>설명하는 계기판</h3>
+        <p>참고: Stripe 목업, Vercel 채팅, Supabase의 작은 그림. Datadog식 가짜 차트는 피한다. SVG 노드 하나만 <span style="color:var(--signal)">신호색</span>으로. 영상 없음.</p>
+      </div>
+    </article>
+    <article class="rank">
+      <div class="idx">04</div>
+      <div>
+        <h3>짧은 등장 — 현행 규칙 유지</h3>
+        <p>세로 12px, 가로 16px, 420–500ms, 스태거 70ms. Raycast·Framer의 상시 배경은 반례. IntersectionObserver가 실패하면 최종 상태가 보인다.</p>
+      </div>
+    </article>
+    <article class="rank">
+      <div class="idx">05</div>
+      <div>
+        <h3>역할 홈 사이 크로스페이드</h3>
+        <p>View Transitions. 고객·파트너·엔지니어 전환이 다른 사이트가 아니라 같은 책의 다른 장임을 보여 준다. 300ms 이내. 미지원과 reduced motion은 즉시 전환. 현행 규칙에 없는 항목이라 승인 문장에 적는다.</p>
+      </div>
+    </article>
+    <article class="rank">
+      <div class="idx">06</div>
+      <div>
+        <h3>숫자는 정지</h3>
+        <p>Stripe GDP 카운터는 그들 숫자다. BLRO는 고객 수, 절감률, SLA를 만들지 않는다. 승인된 사실도 기본은 정적 표기.</p>
+      </div>
+    </article>
+    <article class="rank">
+      <div class="idx">07</div>
+      <div>
+        <h3>로고는 멈추게</h3>
+        <p>Cloudflare 마키는 일시정지가 있어도 무한 모션이다. 승인된 제조사 워드마크만 정지 그리드. 고객 로고는 발명하지 않는다.</p>
+      </div>
+    </article>
+    <p>피할 것. WebGL, 커서 추종, 스크롤 하이재킹, 바운스, 무한 마키, 자동재생 영상, Lottie 마스코트, 키네틱 슬로건, 균등 카드 벽, 네온 구체, 행사 히어로, 배너가 홈을 대체하는 구성.</p>
+  </section>
+
+  <section id="rule">
+    <h2>승인용 모션 규칙</h2>
+    <p>현행 <code>AGENTS.md</code> 문장을 아래 문장으로 바꾸는 제안이다. 승인 전에는 정본을 고치지 않는다.</p>
+    <div class="rule">
+      <p>모션은 실제 업무의 한 단계를 보여 줄 때만 쓴다. 시간 기반 등장은 세로 12px·가로 16px 이내, 420–500ms, 스태거 70ms, 바운스 없음. 스크롤 연동은 CSS animation-timeline: view() 또는 scroll()로, transform·opacity·stroke만, 문서 스크롤을 빼앗지 않는다. 이야기 섹션당 스티키 스테이지는 하나. 호버는 링크·버튼·다이어그램 노드에만 opacity 또는 1px 이동. 페이지 전환은 역할 홈 사이 300ms 이내 크로스페이드만 허용하고, 미지원·reduced motion에서는 즉시 전환한다. 무한 반복, 커서 추종, 스크롤 하이재킹, WebGL, 자동재생 영상, 카운트업, 모션만으로 전달되는 의미는 금지한다. JavaScript 실패, IntersectionObserver 실패, prefers-reduced-motion: reduce에서는 완성된 내용이 즉시 보인다. 숫자는 승인된 사실만 정적 표기한다.</p>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap">
+    <p>조사 브라우저: omowright connectPipe, Chrome headless, 2026-09-30. 성능 점수는 체감이지 측정이 아니다. reduced-motion 동작은 미측정. Sangfor 라이브는 차단.</p>
+  </div>
+</footer>
+</body>
+</html>
