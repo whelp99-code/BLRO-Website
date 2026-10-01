@@ -12,8 +12,8 @@ describe("desktop navigation", () => {
     // Given
     const user = userEvent.setup()
     render(<DesktopNav pathname="/solutions/network-security" />)
-    const solutions = screen.getByRole("button", { name: "Solutions 메뉴" })
-    const automation = screen.getByRole("link", { name: "AI & Automation" })
+    const solutions = screen.getByRole("button", { name: "솔루션 메뉴" })
+    const projects = screen.getByRole("link", { name: "프로젝트" })
     expect(solutions).toHaveAttribute("tabindex", "0")
     solutions.focus()
 
@@ -21,29 +21,29 @@ describe("desktop navigation", () => {
     await user.keyboard("{ArrowRight}")
 
     // Then
-    expect(automation).toHaveFocus()
-    expect(automation).toHaveAttribute("tabindex", "0")
+    expect(projects).toHaveFocus()
+    expect(projects).toHaveAttribute("tabindex", "0")
     expect(solutions).toHaveAttribute("aria-current", "page")
 
     // When
     await user.keyboard("{End}")
 
     // Then
-    expect(screen.getByRole("link", { name: "전환 진단 범위 확인" })).toHaveFocus()
+    expect(screen.getByRole("link", { name: "상담" })).toHaveFocus()
   })
 
   it("enters a megamenu with ArrowDown and escapes from inside it", async () => {
     // Given
     const user = userEvent.setup()
     render(<DesktopNav pathname="/" />)
-    const trigger = screen.getByRole("button", { name: "Solutions 메뉴" })
+    const trigger = screen.getByRole("button", { name: "솔루션 메뉴" })
     trigger.focus()
 
     // When
     await user.keyboard("{ArrowDown}")
 
     // Then
-    const overview = screen.getByRole("link", { name: "Solutions 전체 개요 보기" })
+    const overview = screen.getByRole("link", { name: "솔루션 전체 개요 보기" })
     expect(overview).toHaveFocus()
     expect(trigger).toHaveAttribute("aria-expanded", "true")
 
@@ -59,14 +59,14 @@ describe("desktop navigation", () => {
     // Given
     const user = userEvent.setup()
     render(<DesktopNav pathname="/" />)
-    const trigger = screen.getByRole("button", { name: "Solutions 메뉴" })
+    const trigger = screen.getByRole("button", { name: "솔루션 메뉴" })
 
     // When
     await user.click(trigger)
     await user.keyboard("{Escape}")
 
     // Then
-    expect(screen.queryByRole("link", { name: "Network Security" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("link", { name: "네트워크·보안" })).not.toBeInTheDocument()
     expect(trigger).toHaveFocus()
     expect(trigger).toHaveAttribute("aria-expanded", "false")
   })
@@ -80,7 +80,7 @@ describe("desktop navigation", () => {
         <button type="button">Outside</button>
       </div>,
     )
-    const trigger = screen.getByRole("button", { name: "Solutions 메뉴" })
+    const trigger = screen.getByRole("button", { name: "솔루션 메뉴" })
     await user.click(trigger)
 
     // When
@@ -99,7 +99,7 @@ describe("desktop navigation", () => {
     )
 
     // Then
-    expect(screen.getByRole("button", { name: "Solutions 메뉴" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "솔루션 메뉴" })).toHaveAttribute(
       "aria-expanded",
       "false",
     )
@@ -113,7 +113,7 @@ describe("desktop navigation", () => {
     )
 
     // Then
-    expect(screen.getByRole("button", { name: "Solutions 메뉴" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "솔루션 메뉴" })).toHaveAttribute(
       "aria-expanded",
       "false",
     )
@@ -150,7 +150,7 @@ describe("mobile navigation", () => {
     render(<MobileNav pathname="/" />)
     await user.click(screen.getByRole("button", { name: "메뉴 열기" }))
     const close = screen.getByRole("button", { name: "메뉴 닫기" })
-    const contact = screen.getByRole("link", { name: "전환 진단 범위 확인" })
+    const contact = screen.getByRole("link", { name: "상담" })
 
     // When
     await user.keyboard("{Shift>}{Tab}{/Shift}")
@@ -246,7 +246,10 @@ describe("route-derived shell components", () => {
       "href",
       "/terms",
     )
-    expect(within(footer).queryByText(/@|대표전화|주소/u)).not.toBeInTheDocument()
+    expect(within(footer).getByRole("link", { name: "jm.park@blro.co.kr" })).toHaveAttribute("href", "mailto:jm.park@blro.co.kr")
+    expect(within(footer).getByText("010-8896-1260")).toBeVisible()
+    expect(within(footer).getByText(/420-87-02727/u)).toBeVisible()
+    expect(within(footer).queryByText("주소")).not.toBeInTheDocument()
     expect(within(footer).getByText("AI 자동화")).toHaveClass("blro-nowrap")
     expect(within(footer).getByText("실행 파트너")).toHaveClass("blro-nowrap")
   })
@@ -259,8 +262,8 @@ describe("route-derived shell components", () => {
     const controls = screen.getByRole("navigation", { name: "주 내비게이션" }).querySelectorAll(
       "[data-primary-control]",
     )
-    expect(controls.item(controls.length - 1)).toHaveTextContent("전환 진단 범위 확인")
-    expect(screen.getByRole("link", { name: "전환 진단 범위 확인" })).toHaveClass(
+    expect(controls.item(controls.length - 1)).toHaveTextContent("상담")
+    expect(screen.getByRole("link", { name: "상담" })).toHaveClass(
       "blro-nav-cta",
     )
   })

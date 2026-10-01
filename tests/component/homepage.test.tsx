@@ -1,112 +1,39 @@
 import { render, screen, within } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import Home from "@/app/page"
-
-const BUSINESS_AXES = [
-  "가상화 · HCI · 프라이빗 클라우드",
-  "보안 운영 · SASE · 연결성",
-  "VDI · 디지털 워크스페이스",
-  "검증 · 전환 · 운영 인수",
-] as const
-
-const AUDIENCES = ["기업 고객", "국내 파트너", "글로벌 벤더"] as const
+import Home, { HOME_HEADING, HOME_SUPPLY_LINE } from "@/app/page"
 
 const HOME_ACTIONS = [
-  ["전환 진단 범위 확인", "/contact?type=customer-project"],
-  ["파트너 공동사업을 검토 중이신가요?", "/contact?type=partner-collaboration"],
-  ["한국 시장 진출을 준비 중이신가요?", "/contact?type=vendor-korea-entry"],
+  ["도입·운영 상담하기", "/contact?type=customer-project&role=customer"],
+  ["협력 제안하기", "/contact?type=partner-collaboration&role=partner"],
+  ["기술 자료 찾기", "/engineer"],
 ] as const
 
-describe("BLRO basic homepage", () => {
-  it("publishes the approved company definition and homepage message hierarchy", async () => {
-    render(await Home())
+describe("BLRO motion homepage", () => {
+  it("publishes the two open headlines and keeps the three roles apart", () => {
+    render(<Home />)
 
-    expect(
-      screen.getByRole("heading", {
-        level: 1,
-        name: "가상화·보안 전환, 무엇부터 검증할지 먼저 정리합니다.",
-      }),
-    ).toBeVisible()
-    expect(
-      screen.getByLabelText(
-        "BLRO는 인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 운영 판단으로 바꿀 수 있도록, 현황 진단부터 검증·전환·안정화까지 연결하는 기술사업 회사다.",
-      ),
-    ).toBeVisible()
-
-    for (const axis of BUSINESS_AXES) {
-      expect(screen.getByRole("heading", { level: 3, name: axis })).toBeVisible()
-    }
-    for (const audience of AUDIENCES) {
-      expect(screen.getByRole("heading", { level: 3, name: audience })).toBeVisible()
-    }
-    expect(screen.getByRole("heading", { level: 2, name: "첫 상담의 진단 결과물" })).toBeVisible()
-    expect(screen.getByRole("heading", { level: 3, name: "우선 검증할 워크로드와 제외 범위" })).toBeVisible()
-    expect(screen.getByRole("img", { name: "현재 운영 조건에서 다음 검증과 의사결정으로 이어지는 전환 진단 흐름" })).toBeVisible()
+    expect(screen.getByRole("heading", { level: 1, name: HOME_HEADING })).toBeVisible()
+    expect(screen.getByText(HOME_SUPPLY_LINE)).toBeVisible()
+    expect(screen.getByText("주식회사 베를로")).toBeVisible()
+    expect(screen.getByRole("heading", { level: 2, name: "다섯 초 안에 역할을 고릅니다." })).toBeVisible()
+    expect(screen.getByText("기업 고객")).toBeVisible()
+    expect(screen.getByText("국내 파트너")).toBeVisible()
+    expect(screen.getByText("기술 엔지니어")).toBeVisible()
+    expect(screen.getByRole("img", { name: /도입, 전환, 구축, 운영, 기술지원/u })).toBeVisible()
+    expect(screen.queryByText("시큐아이")).not.toBeInTheDocument()
+    expect(screen.queryByText(/24시간/u)).not.toBeInTheDocument()
   })
 
-  it("connects each capability to a next decision route", async () => {
-    render(await Home())
-
-    const links = screen.getAllByRole("link", { name: "검토 기준 보기" })
-    expect(links).toHaveLength(4)
-    expect(links[0]).toHaveAttribute("href", "/solutions/hci-private-cloud")
-    expect(links[1]).toHaveAttribute("href", "/solutions/network-security")
-    expect(links[2]).toHaveAttribute("href", "/solutions/vdi-digital-workspace")
-    expect(links[3]).toHaveAttribute("href", "/solutions")
-  })
-
-  it("connects every major action to a typed inquiry destination", async () => {
-    render(await Home())
+  it("connects each role action without merging the paths", () => {
+    render(<Home />)
+    const hero = within(screen.getByRole("region", { name: HOME_HEADING }))
 
     for (const [label, destination] of HOME_ACTIONS) {
-      expect(screen.getAllByRole("link", { name: label }).at(0)).toHaveAttribute("href", destination)
+      expect(hero.getByRole("link", { name: label })).toHaveAttribute("href", destination)
     }
-  })
-
-  it("renders approved insight evidence without exposing review project templates", async () => {
-    render(await Home())
-
-    const evidence = screen.getByRole("region", { name: "공개된 실무 인사이트" })
-    expect(within(evidence).getAllByRole("article")).toHaveLength(17)
-    expect(within(evidence).getByText("HCI 도입 전 확인할 운영 기준")).toBeVisible()
-    expect(within(evidence).getByText("Azure Local 2606 업데이트: 설치보다 준비 상태를 먼저 검증할 것")).toBeVisible()
-    expect(within(evidence).getByText("Azure Virtual Desktop RDP Multipath: 활성화보다 경로 검증이 먼저")).toBeVisible()
-    expect(document.querySelector("#insight-secure-access-selection")).toBeInTheDocument()
-    expect(document.querySelector("#insight-sase-sdwan-roles")).toBeInTheDocument()
-    expect(screen.queryByText(/template/iu)).not.toBeInTheDocument()
-    expect(screen.queryByText(/제조업 HCI와 DR 전환/iu)).not.toBeInTheDocument()
-  })
-
-  it("attributes Korea Sangfor cases to Park Jaemin's Sangfor Korea delivery", async () => {
-    render(await Home())
-
-    expect(screen.getByRole("heading", { name: "상포코리아 시절 국내 구축 경험" })).toBeVisible()
-    expect(screen.getByText("국내 구축 경험")).toBeVisible()
-    expect(screen.getByText(/박재민이 상포코리아 지사장 시절 수행한 국내 구축 경험/u)).toBeVisible()
-    expect(screen.getByText("당시 상포코리아에서 수행")).toHaveClass("blro-nowrap")
-    expect(screen.queryByText(/BLRO 수행 실적/u)).not.toBeInTheDocument()
-    expect(screen.queryByText(/성과 보증/u)).not.toBeInTheDocument()
-    expect(screen.queryByText(/BLRO 수행 아님/u)).not.toBeInTheDocument()
-    expect(screen.getAllByRole("link", { name: /공식 원문/u }).length).toBeGreaterThanOrEqual(20)
-    expect(screen.getByRole("heading", { level: 3, name: "시큐아이" })).toBeVisible()
-    expect(screen.getByRole("heading", { level: 3, name: "롯데건설" })).toBeVisible()
-    expect(screen.getByRole("heading", { level: 3, name: "LG생활건강" })).toBeVisible()
-    expect(screen.getByRole("heading", { level: 3, name: "한신대" })).toBeVisible()
-    expect(screen.getByRole("heading", { level: 3, name: "조선일보" })).toBeVisible()
-    expect(screen.queryByText(/삼성전자 인도네시아/u)).not.toBeInTheDocument()
-  })
-
-  it("preserves approved final copy and unbroken Korean and technical phrases", async () => {
-    const { container } = render(await Home())
-
-    expect(screen.getByRole("heading", { name: "무엇부터 바꿔야 할지 명확하지 않아도 괜찮습니다." })).toBeVisible()
-    expect(screen.getByText("현재 환경, 업무 영향, 허용 가능한 전환 위험을 기준으로 첫 번째 검증 범위를 함께 정리합니다.")).toBeVisible()
-    expect(container.querySelectorAll(".home-hero h1 .blro-nowrap")).toHaveLength(1)
-    expect(screen.getByText("무엇부터 검증할지")).toHaveClass("blro-nowrap")
-    expect(screen.getByText("실제 운영 판단으로")).toHaveClass("blro-nowrap")
-    expect(screen.getByText("바꿀 수 있도록")).toHaveClass("blro-nowrap")
-    expect(screen.getByRole("link", { name: /해외지사에서.*SASE/u })).toBeVisible()
-    expect(screen.getByText("전환 리허설")).toHaveClass("capability-index__scope-term")
-    expect(screen.getByText("설계·PoC·전환·안정화")).toHaveClass("blro-nowrap")
+    expect(screen.getByRole("link", { name: "고객 안내 보기" })).toHaveAttribute("href", "/customer")
+    expect(screen.getByRole("link", { name: "역할 표 보기" })).toHaveAttribute("href", "/partner")
+    expect(screen.getByRole("link", { name: "자료 흐름 보기" })).toHaveAttribute("href", "/engineer")
+    expect(screen.getByRole("link", { name: "HCI 상세" })).toHaveAttribute("href", "/solutions/hci")
   })
 })

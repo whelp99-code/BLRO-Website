@@ -4,6 +4,7 @@ import { AnalyticsProvider } from "@/components/analytics/analytics-provider"
 import { ConsentManager } from "@/components/analytics/consent-manager"
 import { SiteFooterShell } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
+import { MotionBoot } from "@/components/redesign/motion-boot"
 import { organizationStructuredData, siteDescription, siteName, siteUrl, websiteStructuredData } from "@/lib/site"
 import "./globals.css"
 import "./home.css"
@@ -11,6 +12,7 @@ import "./insights.css"
 import "./navigation.css"
 import "./contact.css"
 import "./strategic.css"
+import "./redesign.css"
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -32,6 +34,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ko">
+      <head>
+        <link
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationStructuredData, websiteStructuredData]).replaceAll("<", "\\u003c") }} />
         <a className="blro-skip-link" href="#main-content">
@@ -40,6 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <SiteHeader />
         <ConsentManager />
         <AnalyticsProvider />
+        <MotionBoot />
         <main id="main-content" tabIndex={-1}>
           {children}
         </main>

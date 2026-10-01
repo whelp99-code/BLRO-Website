@@ -4,13 +4,14 @@ import { Eyebrow, Heading, Text } from "@/components/content/typography"
 import { ContactPathGuide } from "@/components/contact/contact-path-guide"
 import { DiagnosticSummarySample } from "@/components/contact/diagnostic-summary-sample"
 import { InquiryForm } from "@/components/contact/inquiry-form"
+import { RoleChecklist } from "@/components/redesign/role-checklist"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
 import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
-  title: "전환 진단 상담",
-  description: "BLRO와 함께 인프라·보안 전환의 우선순위, 검증 범위, 실행 조건을 정리합니다.",
+  title: "역할별 상담",
+  description: "역할을 먼저 고르면 그 역할의 확인 목록이 바뀝니다. 목록 교체에 자리 이동 애니메이션은 없습니다.",
   ...canonicalMetadata("/contact"),
 }
 
@@ -22,17 +23,20 @@ const preparationItems = [
 
 export default function ContactPage() {
   return (
-    <article className="contact-page">
+    <article className="contact-page rd">
       <Section aria-labelledby="contact-heading" className="contact-page__hero" spacing="generous">
         <Container className="contact-page__layout">
           <div className="contact-page__intro">
-            <Eyebrow>START WITH THE OPERATING CONDITIONS</Eyebrow>
+            <Eyebrow>역할 먼저</Eyebrow>
             <Heading id="contact-heading" level={1}>
-              제품보다 먼저, <span className="blro-nowrap">전환의 기준</span>을 정리합니다.
+              역할을 먼저 고릅니다.
             </Heading>
             <Text variant="lead">
-              도입할 제품보다, 현재 운영에서 지켜야 할 조건을 먼저 확인합니다. 그 기준을 바탕으로 검증 범위와 다음 결정을 함께 설계합니다.
+              기업 고객, 국내 파트너, 기술 엔지니어는 확인 목록이 다릅니다. 목록만 바뀌고, 칸의 높이를 애니메이션으로 밀지 않습니다.
             </Text>
+            <Suspense fallback={<div className="rd-role-panel" aria-hidden="true" />}>
+              <RoleChecklist />
+            </Suspense>
           </div>
           <Suspense fallback={<div className="contact-path-guide" aria-hidden="true" />}>
             <ContactPathGuide />

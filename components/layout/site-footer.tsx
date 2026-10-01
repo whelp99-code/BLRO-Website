@@ -25,6 +25,14 @@ export function SiteFooter({ pathname }: SiteFooterProps) {
             {"를 연결하는 "}
             <span className="blro-nowrap">실행 파트너</span>입니다.
           </p>
+          <p>
+            주식회사 베를로 · 대표 박재민 · 사업자등록번호 420-87-02727
+            {" · "}
+            <a href="tel:010-8896-1260">010-8896-1260</a>
+            {" · "}
+            <a href="mailto:jm.park@blro.co.kr">jm.park@blro.co.kr</a>
+          </p>
+          <p>소재지는 확인 전이라 적지 않습니다.</p>
         </div>
         <nav aria-label="사업">
           <h2>사업</h2>

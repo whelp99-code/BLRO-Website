@@ -7,8 +7,9 @@ describe("contact page", () => {
   it("keeps the conversion context and requires explicit privacy consent before secure intake can be enabled", () => {
     render(<ContactPage />)
 
-    expect(screen.getByRole("heading", { level: 1, name: /전환의 기준/u })).toBeVisible()
-    expect(screen.getByText("도입할 제품보다, 현재 운영에서 지켜야 할 조건을 먼저 확인합니다. 그 기준을 바탕으로 검증 범위와 다음 결정을 함께 설계합니다.")).toBeVisible()
+    expect(screen.getByRole("heading", { level: 1, name: /역할을 먼저 고릅니다/u })).toBeVisible()
+    expect(screen.getByText("기업 고객, 국내 파트너, 기술 엔지니어는 확인 목록이 다릅니다. 목록만 바뀌고, 칸의 높이를 애니메이션으로 밀지 않습니다.")).toBeVisible()
+    expect(screen.getByRole("link", { name: "기업 고객" })).toHaveAttribute("aria-current", "page")
     expect(screen.queryByText(/할지보다/u)).not.toBeInTheDocument()
     expect(screen.queryByText(/하는지를/u)).not.toBeInTheDocument()
     expect(screen.getByText("기술 프로젝트 상담")).toBeVisible()

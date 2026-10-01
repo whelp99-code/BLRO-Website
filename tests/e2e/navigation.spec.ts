@@ -4,7 +4,7 @@ test("supports mouse-free desktop navigation and semantic landmarks", async ({ p
   // Given
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto("/", { waitUntil: "networkidle" })
-  const solutions = page.getByRole("button", { name: "Solutions 메뉴" })
+  const solutions = page.getByRole("button", { name: "솔루션 메뉴" })
 
   // When
   await solutions.focus()
@@ -12,7 +12,7 @@ test("supports mouse-free desktop navigation and semantic landmarks", async ({ p
 
   // Then
   await expect(solutions).toHaveAttribute("aria-expanded", "true")
-  await expect(page.getByRole("link", { name: "Network Security" })).toBeVisible()
+  await expect(page.getByRole("link", { name: "네트워크·보안" })).toBeVisible()
 
   // When
   await page.keyboard.press("Escape")

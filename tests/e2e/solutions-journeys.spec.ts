@@ -16,11 +16,11 @@ test("opens the Solutions hub from the desktop menu", async ({ page }) => {
   // Given
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto("/", { waitUntil: "networkidle" })
-  const menu = page.getByRole("button", { name: "Solutions 메뉴" })
+  const menu = page.getByRole("button", { name: "솔루션 메뉴" })
 
   // When
   await menu.click()
-  const overview = page.getByRole("link", { name: "Solutions 전체 개요 보기" })
+  const overview = page.getByRole("link", { name: "솔루션 전체 개요 보기" })
   await overview.click()
 
   // Then

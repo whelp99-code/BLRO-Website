@@ -12,12 +12,12 @@ describe("navigation registry", () => {
   it("exposes only launch-ready primary routes and one solution megamenu", () => {
     // Given
     const expectedLabels = [
-      "Solutions",
-      "AI & Automation",
-      "Projects",
-      "Insights",
-      "Partner Business",
-      "전환 진단 범위 확인",
+      "기업 고객",
+      "국내 파트너",
+      "기술 엔지니어",
+      "솔루션",
+      "프로젝트",
+      "상담",
     ]
 
     // When
@@ -25,16 +25,15 @@ describe("navigation registry", () => {
 
     // Then
     expect(primaryNavigation.map((item) => item.label)).toEqual(expectedLabels)
-    expect(megamenus.map((item) => item.label)).toEqual(["Solutions"])
+    expect(megamenus.map((item) => item.label)).toEqual(["솔루션"])
   })
 
   it("keeps company information in the footer without diluting the primary journey", () => {
     expect(footerBusinessRoutes.map((item) => item.label)).toEqual([
       "BLRO",
-      "Solutions",
-      "AI & Automation",
-      "Projects",
+      "솔루션",
       "Insights",
+      "AI & Automation",
       "Partner Business",
     ])
   })

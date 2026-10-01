@@ -22,29 +22,28 @@ export type LocaleCounterpart = {
 }
 
 const solutionChildren = [
-  { href: "/solutions/hci-private-cloud", label: "HCI & Private Cloud", description: "가상화와 프라이빗 클라우드 전환" },
-  { href: "/solutions/vdi-digital-workspace", label: "VDI & Digital Workspace", description: "안전하고 일관된 디지털 업무환경" },
-  { href: "/solutions/backup-disaster-recovery", label: "Backup & Disaster Recovery", description: "복구 가능성을 기준으로 한 데이터 보호" },
-  { href: "/solutions/network-security", label: "Network Security", description: "접근과 연결을 함께 설계하는 보안" },
-  { href: "/solutions/sase-global-connectivity", label: "SASE & Global Connectivity", description: "분산 조직을 위한 안전한 글로벌 연결" },
+  { href: "/solutions/hci", label: "HCI", description: "통합 인프라 검토 출발점" },
+  { href: "/solutions/vdi-digital-workspace", label: "VDI", description: "업무 화면과 디지털 워크스페이스" },
+  { href: "/solutions/network-security", label: "네트워크·보안", description: "접근과 연결" },
+  { href: "/solutions/backup-disaster-recovery", label: "백업·DR", description: "복구 가능성" },
+  { href: "/solutions/sase-global-connectivity", label: "SASE", description: "분산 조직의 연결" },
 ] as const satisfies readonly NavigationChild[]
 
 export const primaryNavigation = [
-  { href: "/solutions", label: "Solutions", children: solutionChildren },
-  { href: "/ai-automation", label: "AI & Automation", children: [] },
-  { href: "/projects", label: "Projects", children: [] },
-  { href: "/insights", label: "Insights", children: [] },
-  { href: "/partner-business", label: "Partner Business", children: [] },
-  { href: "/contact", label: "전환 진단 범위 확인", children: [] },
+  { href: "/customer", label: "기업 고객", children: [] },
+  { href: "/partner", label: "국내 파트너", children: [] },
+  { href: "/engineer", label: "기술 엔지니어", children: [] },
+  { href: "/solutions", label: "솔루션", children: solutionChildren },
+  { href: "/projects", label: "프로젝트", children: [] },
+  { href: "/contact", label: "상담", children: [] },
 ] as const satisfies readonly NavigationItem[]
 
-// 기업 고객의 탐색 흐름은 상단에 집중하고, 회사 소개는 푸터에서만 제공한다.
+// 인사이트와 AI는 1차 내비게이션에 두지 않는다.
 export const footerBusinessRoutes = [
   { href: "/blro", label: "BLRO" },
-  { href: "/solutions", label: "Solutions" },
-  { href: "/ai-automation", label: "AI & Automation" },
-  { href: "/projects", label: "Projects" },
+  { href: "/solutions", label: "솔루션" },
   { href: "/insights", label: "Insights" },
+  { href: "/ai-automation", label: "AI & Automation" },
   { href: "/partner-business", label: "Partner Business" },
 ] as const
 
@@ -62,6 +61,9 @@ export const footerPolicyLinks = [
 export const publishedRoutes: ReadonlySet<string> = new Set([
   "/",
   "/blro",
+  "/customer",
+  "/partner",
+  "/engineer",
   "/ai-automation",
   "/partner-business",
   "/projects",
@@ -70,12 +72,17 @@ export const publishedRoutes: ReadonlySet<string> = new Set([
   "/terms",
   "/insights",
   "/solutions",
+  "/solutions/hci",
+  "/solutions/hci-private-cloud",
   ...solutionChildren.map((item) => item.href),
 ])
 
 const routeLabels = new Map<string, string>([
   ["/", "Home"],
   ["/blro", "BLRO"],
+  ["/customer", "기업 고객"],
+  ["/partner", "국내 파트너"],
+  ["/engineer", "기술 엔지니어"],
   ["/ai-automation", "AI & Automation"],
   ["/partner-business", "Partner Business"],
   ["/projects", "Projects"],
@@ -84,7 +91,12 @@ const routeLabels = new Map<string, string>([
   ["/privacy", "개인정보 처리방침"],
   ["/terms", "이용안내"],
   ["/solutions", "Solutions"],
-  ...solutionChildren.map((item) => [item.href, item.label] as const),
+  ["/solutions/hci", "HCI"],
+  ["/solutions/hci-private-cloud", "HCI & Private Cloud"],
+  ["/solutions/vdi-digital-workspace", "VDI & Digital Workspace"],
+  ["/solutions/backup-disaster-recovery", "Backup & Disaster Recovery"],
+  ["/solutions/network-security", "Network Security"],
+  ["/solutions/sase-global-connectivity", "SASE & Global Connectivity"],
 ])
 
 const localePairs = [

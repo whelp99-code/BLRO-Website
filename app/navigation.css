@@ -12,7 +12,7 @@
 
 .blro-skip-link:focus {
   outline: 0;
-  box-shadow: 0 0 0 3px var(--color-focus);
+  box-shadow: 0 0 0 2px var(--color-focus);
   transform: translateY(0);
 }
 
@@ -57,7 +57,7 @@
 .blro-site-footer a:focus-visible,
 .blro-breadcrumb a:focus-visible,
 .blro-locale-switch:focus-visible {
-  outline: 3px solid var(--color-focus);
+  outline: 2px solid var(--color-focus);
   outline-offset: 3px;
 }
 
