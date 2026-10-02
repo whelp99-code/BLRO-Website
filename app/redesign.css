@@ -398,11 +398,9 @@
 }
 
 html.js-io [data-reveal] {
-  opacity: 0.65;
+  opacity: 1;
   transform: translateY(12px);
-  transition:
-    opacity var(--dur-mid) var(--ease-out),
-    transform var(--dur-mid) var(--ease-out);
+  transition: transform var(--dur-mid) var(--ease-out);
   transition-delay: calc(min(var(--stagger, 0), 3) * 70ms);
 }
 
@@ -411,12 +409,12 @@ html.js-io [data-reveal].is-in {
   transform: none;
 }
 
-html.js-io:not(.js-timeline) [data-step] {
-  opacity: 0.28;
+html.js-io:not(.js-timeline) .life-step circle {
+  opacity: 0.35;
   transition: opacity var(--dur-diagram) var(--ease-out);
 }
 
-html.js-io:not(.js-timeline) [data-step].is-in {
+html.js-io:not(.js-timeline) .life-step.is-in circle {
   opacity: 1;
 }
 

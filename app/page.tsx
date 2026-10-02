@@ -77,7 +77,7 @@ export default function Home() {
             <article className="rd-role partner" data-reveal data-stagger="1">
               <p className="rd-who">국내 파트너</p>
               <h3>협력 제안하기</h3>
-              <p>공동 영업, 공동 제안과 PoC, 구축·운영에서 누가 고객을 만나고 누가 기술 범위를 쓰는지가 먼저입니다. 파트너 프로그램 약관은 아직 공개 사실이 아닙니다.</p>
+              <p>공동 영업, 공동 제안과 PoC(개념 검증), 구축·운영에서 누가 고객을 만나고 누가 기술 범위를 쓰는지가 먼저입니다. 파트너 프로그램 약관은 아직 공개 사실이 아닙니다.</p>
               <Link className="rd-btn rd-btn-ghost" href="/partner">역할 표 보기</Link>
             </article>
             <article className="rd-role engineer" data-reveal data-stagger="2">

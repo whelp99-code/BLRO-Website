@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { TodoNote } from "@/components/redesign/todo-note"
 import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -80,7 +79,6 @@ export default function CustomerPage() {
             <h2>운영 지원</h2>
             <p>운영 지원은 장비를 넘긴 뒤 누가 보고, 무엇을 기록하고, 어디를 통해 기술 지원으로 올라가는지입니다. BLRO가 24시간 관제나 특정 응답 시간을 제공한다는 문장은 확인된 사실이 없어 쓰지 않습니다.</p>
             <p>인수 문서에 들어갈 최소 항목은 구성, 계정 권한의 주체, 백업과 복구의 담당, 알려진 예외입니다. 계정 비밀번호 원문은 웹 폼으로 받지 않습니다.</p>
-            <TodoNote>B02/B03 공급·수행 범위와 실운영 문의 담당은 오너 확인이 필요합니다.</TodoNote>
           </div>
           <div className="rd-slot" data-reveal id="consult">
             <strong>상담·견적</strong>

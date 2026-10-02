@@ -42,9 +42,9 @@ export const primaryNavigation = [
 export const footerBusinessRoutes = [
   { href: "/blro", label: "BLRO" },
   { href: "/solutions", label: "솔루션" },
-  { href: "/insights", label: "Insights" },
-  { href: "/ai-automation", label: "AI & Automation" },
-  { href: "/partner-business", label: "Partner Business" },
+  { href: "/insights", label: "인사이트" },
+  { href: "/ai-automation", label: "AI와 자동화" },
+  { href: "/partner-business", label: "파트너 사업" },
 ] as const
 
 export const footerInquiries = [

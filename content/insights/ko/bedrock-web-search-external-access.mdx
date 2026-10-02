@@ -48,7 +48,7 @@ Amazon Bedrock Web Search는 2026-08-04에 일반 공급입니다. OpenAI GPT �
 
 ### 인-AWS 검색과 실시간 외부 웹을 같은 승인으로 묶지 않습니다
 
-운영 문서는 Search가 인덱스와 지식 그래프에서 제목, URL, 조각을 돌려주고, Fetch가 캐시된 페이지를 읽는다고 적습니다. ExternalWebAccess가 있으면 두 작업 모두 외부 웹에 닿을 수 있습니다. 민감 입력이 있는 과제는 파라미터를 false로 두고, 실시간 시세나 방금 공개된 문서가 필요한 과제만 권한을 별도로 줍니다.
+운영 문서는 Search가 인덱스와 지식 그래프에서 제목, URL, 조각을 돌려주고, Fetch가 캐시된 페이지를 읽는다고 적습니다. 외부 웹 접근은 Search·Fetch 모두가 아니라 허용된 Fetch입니다. 민감 입력이 있는 과제는 파라미터를 false로 두고, 실시간 시세나 방금 공개된 문서가 필요한 과제만 권한을 별도로 줍니다. 출처: Amazon Bedrock User Guide, Identity and access management for Web Search.
 
 ### 파라미터 기본값과 관리형 정책을 한 줄로 읽지 않습니다
 

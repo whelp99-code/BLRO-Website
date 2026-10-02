@@ -11,7 +11,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:72-84"],
       "contentSha256": "ac9b786e361e0a21c8d0019b0c82b713e612115fdf5a701c9f0c709c1229ca01",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -25,7 +25,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:72-84"],
       "contentSha256": "9e519c2f3b65dd234453ed5e4523c3fbaa88fa61f25f8768b91b9708577383dd",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -39,7 +39,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:72-84"],
       "contentSha256": "c491871a6c8a48519874e32f6ede2301223a96588b7c97e9598d91560fe3c842",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -53,7 +53,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:33-42", "05_CONTENT_STRATEGY.md:72-84"],
       "contentSha256": "0ca2309c59bad8d3eb55fe6b5d4e2f307e82486ce1f717257e4c2574195aa608",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -67,7 +67,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:33-42", "05_CONTENT_STRATEGY.md:72-84"],
       "contentSha256": "83685a904d9b9182f33994e14587b899850e2cf5393e73b98a60fbec642ed9b3",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -81,7 +81,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
       "contentSha256": "b06c27d98d96c9251ccd82c831cb0c230e6cfae6a74931804e25ab32b5e485d0",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-12"
     },
     {
@@ -95,7 +95,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
       "contentSha256": "c440308027598bdf6f2ccf8c6889db3470a760208d6748bc402c2d7a79e4f1ae",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-12"
     },
     {
@@ -109,7 +109,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
       "contentSha256": "531f887a3f547ae89d9e82804864332942fac4b4f8779bdf4deccdfc36d0a925",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-12"
     },
     {
@@ -123,7 +123,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
       "contentSha256": "c6923d1d7f9a91a13b0e92e788b4dfbc6018c8e0ef8091ba248335bdc1c5f610",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-12"
     },
     {
@@ -137,7 +137,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["05_CONTENT_STRATEGY.md:133-148"],
       "contentSha256": "7f47fb309a9c7f915b3d2b4fe04f6bb94bae95d7dbda3ffcf5e74bb989949b4f",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-12"
     },
     {
@@ -151,7 +151,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:33-42", "05_CONTENT_STRATEGY.md:49-63"],
       "contentSha256": "d5b33a3d913a4a59980406dbea055be8f534f0edddf523a6a772710bd4736206",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -165,7 +165,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:49-63"],
       "contentSha256": "d19dff575208738fff7b422be69514d4d1ba58ac67f2bfa68eb1dae5c2d121e1",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -179,7 +179,7 @@
       "publicScopes": ["website:public:ko"],
       "evidenceRefs": ["01_BLUEPRINT.md:20-32", "05_CONTENT_STRATEGY.md:133-148"],
       "contentSha256": "34f9e0954060fd5fd22b9ed198eb00656c1db33e6e895027df63840015587c10",
-      "reviewAt": "2026-10-01",
+      "reviewAt": "2026-11-01",
       "expiresAt": "2027-07-14"
     },
     {
@@ -265,7 +265,7 @@
         "https://docs.aws.amazon.com/bedrock/latest/userguide/web-search.html",
         "https://docs.aws.amazon.com/bedrock/latest/userguide/security-web-search.html"
       ],
-      "contentSha256": "c345d82cbce97853bed140ab23facf2aea11186c053d0bb0c68d671dbaa931c5",
+      "contentSha256": "1637bd2fa63aa9d95ebf7fd35c09d4b9085309d8065ee080173b201699cfe07e",
       "reviewAt": "2026-11-22",
       "expiresAt": "2027-08-22"
     },
@@ -323,7 +323,7 @@
         "https://docs.cloud.google.com/backup-disaster-recovery/docs/cloud-console/backup-vault-create",
         "https://docs.cloud.google.com/resource-manager/docs/project-liens"
       ],
-      "contentSha256": "a2659e4685f3c3dcefc795b1d5774c6fe9c8f7a8ea020d95361eb5f7241c6080",
+      "contentSha256": "8c299946049be8713d0d4bb67bef72758523151138230298e33c7c907a410840",
       "reviewAt": "2026-11-22",
       "expiresAt": "2027-08-22"
     },
@@ -342,7 +342,7 @@
         "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPEndpoint.html",
         "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTelEnrichment.html"
       ],
-      "contentSha256": "03acc34a25745c2a1eff4070f32a95b2aa452f40cc503150112b3ced030ab38d",
+      "contentSha256": "91c1e164458aa85fe31267cead9d9763db270255ffca2126fc469be87709b887",
       "reviewAt": "2026-11-22",
       "expiresAt": "2027-08-22"
     }

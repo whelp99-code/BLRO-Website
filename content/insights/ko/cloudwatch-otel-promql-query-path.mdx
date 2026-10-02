@@ -34,7 +34,7 @@ Amazon CloudWatch는 2026-06-16에 OpenTelemetry 지표를 네이티브로 받�
 
 6월 16일 What's New는 OTLP로 보낸 지표를 PromQL로 질의하고, 상용 리전 중 중동 아랍에미리트, 바레인, 이스라엘 텔아비브를 뺀다고 적습니다. PromQL 문서는 OTLP 범위를 @resource, @instrumentation, @datapoint, @aws 접두사로 펼친다고 적습니다. 벤더 제공(vended) 지표를 PromQL로 보려면 계정과 리전에서 OTel enrichment를 켜야 하고, 그 전에 텔레메트리 리소스 태그를 켜야 한다고 적습니다. 원래 CloudWatch 지표는 그대로 남습니다.
 
-OTLP 엔드포인트 문서는 지표 URL이 monitoring 리전 엔드포인트의 /v1/metrics이며 HTTP만 지원한다고 적습니다. Grafana는 CloudWatch 플러그인이 아니라 Amazon Managed Service for Prometheus 플러그인을 https://monitoring.리전.amazonaws.com 에 두고 SigV4를 쓴다고 적습니다. 필요한 IAM은 cloudwatch:GetMetricData와 cloudwatch:ListMetrics입니다.
+OTLP 엔드포인트 문서는 지표 URL이 monitoring 리전 엔드포인트의 /v1/metrics이며 HTTP만 지원한다고 적습니다. Grafana는 CloudWatch 플러그인이 아니라 Amazon Managed Service for Prometheus 플러그인을 https://monitoring.리전.amazonaws.com 에 두고 SigV4를 쓴다고 적습니다. 그 SigV4의 Service는 monitoring입니다. 기본값 aps이면 HTTP 403이 납니다. 필요한 IAM은 cloudwatch:GetMetricData와 cloudwatch:ListMetrics입니다. 출처: Amazon CloudWatch User Guide, PromQL querying.
 
 ## 지금 결정할 것
 
@@ -52,7 +52,7 @@ OTLP 지표 엔드포인트에 보내면 앱 지표는 PromQL 대상이 됩니�
 
 ### Grafana 경로와 콘솔 경로를 섞지 않습니다
 
-PromQL 문서는 Grafana에서 AMP 플러그인을 CloudWatch 모니터링 엔드포인트에 두라고 적습니다. 플러그인 이름과 실제 백엔드가 다릅니다. 콘솔 Query Studio와 Grafana 워크스페이스 IAM을 한 구성으로 보지 않습니다. 워크스페이스 역할에 GetMetricData와 ListMetrics가 있는지 확인합니다.
+PromQL 문서는 Grafana에서 AMP 플러그인을 CloudWatch 모니터링 엔드포인트에 두라고 적습니다. 플러그인 이름과 실제 백엔드가 다릅니다. SigV4 Service는 monitoring으로 두고, 기본값 aps는 HTTP 403이 됩니다. 콘솔 Query Studio와 Grafana 워크스페이스 IAM을 한 구성으로 보지 않습니다. 워크스페이스 역할에 GetMetricData와 ListMetrics가 있는지 확인합니다.
 
 ### HTTP OTLP와 gRPC 수집을 같은 파이프로 두지 않습니다
 
@@ -68,7 +68,7 @@ PromQL 문서는 Grafana에서 AMP 플러그인을 CloudWatch 모니터링 엔�
 2. 수집기가 HTTP OTLP와 SigV4를 쓰는지 확인합니다.
 3. 대상 리전이 제외 목록에 있는지 확인합니다.
 4. 벤더 제공(vended) 지표를 PromQL로 볼지 정하고, 볼 경우 리소스 태그와 enrichment를 켭니다.
-5. Grafana 데이터 소스를 AMP 플러그인으로 모니터링 엔드포인트에 둡니다.
+5. Grafana 데이터 소스를 AMP 플러그인으로 모니터링 엔드포인트에 두고, SigV4 Service를 monitoring으로 설정합니다. 기본값 aps는 HTTP 403입니다.
 6. 질의 IAM에 GetMetricData와 ListMetrics가 있는지 확인합니다.
 7. 레이블 접두사 @resource와 기존 Prometheus 언더스코어 변환을 쿼리 표준에 적습니다.
 8. 기존 CloudWatch 경보와 PromQL 질의를 어느 쪽을 운영 기준으로 둘지 정합니다.

@@ -32,9 +32,9 @@ describe("navigation registry", () => {
     expect(footerBusinessRoutes.map((item) => item.label)).toEqual([
       "BLRO",
       "솔루션",
-      "Insights",
-      "AI & Automation",
-      "Partner Business",
+      "인사이트",
+      "AI와 자동화",
+      "파트너 사업",
     ])
   })
 

@@ -10,7 +10,7 @@ const PATHS = [
     situation: "가상화 비용과 운영 부담은 커지는데, 어떤 워크로드부터 옮기고 무엇을 남겨야 할지 판단이 필요합니다.",
     promise: (
       <>
-        업무 중요도, 허용 중단시간, 보안·규정 조건을 기준으로 <span className="blro-nowrap">설계·PoC·전환·안정화</span>의 통과 기준을 정리합니다.
+        업무 중요도, 허용 중단시간, 보안·규정 조건을 기준으로 <span className="blro-nowrap">설계·PoC(개념 검증)·전환·안정화</span>의 통과 기준을 정리합니다.
       </>
     ),
     action: "기술 프로젝트 상담",
@@ -19,7 +19,7 @@ const PATHS = [
   {
     id: "partner-path",
     label: "국내 파트너",
-    situation: "새 기술을 제안할 수는 있지만, 고객 환경을 진단하고 PoC와 구축까지 책임질 수행 체계가 필요합니다.",
+    situation: "새 기술을 제안할 수는 있지만, 고객 환경을 진단하고 PoC(개념 검증)와 구축까지 책임질 수행 체계가 필요합니다.",
     promise: "공동영업·기술검증·구축의 역할을 나누고, 파트너가 반복 실행할 수 있도록 기준 문서와 전환 절차를 남깁니다.",
     action: "파트너 공동사업",
     href: "/contact?type=partner-collaboration",

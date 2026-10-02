@@ -13,7 +13,7 @@ export const siteUrl = new URL(environment.NEXT_PUBLIC_SITE_URL)
 export const siteName = "BLRO"
 
 export const siteDescription =
-  "BLRO는 인프라·보안 전환을 앞둔 기업이 기술 비교를 실제 운영 판단으로 바꿀 수 있도록, 현황 진단부터 검증·전환·안정화까지 연결합니다."
+  "BLRO는 기업 IT의 도입, 전환, 구축, 운영, 기술 지원을 역할에 맞게 연결합니다."
 
 export function absoluteUrl(pathname = "/"): string {
   return new URL(pathname, siteUrl).toString()

@@ -33,6 +33,7 @@ export function InquiryForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
   const [hasStarted, setHasStarted] = useState(false)
   const topic = topicFromType(searchParams?.get("type") ?? null)
+  const product = searchParams?.get("product") === "hci" ? "hci" : undefined
   const analyticsCtaId = contactCtaId(searchParams?.get("type") ?? null)
   const ready = endpoint !== undefined && siteKey !== undefined
 
@@ -68,6 +69,7 @@ export function InquiryForm() {
         workEmail: value(formData, "workEmail"),
         ...(phone ? { phone } : {}),
         topic,
+        ...(product === undefined ? {} : { product }),
         ...(message ? { message } : {}),
         consent: { privacyVersion: PRIVACY_NOTICE_VERSION, marketing: false },
         attribution: { ctaId: analyticsCtaId, landingPath: window.location.pathname, utm: {} },

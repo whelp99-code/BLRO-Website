@@ -21,7 +21,7 @@ type SolutionBodySection = {
 const processSteps = [
   "현황과 운영 조건 분석",
   "판단 기준과 검증 범위 정의",
-  "아키텍처·PoC 설계",
+  "아키텍처·PoC(개념 검증) 설계",
   "전환과 운영 인수 기준 정리",
 ] as const
 

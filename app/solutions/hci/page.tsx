@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { TodoNote } from "@/components/redesign/todo-note"
 import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -38,9 +37,8 @@ export default function HciPage() {
               <a href="https://www.sangfor.com/cloud-and-infrastructure/products/hci-hyper-converged-infrastructure">
                 sangfor.com HCI
               </a>
-              . 확인일: 2026-09-30 시도, Cloudflare에 차단되어 본문 사양을 재수집하지 못했습니다.
+              . 확인일: 2026-09-30 시도, Cloudflare에 차단되어 본문 사양을 재수집하지 못했습니다. 노드 수, 성능, 라이선스, 지원 하이퍼바이저는 그 확인 전에는 적지 않습니다.
             </p>
-            <TodoNote>노드 수, 성능, 라이선스, 지원 하이퍼바이저는 공식 페이지를 다시 열기 전에는 적지 않습니다.</TodoNote>
           </div>
           <figure className="rd-panel">
             <figcaption className="rd-kicker">검토용 분해도 · HCI 구성</figcaption>
@@ -85,7 +83,6 @@ export default function HciPage() {
             <p>상담 전에 준비하면 좋은 것은 현재 클러스터 또는 서버 대수(대략), 주요 업무 시스템 이름, 가상화 제품명, 백업이 있는지, 중단 가능 창구입니다. 모델명이 없어도 상담은 열립니다. 잘못된 제품 ID를 견적 조건으로 저장하지 않습니다.</p>
             <h2>실재 자료</h2>
             <p>이 페이지에는 다운로드 파일이 없습니다. 승인된 한국어 자료가 연결되기 전에는 등록된 공개 파일 없음이 정직한 상태입니다.</p>
-            <TodoNote>로컬 사용성 기록의 한국어 자료 3건은 과거 검증입니다. 파일명과 현재 빌드의 일치는 재확인하지 않았습니다.</TodoNote>
           </div>
           <div>
             <div className="rd-slot" data-reveal>
@@ -95,7 +92,7 @@ export default function HciPage() {
             <div className="rd-slot" data-reveal id="talk">
               <strong>상담에 같이 보낼 것</strong>
               <p>관심 제품은 HCI입니다. 고객은 상황과 현재 환경을, 엔지니어는 버전과 증상을, 파트너는 이미 합의된 범위를 적습니다.</p>
-              <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer">도입·운영 상담하기</Link>
+              <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer&product=hci">도입·운영 상담하기</Link>
               <p className="rd-caption">같은 골격의 나머지 제품 상세는 이번 미리보기 범위가 아닙니다. 문장을 복제하지 않습니다.</p>
             </div>
           </div>

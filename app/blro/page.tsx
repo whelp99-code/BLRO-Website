@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { TodoNote } from "@/components/redesign/todo-note"
 import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 
 const DOES = [
   ["01", "운영 조건을 설계 입력으로 바꿉니다.", "도입 목표만으로는 전환 범위를 정할 수 없습니다. 지켜야 할 업무와 바꿀 수 있는 조건을 먼저 구분합니다."],
-  ["02", "검증의 통과 기준을 먼저 합의합니다.", "PoC는 제품 시연이 아니라 다음 단계로 넘어갈 수 있는지를 확인하는 과정입니다. 성공 조건과 롤백 조건을 문서에 남깁니다."],
+  ["02", "검증의 통과 기준을 먼저 합의합니다.", "PoC(개념 검증)는 제품 시연이 아니라 다음 단계로 넘어갈 수 있는지를 확인하는 과정입니다. 성공 조건과 롤백 조건을 문서에 남깁니다."],
   ["03", "합의한 공급과 전환 검증을 한 경로로 맡깁니다.", "단순 공급은 공급으로 남기고, 제약이 있을 때만 전환 단계를 붙입니다."],
 ] as const
 
@@ -57,7 +56,6 @@ export default function BlroPage() {
               <li key={item}>{item}</li>
             ))}
           </ul>
-          <TodoNote>인증과 고객 섹션은 오너가 사실을 승인하기 전에는 열지 않습니다. 소재지도 이 저장소 본문과 다르면 적지 않습니다.</TodoNote>
           <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer">도입·운영 상담하기</Link>
         </div>
       </section>

@@ -53,6 +53,16 @@ describe("lead gateway intake boundary", () => {
     expect(outdatedConsent.status).toBe(400)
   })
 
+  it("accepts an HCI product flag on the inquiry and rejects an unknown product", async () => {
+    const withProduct = await handleRequest(request({ ...validInquiry, product: "hci" }), environment)
+    const unknownProduct = await handleRequest(request({ ...validInquiry, product: "other" }), environment)
+
+    expect(withProduct.status).toBe(503)
+    expect(await withProduct.json()).toEqual({ error: "intake_not_enabled" })
+    expect(unknownProduct.status).toBe(400)
+    expect(await unknownProduct.json()).toEqual({ error: "invalid_inquiry" })
+  })
+
   it("accepts an allowlisted analytics event without enabling PII intake", async () => {
     const run = vi.fn().mockResolvedValue({ meta: { changes: 1 } })
     const first = vi.fn().mockResolvedValue(null)

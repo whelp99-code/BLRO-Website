@@ -199,6 +199,7 @@ function leadMessage(leadId: string, payload: Record<string, unknown>): Record<s
     `접수 ID: ${leadId}`,
     `유형: ${leadType}`,
     `주제: ${String(payload["topic"] ?? "general")}`,
+    ...(typeof payload["product"] === "string" ? [`제품: ${payload["product"]}`] : []),
     `랜딩: ${String(attribution["landingPath"] ?? "미상")}`,
     `CTA: ${String(attribution["ctaId"] ?? "미상")}`,
     "상세 개인정보와 문의 본문은 Slack으로 전송하지 않음",
@@ -410,6 +411,7 @@ export async function handleRequest(request: Request, env: LeadGatewayEnvironmen
     ...(inquiry.phone === undefined ? {} : { phone: inquiry.phone }),
     ...(inquiry.message === undefined ? {} : { message: inquiry.message }),
     topic: inquiry.topic,
+    ...(inquiry.product === undefined ? {} : { product: inquiry.product }),
     attribution: inquiry.attribution,
   }, bindings.PII_ENCRYPTION_KEY, "v1")
   const inserted = await bindings.DB.prepare(

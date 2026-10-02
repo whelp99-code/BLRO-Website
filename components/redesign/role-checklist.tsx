@@ -55,6 +55,7 @@ function selectedRole(type: string | null, role: string | null): RoleId {
 export function RoleChecklist() {
   const params = useSearchParams()
   const role = selectedRole(params?.get("type") ?? null, params?.get("role") ?? null)
+  const product = params?.get("product") === "hci" ? "hci" : undefined
   const active = ROLES.find((item) => item.id === role)
   const items = active ? active.items : VENDOR_ITEMS
   const label = active ? active.label : "한국 시장 실행"
@@ -63,7 +64,7 @@ export function RoleChecklist() {
     <div className="rd-role-panel">
       <div aria-label="상담 역할" className="rd-role-switch" role="group">
         {ROLES.map((item) => (
-          <Link aria-current={role === item.id ? "page" : undefined} href={item.href} key={item.id} scroll={false}>
+          <Link aria-current={role === item.id ? "page" : undefined} href={product === undefined ? item.href : `${item.href}&product=${product}`} key={item.id} scroll={false}>
             {item.label}
           </Link>
         ))}

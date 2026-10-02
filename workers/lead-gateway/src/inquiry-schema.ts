@@ -9,6 +9,7 @@ const inquirySchema = z.object({
   workEmail: z.string().trim().email().max(254),
   phone: z.string().trim().min(7).max(30).optional(),
   topic: z.enum(inquiryTopics),
+  product: z.enum(["hci"]).optional(),
   message: z.string().trim().min(1).max(2000).optional(),
   consent: z.object({ privacyVersion: z.literal(PRIVACY_NOTICE_VERSION), marketing: z.literal(false) }),
   attribution: z.object({
