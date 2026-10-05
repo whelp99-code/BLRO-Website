@@ -47,20 +47,20 @@ export default function Home() {
             </p>
             <p>그림은 회사가 수행하는 일의 순서입니다. 방문자의 다음 행동을 대신하지 않습니다. 고객 수, 응답 시간, 절감률은 확인된 공개 사실이 없어 적지 않습니다.</p>
           </div>
-          <div className="rd-hero-aside">
-            <LifecycleFigure />
-            <ol className="rd-steps">
-              {LIFE_STEPS.map(([name, detail], index) => (
-                <li className="rd-step" data-reveal data-stagger={String(Math.min(index, 3))} key={name}>
-                  <span className="rd-idx">{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <p className="rd-step-name">{name}</p>
-                    <p>{detail}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <LifecycleFigure />
+        </div>
+        <div className="rd-wrap">
+          <ol aria-label="수행하는 단계" className="rd-steps home-steps">
+            {LIFE_STEPS.map(([name, detail], index) => (
+              <li className="rd-step" data-reveal data-stagger={String(Math.min(index, 3))} key={name}>
+                <span className="rd-idx">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <p className="rd-step-name">{name}</p>
+                  <p>{detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 

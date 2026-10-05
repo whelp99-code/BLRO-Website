@@ -354,22 +354,19 @@
   scroll-margin-top: 5.5rem;
 }
 
-.rd-hero-aside {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-  min-width: 0;
+.home-steps {
+  margin-top: 2.5rem;
 }
 
-.rd-hero-aside .rd-steps {
-  width: 100%;
-  margin-top: 0;
-}
-
-.rd-hero-aside .rd-step,
-.rd-hero-aside .rd-panel {
-  width: 100%;
+.home-steps .rd-step {
   max-width: none;
+  height: 100%;
+}
+
+@media (min-width: 720px) {
+  .home-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 900px) {
@@ -380,11 +377,18 @@
   }
 
   .home-hero .rd-hero-grid {
-    align-items: start;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
   }
 
   .rd-roles {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .home-steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 
