@@ -45,22 +45,22 @@ export default function Home() {
             <p>
               BLRO는 제품 이름만 나열하는 카탈로그가 아닙니다. 기업 고객은 지금 상황부터, 국내 파트너는 누가 무엇을 맡는지부터, 기술 엔지니어는 설치·장애·호환 자료부터 들어옵니다. 세 경험은 한 상담 페이지로 합치지 않습니다.
             </p>
-            <p>오른쪽 그림은 회사가 수행하는 일의 순서입니다. 좁은 화면에서는 글 바로 아래에 있습니다. 방문자의 다음 행동을 대신하지 않습니다. 고객 수, 응답 시간, 절감률은 확인된 공개 사실이 없어 적지 않습니다.</p>
+            <p>그림은 회사가 수행하는 일의 순서입니다. 방문자의 다음 행동을 대신하지 않습니다. 고객 수, 응답 시간, 절감률은 확인된 공개 사실이 없어 적지 않습니다.</p>
           </div>
-          <LifecycleFigure />
-        </div>
-        <div className="rd-wrap">
-          <ol className="rd-steps">
-            {LIFE_STEPS.map(([name, detail], index) => (
-              <li className="rd-step" data-reveal data-stagger={String(Math.min(index, 3))} key={name}>
-                <span className="rd-idx">{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <p className="rd-step-name">{name}</p>
-                  <p>{detail}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <div className="rd-hero-aside">
+            <LifecycleFigure />
+            <ol className="rd-steps">
+              {LIFE_STEPS.map(([name, detail], index) => (
+                <li className="rd-step" data-reveal data-stagger={String(Math.min(index, 3))} key={name}>
+                  <span className="rd-idx">{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <p className="rd-step-name">{name}</p>
+                    <p>{detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 
@@ -112,7 +112,6 @@ export default function Home() {
                 통로 스케치
               </text>
             </svg>
-            <p className="rd-caption">그린 SVG입니다. 사진이 아니고, 실제 사례가 아닙니다.</p>
           </figure>
           <div data-reveal>
             <h2 id="hci-door-heading">그림은 일을 설명해야 합니다.</h2>

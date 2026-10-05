@@ -32,6 +32,10 @@ export default function HciPage() {
             <p className="rd-kicker">제품 상세</p>
             <h1 className="blro-heading blro-heading--h1">Sangfor HCI</h1>
             <p className="rd-lead">업무 시스템을 실행하는 통합 인프라를 검토할 때 여는 페이지입니다. 제조사 사양을 BLRO의 공급·수행 약속으로 바꾸지 않습니다.</p>
+            <p className="rd-actions">
+              <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer&product=hci">도입·운영 상담하기</Link>
+              <a className="rd-btn rd-btn-ghost" href="#talk">상담에 보낼 내용</a>
+            </p>
             <p>
               공식 URL:{" "}
               <a href="https://www.sangfor.com/cloud-and-infrastructure/products/hci-hyper-converged-infrastructure">
@@ -50,7 +54,7 @@ export default function HciPage() {
                 </li>
               ))}
             </ol>
-            <p className="rd-caption">검토용 분해도입니다. 노드 수, 성능, 라이선스는 적지 않습니다. 제조사 도면의 복제가 아닙니다. 모션을 줄이면 네 층이 처음부터 보입니다.</p>
+            <p className="rd-caption">검토용 분해도입니다. 노드 수, 성능, 라이선스는 적지 않습니다.</p>
           </figure>
         </div>
       </section>
@@ -85,15 +89,10 @@ export default function HciPage() {
             <p>이 페이지에는 다운로드 파일이 없습니다. 승인된 한국어 자료가 연결되기 전에는 등록된 공개 파일 없음이 정직한 상태입니다.</p>
           </div>
           <div>
-            <div className="rd-slot" data-reveal>
-              <strong>제조사 공식 이미지 사용 허가 필요</strong>
-              <p>저장소에서 라이선스가 확인된 제품 사진을 찾지 않았습니다. 임의 제품 사진을 넣지 않습니다.</p>
-            </div>
-            <div className="rd-slot" data-reveal id="talk">
+            <div className="rd-panel" data-reveal id="talk">
               <strong>상담에 같이 보낼 것</strong>
               <p>관심 제품은 HCI입니다. 고객은 상황과 현재 환경을, 엔지니어는 버전과 증상을, 파트너는 이미 합의된 범위를 적습니다.</p>
               <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer&product=hci">도입·운영 상담하기</Link>
-              <p className="rd-caption">같은 골격의 나머지 제품 상세는 이번 미리보기 범위가 아닙니다. 문장을 복제하지 않습니다.</p>
             </div>
           </div>
         </div>

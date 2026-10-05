@@ -62,7 +62,7 @@ export default function PartnerPage() {
                 ))}
               </tbody>
             </table>
-            <p className="rd-caption">표의 칸은 초안이며 계약이 아닙니다. 좁은 화면에서도 왼쪽 단계 설명이 표와 함께 읽힙니다.</p>
+            <p className="rd-caption">표의 칸은 초안이며 계약이 아닙니다.</p>
             <Link className="rd-btn rd-btn-primary" href="/contact?type=partner-collaboration&role=partner">협력 제안하기</Link>
           </figure>
         </div>

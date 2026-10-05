@@ -34,6 +34,9 @@ export default function ContactPage() {
             <Text variant="lead">
               기업 고객, 국내 파트너, 기술 엔지니어는 확인 목록이 다릅니다. 목록만 바뀌고, 칸의 높이를 애니메이션으로 밀지 않습니다.
             </Text>
+            <p className="rd-actions">
+              <a className="rd-btn rd-btn-primary" href="#inquiry-form">상담 요청 작성</a>
+            </p>
             <Suspense fallback={<div className="rd-role-panel" aria-hidden="true" />}>
               <RoleChecklist />
             </Suspense>
@@ -67,7 +70,7 @@ export default function ContactPage() {
         </Container>
       </Section>
 
-      <Section aria-labelledby="contact-status-heading" spacing="default" tone="alternate">
+      <Section aria-labelledby="contact-status-heading" id="inquiry-form" spacing="default" tone="alternate">
         <Container className="contact-page__status">
           <Eyebrow>상담 접수</Eyebrow>
           <Heading id="contact-status-heading" level={2}>전환 진단 범위를 확인하세요.</Heading>

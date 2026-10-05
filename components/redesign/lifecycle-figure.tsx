@@ -31,9 +31,6 @@ export function LifecycleFigure() {
           </g>
         ))}
       </svg>
-      <p className="rd-caption">
-        스크롤하면 진행선이 단계를 따라 그려집니다. 모션을 줄이거나 스크립트가 없으면 다섯 단계가 처음부터 보입니다. 실제 사례가 아닙니다.
-      </p>
     </figure>
   )
 }
