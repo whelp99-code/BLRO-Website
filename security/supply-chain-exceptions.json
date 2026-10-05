@@ -1,49 +1,22 @@
 {
   "exceptions": [
     {
-      "package": "deslop-js@0.7.6",
-      "setting": "minimumReleaseAgeExclude",
-      "reason": "React Doctor pins this newly published development-only analyzer dependency.",
-      "owner": "BLRO Website Maintainer",
-      "introducedDate": "2026-07-12",
-      "reviewDate": "2026-09-19",
-      "removalCondition": "Remove after the pinned release is older than the minimum release age or React Doctor no longer requires it."
-    },
-    {
-      "package": "oxlint-plugin-react-doctor@0.7.6",
-      "setting": "minimumReleaseAgeExclude",
-      "reason": "React Doctor pins this newly published development-only lint plugin.",
-      "owner": "BLRO Website Maintainer",
-      "introducedDate": "2026-07-12",
-      "reviewDate": "2026-09-19",
-      "removalCondition": "Remove after the pinned release is older than the minimum release age or React Doctor no longer requires it."
-    },
-    {
-      "package": "react-doctor@0.7.6",
-      "setting": "minimumReleaseAgeExclude",
-      "reason": "The approved PR-00 React quality gate requires this exact development-only release.",
-      "owner": "BLRO Website Maintainer",
-      "introducedDate": "2026-07-12",
-      "reviewDate": "2026-09-19",
-      "removalCondition": "Remove when the pinned release is older than the minimum release age or a reviewed replacement is adopted."
-    },
-    {
       "package": "eslint-import-resolver-typescript",
       "setting": "trustPolicyExclude",
-      "reason": "The pinned official eslint-config-next dependency graph selects a release without provenance attestation.",
+      "reason": "Reviewed 2026-10-05. eslint-config-next@16.2.11 still installs eslint-import-resolver-typescript@3.10.1 (published 2025-04-21). That version has no npm provenance attestation (registry attestations 404). Latest 4.4.5 (published 2026-06-01) does have SLSA provenance, but this lockfile does not select it. pnpm trustPolicy no-downgrade rejects 3.10.1 as a high-risk trust downgrade. npm advisory bulk lookup returned no advisories for 3.10.1. The package is still required by eslint-config-next.",
       "owner": "BLRO Website Maintainer",
       "introducedDate": "2026-07-12",
-      "reviewDate": "2026-09-19",
-      "removalCondition": "Remove when eslint-config-next resolves a trusted release with provenance that passes no-downgrade verification."
+      "reviewDate": "2026-12-05",
+      "removalCondition": "Remove when eslint-config-next resolves a release with provenance, such as 4.4.5 or newer, and pnpm install --frozen-lockfile passes with trustPolicy no-downgrade and this exclude removed."
     },
     {
       "package": "semver",
       "setting": "trustPolicyExclude",
-      "reason": "The pinned official eslint-config-next dependency graph includes older semver releases without provenance attestation.",
+      "reason": "Reviewed 2026-10-05. semver@7.8.5 (published 2026-06-19) has npm provenance and was not flagged. semver@6.3.1 (published 2023-07-10) has no provenance attestation and is still pulled by @babel/core@7.29.7, eslint-plugin-import@2.32.0, and eslint-plugin-react@7.37.5. pnpm trustPolicy no-downgrade rejects only semver@6.3.1 as a high-risk trust downgrade. npm advisory bulk lookup returned no advisories for 6.3.1 or 7.8.5. The exclude is package-wide because pnpm trustPolicyExclude does not take a version.",
       "owner": "BLRO Website Maintainer",
       "introducedDate": "2026-07-12",
-      "reviewDate": "2026-09-19",
-      "removalCondition": "Remove when upstream dependencies stop selecting non-provenance semver releases and no-downgrade passes without it."
+      "reviewDate": "2026-12-05",
+      "removalCondition": "Remove when the lockfile no longer contains semver@6.3.1, or when that release gains provenance, and pnpm install --frozen-lockfile passes with trustPolicy no-downgrade and this exclude removed."
     }
   ]
 }
