@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BLRO 개편안 — 모션</title>
+<style>
+  :root { --ink:#102033; --soft:#3d4d63; --paper:#f4f1ea; --card:#fffcf7; --line:#d7d0c4; --signal:#1f7a4d; --action:#1d4ed8; }
+  body { margin:0; background:var(--paper); color:var(--ink); font: 17px/1.55 Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+  main { width:min(920px, calc(100% - 32px)); margin:0 auto; padding:48px 0 80px; }
+  h1 { font-size:clamp(32px, 5vw, 48px); letter-spacing:-0.03em; line-height:1.15; }
+  h2 { margin-top:48px; font-size:28px; letter-spacing:-0.02em; }
+  h3 { font-size:18px; }
+  p, li { color:var(--soft); }
+  strong { color:var(--ink); }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { border-top:1px solid var(--line); text-align:left; vertical-align:top; padding:8px 6px; }
+  figure { margin:16px 0 28px; }
+  img { width:100%; height:auto; border-radius:12px; background:#fff; }
+  figcaption { font-size:13px; color:var(--soft); margin-top:6px; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:700px) { .pair { grid-template-columns:1fr; } }
+  code { font-size:13px; }
+  a { color:var(--action); }
+</style>
+</head>
+<body>
+<main>
+  <p>2026-09-30 · 제안서 · 배포하지 않음</p>
+  <h1>BLRO 사이트 개편안. 모션은 경로를 진행시키는 데만 쓴다.</h1>
+  <p>참고는 cloudflare.com의 마케팅 모션과, 공개 사이트 <a href="https://blro.co.kr">blro.co.kr</a>, 로컬 2.1.0 미리보기이다. 이 서버에 Cloudflare라는 이름의 BLRO 프로젝트는 없었다. 자산과 코드는 복사하지 않았다. <code>publishingEnabled</code>, DNS, TLS, 미리보기 서비스는 그대로다.</p>
+
+  <h2>1. 지금 두 사이트가 다르다</h2>
+  <table>
+    <tr><th></th><th>공개 blro.co.kr</th><th>로컬 2.1.0</th></tr>
+    <tr><td>한 줄</td><td>전환을 운영 판단으로</td><td>제품 공급·구축</td></tr>
+    <tr><td>스택</td><td>Next.js, Cloudflare 앞단</td><td>자체 Node 정적 빌드</td></tr>
+    <tr><td>모션</td><td>측정 시점 애니메이션 0</td><td>홈 애니메이션 4, 스크롤 스토리 없음</td></tr>
+    <tr><td>구조</td><td>Solutions, Insights, Projects, Partner</td><td>고객 / 파트너 / 엔지니어, 솔루션 21</td></tr>
+  </table>
+  <div class="pair">
+    <figure><img src="captures/live/home-1440.png" alt="공개 홈 데스크톱" /><figcaption>공개 홈 1440. 문장은 분명하고 진단 카드가 우측이다. 모션은 없다.</figcaption></figure>
+    <figure><img src="captures/local/home-1440.png" alt="로컬 홈 데스크톱" /><figcaption>로컬 홈 1440. 단말-보안-VDI-HCI 경로가 있다. 문장은 공급·구축이다.</figcaption></figure>
+  </div>
+  <div class="pair">
+    <figure><img src="captures/live/home-390.png" alt="공개 홈 모바일" /><figcaption>공개 홈 390. 제목이 화면을 채우고 진단 카드는 아래로 밀린다.</figcaption></figure>
+    <figure><img src="captures/local/home-390.png" alt="로컬 홈 모바일" /><figcaption>로컬 홈 390. 경로 그림이 제목 아래에서 잘린다.</figcaption></figure>
+  </div>
+  <p>같은 폭으로 찍은 나머지 주요 화면은 <code>captures/live/</code>, <code>captures/local/</code>에 있다. solutions, HCI, VDI, 보안 또는 고객, 회사, 문의. 뷰포트 첫 화면이다. 공개 홈 전체 높이는 약 10449px이다.</p>
+  <p><strong>유지:</strong> 진단 CTA 하나, 고객명을 꾸미지 않는 Projects, 역할 3개 계약. <strong>약함:</strong> 정본 문장이 둘, 홈이 같은 무게의 카드를 반복, 경로 그림이 정지, 솔루션에서 다음에 보낼 정보가 약함.</p>
+
+  <h2>2. Cloudflare에서 본 모션</h2>
+  <div class="pair">
+    <figure><img src="captures/cloudflare/home-s0.png" alt="Cloudflare 홈" /><figcaption>홈 히어로. 큰 색면과 한 문장. 모션의 본체는 아래다.</figcaption></figure>
+    <figure><img src="captures/cloudflare/home-s38.png" alt="Cloudflare 대비 패널" /><figcaption>문제 패널과 해답 패널. 파형과 상태 점멸이 루프다.</figcaption></figure>
+  </div>
+  <figure><img src="captures/cloudflare/zt-s18.png" alt="Cloudflare One 수치" /><figcaption>Zero Trust. 수치는 사례에 붙는다. 문제/해답 분할.</figcaption></figure>
+  <ul>
+    <li>홈 <code>getAnimations()</code> 약 230. <code>canvas-fade-in</code> 1s, <code>waveform-scroll</code> 20s linear, <code>marquee</code> 8s, <code>infinite-scroll</code> 40–80s, <code>float</code> 5s translateY 0/−8px.</li>
+    <li>스크롤은 주장을 단계로 자른다. 스티키 CTA는 작아진 버튼 하나.</li>
+    <li>호버는 컨트롤만. 감소 모션에서 shimmer를 끈다.</li>
+  </ul>
+  <p>가져올 것: 한 장면 한 주장, 스크롤이 설명을 진행, 감소 모션. 주황, 지구본, 마키, 80초 루프, 에이전트 문장은 가져오지 않는다.</p>
+
+  <h2>3. 개편</h2>
+  <p><strong>목표.</strong> 첫 화면에서 공급과 검증이 한 경로임을 말하고, 스크롤이 HCI·VDI·보안의 순서를 보여 준 뒤 역할별 문의로 보낸다.</p>
+  <p><strong>권고 문장.</strong> 제품 공급과 전환 검증을 한 경로로 맡깁니다. 공개 사이트의 진단과 2.1.0의 공급을 둘 다 지우지 않는다.</p>
+  <h3>IA</h3>
+  <p>홈 → 솔루션(HCI, VDI, 네트워크·보안, 백업·DR, SASE) → Projects → 회사 → 문의. 고객/파트너/엔지니어 경로는 2.1.0 계약대로 유지. Insights와 AI는 1차 내비에서 내리고 솔루션·자료로 보낸다. 벤더 한국 진출은 오너 확인 전 홈에 두지 않는다.</p>
+  <h3>페이지</h3>
+  <ul>
+    <li>홈: 문장, 진단 CTA, 경로 계기, 4단 스크롤(범위, 경로, 검증, 인수), 역할 3, 솔루션 3.</li>
+    <li>솔루션: 같은 그림에서 해당 노드만 점등. 검토 질문, 통과 기준, 하지 않는 약속, 보낼 정보.</li>
+    <li>Projects: 고객명 없는 판단 과정 유지. 번호만 진입.</li>
+    <li>회사: 하는 일 / 하지 않는 일. 허락 없는 로고 자리는 만들지 않는다.</li>
+    <li>문의: 역할 선택 시 준비 목록만 교체. 높이 애니메이션 없음.</li>
+  </ul>
+  <h3>모션 시스템</h3>
+  <table>
+    <tr><th>토큰</th><th>값</th></tr>
+    <tr><td>진입</td><td>420ms, cubic-bezier(0.22, 1, 0.36, 1), opacity + translateY 12px</td></tr>
+    <tr><td>호버</td><td>180ms, 버튼·링크만</td></tr>
+    <tr><td>경로</td><td>animation-timeline: view(), stroke-dashoffset</td></tr>
+    <tr><td>스태거</td><td>70ms, 최대 4</td></tr>
+    <tr><td>예산</td><td>무한 루프 0. 폴백은 IntersectionObserver</td></tr>
+    <tr><td>감소 모션</td><td>경로 완성, 펄스 없음</td></tr>
+    <tr><td>모바일</td><td>스티키 해제, 핀 섹션 없음</td></tr>
+  </table>
+  <p>CSS scroll-driven이 1순위다. 워크스페이스에 GSAP이 없고 라이선스와 번들을 피할 수 있다. Motion One은 문의 역할 전환처럼 CSS로 부족한 곳만. ScrollTrigger 핀은 지금 필요 없다.</p>
+  <h3>시각</h3>
+  <p>종이 <code>#f4f1ea</code>, 잉크 <code>#102033</code>, 검증 그린 <code>#1f7a4d</code>, 액션 파랑 <code>#1d4ed8</code> 하나. Pretendard, 좌측 정렬, 데스크톱 제목 68px 상한. 사이드 컬러 보더 없음. 토큰은 <a href="DESIGN.md">DESIGN.md</a>.</p>
+  <h3>기술과 일정</h3>
+  <p>공개 정본은 Next + Cloudflare로 보인다. 로컬 <code>functions/</code>를 공개 배포 대상으로 확인하지 못했다. 모션은 오너가 고른 정본에만 넣는다. 권고는 공개 Next에 경로 그림과 역할 계약을 합치는 것이다.</p>
+  <table>
+    <tr><th>단계</th><th>내용</th><th>공수</th></tr>
+    <tr><td>0</td><td>정본 문장, Insights·벤더 내비</td><td>0.5일</td></tr>
+    <tr><td>1</td><td>홈과 모션 시스템</td><td>4–6일</td></tr>
+    <tr><td>2</td><td>HCI, VDI, 보안</td><td>4일</td></tr>
+    <tr><td>3</td><td>Projects, 회사, 문의</td><td>3일</td></tr>
+    <tr><td>4</td><td>역할 3경로를 공개 IA에 연결</td><td>5–8일</td></tr>
+    <tr><td>5</td><td>감소 모션, 키보드, 실기기</td><td>2일</td></tr>
+  </table>
+  <p>위험: 두 저장소를 동시에 고치면 정본이 다시 갈라진다. 없는 고객 수치를 카운터로 채우면 신뢰가 깨진다. 핀 섹션은 모바일 스크롤을 가둔다.</p>
+
+  <h2>4. 시안</h2>
+  <p><a href="prototype/index.html">prototype/index.html</a>. 히어로와 스크롤 스토리. 감소 모션이면 경로가 완성 상태다.</p>
+  <div class="pair">
+    <figure><img src="captures/proto/desk-s0.png" alt="시안 히어로" /><figcaption>데스크톱 히어로.</figcaption></figure>
+    <figure><img src="captures/proto/desk-s38.png" alt="시안 스크롤" /><figcaption>스크롤 중 단계 02–03. 다이어그램은 스티키.</figcaption></figure>
+  </div>
+  <div class="pair">
+    <figure><img src="captures/proto/m0.png" alt="시안 모바일" /><figcaption>390 히어로. 그림은 문장 아래.</figcaption></figure>
+    <figure><img src="captures/proto/m80.png" alt="시안 모바일 하단" /><figcaption>390 스토리. 스티키를 풀었다.</figcaption></figure>
+  </div>
+
+  <h2>5. 물어볼 것</h2>
+  <ol>
+    <li>정본 문장은 진단인가, 공급·구축인가, 한 문장으로 합칠 것인가.</li>
+    <li>Insights와 글로벌 벤더 한국 진출을 1차 내비에 남길 것인가.</li>
+    <li>Projects를 늘릴 공개 가능한 판단 기록이 있는가. 고객명과 수치는 여전히 빼 둔다.</li>
+    <li>구현은 공개 Next인가, 2.1.0인가. 이 문서는 구현하지 않았다.</li>
+  </ol>
+  <p>같은 내용의 마크다운: <a href="BLRO-REDESIGN-PROPOSAL-KO.md">BLRO-REDESIGN-PROPOSAL-KO.md</a></p>
+</main>
+</body>
+</html>

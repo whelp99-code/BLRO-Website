@@ -8,9 +8,9 @@ const VIEWPORTS = [
 ] as const
 
 const HOME_ACTIONS = [
-  ["전환 진단 범위 확인", "/contact?type=customer-project"],
-  ["파트너 공동사업을 검토 중이신가요?", "/contact?type=partner-collaboration"],
-  ["한국 시장 진출을 준비 중이신가요?", "/contact?type=vendor-korea-entry"],
+  ["도입·운영 상담하기", "/contact?type=customer-project&role=customer"],
+  ["협력 제안하기", "/contact?type=partner-collaboration&role=partner"],
+  ["기술 자료 찾기", "/engineer"],
 ] as const
 
 for (const viewport of VIEWPORTS) {
@@ -30,8 +30,8 @@ for (const viewport of VIEWPORTS) {
         name: HOME_HEADING,
       }),
     ).toBeVisible()
-    await expect(page.getByRole("heading", { level: 2, name: "고객이 먼저 확인해야 할 네 가지" })).toBeVisible()
-    await expect(page.getByRole("heading", { level: 2, name: "결정이 필요한 지점에서 시작합니다" })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "역할을 고릅니다." })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: "그림은 일을 설명해야 합니다." })).toBeVisible()
 
     const homeActions = page.locator(".home-hero")
     for (const [label, href] of HOME_ACTIONS) {
@@ -41,19 +41,8 @@ for (const viewport of VIEWPORTS) {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
     expect(overflow).toBeLessThanOrEqual(0)
 
-    const outputLabelBox = await page.locator(".home-diagnostic-output__route .blro-signal-field__label--output").boundingBox()
-    const nextStepLabelBox = await page.locator(".home-diagnostic-output__route-labels span").last().boundingBox()
-    expect(outputLabelBox).not.toBeNull()
-    expect(nextStepLabelBox).not.toBeNull()
-    if (outputLabelBox && nextStepLabelBox) {
-      const labelsIntersect = !(
-        outputLabelBox.y + outputLabelBox.height <= nextStepLabelBox.y ||
-        nextStepLabelBox.y + nextStepLabelBox.height <= outputLabelBox.y ||
-        outputLabelBox.x + outputLabelBox.width <= nextStepLabelBox.x ||
-        nextStepLabelBox.x + nextStepLabelBox.width <= outputLabelBox.x
-      )
-      expect(labelsIntersect).toBe(false)
-    }
+    await expect(page.getByRole("img", { name: /도입, 전환, 구축, 운영, 기술지원/u })).toBeVisible()
+    await expect(page.locator(".life-step")).toHaveCount(5)
     expect(consoleErrors).toEqual([])
   })
 }
@@ -68,7 +57,7 @@ test("preserves the skip-link and keyboard focus path", async ({ page }) => {
   await expect(page.locator("#main-content")).toBeFocused()
 
   const primaryNavigation = page.getByRole("navigation", { name: "주 내비게이션" })
-  await primaryNavigation.getByRole("button", { name: "Solutions 메뉴" }).focus()
+  await primaryNavigation.getByRole("button", { name: "솔루션 메뉴" }).focus()
   await page.keyboard.press("End")
   await expect(primaryNavigation.locator(".blro-nav-cta")).toBeFocused()
 })
@@ -104,11 +93,9 @@ test("keeps the primary decision action visible and process stages readable on d
   expect(primaryActionBox).not.toBeNull()
   expect((primaryActionBox?.y ?? 900) + (primaryActionBox?.height ?? 1)).toBeLessThanOrEqual(900)
 
-  const stageWidths = await page.locator(".process-timeline__stage").evaluateAll((stages) =>
-    stages.map((stage) => stage.getBoundingClientRect().width),
-  )
-  expect(stageWidths).toHaveLength(6)
-  expect(Math.min(...stageWidths)).toBeGreaterThanOrEqual(250)
+  const stages = page.locator(".life-step")
+  await expect(stages).toHaveCount(5)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0)
 })
 
 test("loads analytics and sends an allowlisted event only after consent", async ({ page }) => {

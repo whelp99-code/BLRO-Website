@@ -16,7 +16,7 @@ const sampleRows = [
   },
   {
     label: "다음 검증",
-    detail: "PoC, 전환 리허설 또는 추가 진단 중 다음 행동과 통과 기준을 정의합니다.",
+    detail: "PoC(개념 검증), 전환 리허설 또는 추가 진단 중 다음 행동과 통과 기준을 정의합니다.",
   },
 ] as const
 
@@ -24,7 +24,7 @@ export function DiagnosticSummarySample() {
   return (
     <section aria-labelledby="diagnostic-summary-heading" className="diagnostic-summary-sample">
       <div>
-        <Eyebrow>WHAT YOU RECEIVE</Eyebrow>
+        <Eyebrow>받게 되는 내용</Eyebrow>
         <Heading id="diagnostic-summary-heading" level={2}>상담 후 받게 될 진단 요약의 형태</Heading>
         <Text>
           아래는 익명 환경을 전제로 한 공개용 예시입니다. 특정 제품 추천이나 고객 결과를 약속하지 않고, 다음 의사결정에 필요한 조건과 검증 범위를 남깁니다.

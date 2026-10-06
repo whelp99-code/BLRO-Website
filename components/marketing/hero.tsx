@@ -21,7 +21,7 @@ const DIAGNOSTIC_OUTPUTS = [
   },
   {
     title: "다음 검증과 의사결정",
-    detail: "PoC, 전환 리허설 또는 추가 진단 중 무엇을 먼저 할지 합의합니다.",
+    detail: "PoC(개념 검증), 전환 리허설 또는 추가 진단 중 무엇을 먼저 할지 합의합니다.",
   },
 ] as const
 

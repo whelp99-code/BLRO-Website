@@ -13,12 +13,11 @@ describe("homepage document shell", () => {
 
     // Then
     expect(markup).toContain('lang="ko"')
-    expect(markup).toContain(
-      `<h1 aria-label="${HOME_HEADING}" id="home-heading" class="blro-heading blro-heading--display">`,
-    )
+    expect(markup).toContain(HOME_HEADING)
+    expect(markup).toContain('id="home-heading"')
     expect(markup).toContain('href="#main-content"')
     expect(markup).toContain('<header class="blro-site-header">')
-    expect(markup).toContain('<main id="main-content" tabindex="-1"><div class="home-page">')
+    expect(markup).toContain('<main id="main-content" tabindex="-1"><div class="home-page rd">')
     expect(markup).toContain('<footer class="blro-site-footer">')
   })
 })

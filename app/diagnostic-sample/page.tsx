@@ -70,7 +70,7 @@ export default function DiagnosticSamplePage() {
             <dl>
               <div><dt>검토 상황</dt><dd>기존 가상화 환경의 지원·비용 변화에 대비해 HCI 또는 혼합 운영 전환을 검토하는 중견기업</dd></div>
               <div><dt>지켜야 할 조건</dt><dd>업무 중단 최소화, 기존 백업 복구 유지, 레거시 애플리케이션 호환, 운영팀 인수 가능성</dd></div>
-              <div><dt>이번 진단의 범위</dt><dd>제품 선정이 아니라 1차 검증 워크로드, 보류·제외 조건, PoC와 원복 리허설의 통과 기준 정의</dd></div>
+              <div><dt>이번 진단의 범위</dt><dd>제품 선정이 아니라 1차 검증 워크로드, 보류·제외 조건, PoC(개념 검증)와 원복 리허설의 통과 기준 정의</dd></div>
               <div><dt>아직 모르는 것</dt><dd>서비스별 복구 목표, 일부 라이선스 이동 조건, 관리 권한 분리 수준, 최근 복구 훈련의 실제 결과</dd></div>
             </dl>
           </div>
@@ -138,7 +138,7 @@ export default function DiagnosticSamplePage() {
           <ul>
             <li>첫 번째로 검증할 워크로드와 지금 제외할 범위</li>
             <li>내부 담당자와 벤더에게 추가로 요구할 증거 목록</li>
-            <li>PoC·원복 리허설·운영 인수의 통과 및 중단 기준</li>
+            <li>PoC(개념 검증)·원복 리허설·운영 인수의 통과 및 중단 기준</li>
             <li>다음 회의에서 결정해야 할 항목과 책임자</li>
           </ul>
           <div className="diagnostic-sample__actions">

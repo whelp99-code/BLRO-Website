@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BLRO 개편안 v2</title>
+  <link rel="stylesheet" href="prototype/tokens.css">
+  <style>
+    main { padding: var(--space-7) 0 var(--space-8); }
+    h1 { margin-bottom: var(--space-5); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 var(--space-6); }
+    th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: var(--space-3); }
+    th { color: var(--muted); font-weight: 600; }
+    code { font-family: var(--font-mono); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로</a>
+  <header class="site"><div class="wrap bar"><a class="brand" href="prototype/index.html"><i></i>BLRO</a><span class="kicker" style="margin:0">개편안 v2 · 제안 문서</span></div></header>
+  <main id="main"><div class="wrap">
+    <h1>내용과 설명 그림을 먼저 채운 개편안</h1>
+    <p>v1은 얇은 히어로와 하나의 경로 이야기였다. 소유자 피드백은 내용이 없고 그림이 없다는 것이었다. v2는 세 역할을 다시 나누고, 라이프사이클·고객 여정·R&amp;R·HCI 구성·자료 흐름을 그려 넣었다. 배포와 AGENTS.md는 건드리지 않았다.</p>
+    <p>시안: <a href="prototype/index.html">홈</a>, <a href="prototype/customer.html">기업 고객</a>, <a href="prototype/product-hci.html">Sangfor HCI</a>. 같은 글의 마크다운: BLRO-REDESIGN-PROPOSAL-V2-KO.md.</p>
+
+    <h2>인벤토리</h2>
+    <table>
+      <thead><tr><th>화면</th><th>지금 부족한 것</th><th>v2</th></tr></thead>
+      <tbody>
+        <tr><td>홈</td><td>공개 사이트는 진단 문장 위주, 설명 그림 없음 (v1 감사, 이번 턴 재크롤 안 함)</td><td>문단 + 다섯 단계 그림 + 역할 3</td></tr>
+        <tr><td>/customer/</td><td>공개 캡처에 전용 장 없음</td><td>상황, 솔루션, 전환, 운영, 상담 진입</td></tr>
+        <tr><td>/partner/</td><td>R&amp;R과 약관이 공개 본문으로 확인되지 않음</td><td>초안 표. 약관은 확인 필요</td></tr>
+        <tr><td>/engineer/</td><td>포트·파일을 단정하면 안 되는 영역</td><td>흐름도. 다운로드 없음</td></tr>
+        <tr><td>HCI</td><td>사양 수치는 공식 페이지 재확인 실패 (Cloudflare, 2026-09-30)</td><td>역할·한계·준비. 수치 없음</td></tr>
+      </tbody>
+    </table>
+
+    <h2>이미지</h2>
+    <p>설명 SVG는 시안에 있다. 분위기 사진 5장은 <code>images/PROMPTS.md</code>에 프롬프트만 있다. 생성 도구가 이 세션에 없었다. 제조사 제품 사진은 "제조사 공식 이미지 사용 허가 필요" 슬롯만 둔다.</p>
+
+    <h2>모션</h2>
+    <p>모듈은 <code>prototype/motion.css</code>와 <code>motion.js</code>뿐이다. 12px·500ms·투명도, 무한 루프 없음. 그림이 스크롤에 따라 여러 조각으로 드러나는 것은 AGENTS.md의 13px/17px 문장보다 넓다. 규칙은 수정하지 않았다. 오너가 설명 그림에 한해 완화할지를 결정하면 된다. 트렌드 조사는 <code>../research/</code>로 따로 진행 중이며, 결과가 오면 모듈만 교체한다.</p>
+
+    <h2>공수</h2>
+    <p>결정 0.5일, 역할 4페이지 이관 6–8일, HCI 3일, 나머지 20개 상세 15–25일, 모션 교체와 작은 화면 3일. 코드베이스 선택은 아직이다.</p>
+
+    <h2>오너 결정</h2>
+    <ol>
+      <li>홈 정본 문장을 v2 제목으로 할지, 공개 사이트의 진단 문장을 부제로 남길지.</li>
+      <li>모션 규칙을 설명 그림에 한해 완화할지.</li>
+      <li>파트너·엔지니어 독립 페이지를 시안 다음에 바로 만들지. 계약상 경로는 독립이어야 한다.</li>
+      <li>사례 섹션을 비울지, 익명 판단 과정만 가져올지.</li>
+      <li>생성 이미지 5장을 넣어 시안을 다시 찍을지.</li>
+    </ol>
+    <p class="note">확인이 필요한 사실: 수행 사례, 파트너 약관, 승인된 기술 문서, B02/B03 수행 범위, 문의 운영 담당, HCI 현재 사양. 없는 수치와 고객명은 넣지 않았다.</p>
+  </div></main>
+</body>
+</html>

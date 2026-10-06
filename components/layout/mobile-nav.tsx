@@ -85,7 +85,7 @@ export function MobileNav({ pathname }: MobileNavProps) {
             role="dialog"
           >
             <div className="blro-mobile-nav__heading">
-              <span>Navigate</span>
+              <span>메뉴</span>
               <button aria-label="메뉴 닫기" onClick={closeMenu} type="button">
                 <span aria-hidden="true">×</span>
               </button>

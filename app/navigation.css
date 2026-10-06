@@ -12,7 +12,7 @@
 
 .blro-skip-link:focus {
   outline: 0;
-  box-shadow: 0 0 0 3px var(--color-focus);
+  box-shadow: 0 0 0 2px var(--color-focus);
   transform: translateY(0);
 }
 
@@ -57,7 +57,7 @@
 .blro-site-footer a:focus-visible,
 .blro-breadcrumb a:focus-visible,
 .blro-locale-switch:focus-visible {
-  outline: 3px solid var(--color-focus);
+  outline: 2px solid var(--color-focus);
   outline-offset: 3px;
 }
 
@@ -364,10 +364,9 @@
 
 .blro-site-footer h2 {
   margin: 0 0 var(--space-4);
-  color: var(--color-accent);
-  font: var(--type-eyebrow);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: #ffffff;
+  font: 600 1rem / 1.4 var(--font-ui);
+  letter-spacing: 0;
 }
 
 .blro-site-footer li + li {

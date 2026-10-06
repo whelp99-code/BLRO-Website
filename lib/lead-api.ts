@@ -9,6 +9,7 @@ export type InquiryInput = Readonly<{
   message?: string
   name: string
   phone?: string
+  product?: "hci"
   topic: InquiryTopic
   turnstileToken: string
   workEmail: string

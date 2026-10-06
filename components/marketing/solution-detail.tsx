@@ -21,7 +21,7 @@ type SolutionBodySection = {
 const processSteps = [
   "현황과 운영 조건 분석",
   "판단 기준과 검증 범위 정의",
-  "아키텍처·PoC 설계",
+  "아키텍처·PoC(개념 검증) 설계",
   "전환과 운영 인수 기준 정리",
 ] as const
 
@@ -60,7 +60,7 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
 
       <Section aria-labelledby="solution-heading" className="solution-detail__hero" spacing="generous">
         <Container>
-          <Eyebrow>SOLUTION · {solution.meta.tags.join(" · ").toUpperCase()}</Eyebrow>
+          <Eyebrow>솔루션</Eyebrow>
           <Heading className="solution-detail__title" id="solution-heading" level={1}>
             {formatSolutionCopy(solution.meta.title)}
           </Heading>
@@ -68,7 +68,11 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
             {formatSolutionCopy(solution.meta.summary)}
           </Text>
           <div className="solution-detail__audience" aria-label="주요 대상">
-            {solution.meta.audience.map((audience) => <span key={audience}>{audience}</span>)}
+            {solution.meta.audience.map((audience) => (
+              <span key={audience}>
+                {audience === "customer" ? "기업 고객" : audience === "partner" ? "국내 파트너" : "글로벌 벤더"}
+              </span>
+            ))}
           </div>
         </Container>
       </Section>
@@ -100,7 +104,7 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
         <Container>
           <div className="solution-section-heading">
             <div>
-              <Eyebrow>VERIFICATION PATH</Eyebrow>
+              <Eyebrow>검증 경로</Eyebrow>
               <Heading id="solution-process-heading" level={2}>검토 절차와 판단 기준</Heading>
             </div>
             <Text>각 단계의 통과 조건과 제외 범위를 먼저 합의하고, 확인된 증거를 다음 실행의 입력으로 사용합니다.</Text>
@@ -113,7 +117,7 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
 
       <Section aria-labelledby="related-insight-heading" className="solution-detail__evidence" spacing="generous">
         <Container>
-          <Eyebrow>APPROVED EVIDENCE</Eyebrow>
+          <Eyebrow>공개된 근거</Eyebrow>
           <Heading id="related-insight-heading" level={2}>관련 실무 인사이트</Heading>
           <Text>공개 승인된 판단 자료만 연결합니다. 프로젝트 사례는 공개 승인 전까지 노출하지 않습니다.</Text>
           <div className="solution-related__list">
@@ -138,7 +142,7 @@ export function SolutionDetail({ insights, solution }: SolutionDetailProps) {
 
       <Section aria-labelledby="solution-cta-heading" className="solution-next" spacing="generous" tone="navy">
         <Container>
-          <Eyebrow>NEXT DECISION</Eyebrow>
+          <Eyebrow>다음 결정</Eyebrow>
           <Heading id="solution-cta-heading" level={2}>현재 조건에서 검증할 첫 단계를 정리합니다.</Heading>
           <Text variant="inverse">제품 제안보다 먼저 환경, 목표, 제약과 필요한 증거를 확인합니다.</Text>
           <div className="solution-next__actions">

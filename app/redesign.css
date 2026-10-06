@@ -1,0 +1,505 @@
+/* Motion preview. Path progress only. No scroll hijack, no infinite decorative loops. */
+
+:root {
+  --ink: #102033;
+  --ink-soft: #3d4d63;
+  --paper: #f4f1ea;
+  --paper-2: #ebe6dc;
+  --card: #fffcf7;
+  --line: #d7d0c4;
+  --signal: #1f7a4d;
+  --action: #1d4ed8;
+  --copper: #5c3a1e;
+  --customer: #0b4f4c;
+  --customer-wash: #0b4f4c14;
+  --partner: #6e4524;
+  --partner-wash: #6e452414;
+  --engineer: #1a3f73;
+  --engineer-wash: #1a3f7314;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-mid: 420ms;
+  --dur-diagram: 500ms;
+}
+
+.rd {
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.rd-wrap {
+  width: min(1120px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.rd-hero,
+.rd-band,
+.rd-chapter {
+  padding-block: 3rem;
+}
+
+.rd-band {
+  background: var(--paper-2);
+}
+
+.rd-kicker {
+  margin: 0 0 0.75rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.rd h1,
+.rd h2,
+.rd h3 {
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+
+.rd h1 {
+  max-width: 18em;
+  margin: 0 0 1rem;
+}
+
+.rd h2 {
+  max-width: 20em;
+  margin: 0 0 0.75rem;
+  font: var(--type-h2);
+}
+
+.rd h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+.rd p,
+.rd li {
+  max-width: 42ch;
+}
+
+.rd-lead {
+  margin: 0 0 1rem;
+  color: var(--ink-soft);
+}
+
+.rd-hero-grid,
+.rd-split {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.rd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.rd-btn {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: var(--type-control);
+  text-decoration: none;
+}
+
+.rd-btn-primary {
+  color: #fffcf7;
+  background: var(--action);
+}
+
+.rd-btn-ghost {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--line);
+}
+
+.rd-panel {
+  margin: 0;
+  padding: 1rem 1rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.rd-caption {
+  margin: 0.75rem 0 1rem;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.rd-steps,
+.rd-roles {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rd-step,
+.rd-role {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.rd-step {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.rd-idx {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.rd-role p,
+.rd-step p,
+.rd-role h3,
+.rd-step h3 {
+  max-width: none;
+}
+
+.rd-role.customer {
+  background: var(--customer-wash);
+}
+
+.rd-role.partner {
+  background: var(--partner-wash);
+}
+
+.rd-role.engineer {
+  background: var(--engineer-wash);
+}
+
+.rd-who {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.rd-role.customer .rd-who {
+  color: var(--customer);
+}
+
+.rd-role.partner .rd-who {
+  color: var(--copper);
+}
+
+.rd-role.engineer .rd-who {
+  color: var(--engineer);
+}
+
+.life-svg,
+.rd-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.life-rail,
+.life-progress {
+  fill: none;
+  stroke-width: 2;
+}
+
+.life-rail {
+  stroke: var(--line);
+}
+
+.life-progress {
+  stroke: var(--signal);
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+
+.life-svg text {
+  font-family: var(--font-ui);
+}
+
+.life-svg .sub {
+  fill: var(--ink-soft);
+}
+
+.rd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.rd-table th,
+.rd-table td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.rd-table th {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rd-layers {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rd-layers li {
+  max-width: none;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.rd-layers li span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.rd-role-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.rd-role-switch a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--card);
+  text-decoration: none;
+}
+
+.rd-role-switch a[aria-current="page"] {
+  color: #fffcf7;
+  background: var(--ink);
+}
+
+.rd-role-switch a:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+}
+
+.rd-step-name {
+  margin: 0 0 0.35rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.rd-checklist,
+.rd-role-panel {
+  transition: none;
+}
+
+.rd-checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rd-checklist li {
+  max-width: 48ch;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.rd-checklist li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.rd-slot {
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  background: var(--paper-2);
+}
+
+.rd-slot strong,
+.rd-slot p {
+  display: block;
+  max-width: 42ch;
+}
+
+#inquiry-form,
+#talk {
+  scroll-margin-top: 5.5rem;
+}
+
+.home-steps {
+  margin-top: 2.5rem;
+}
+
+.home-steps .rd-step {
+  max-width: none;
+  height: 100%;
+}
+
+@media (min-width: 720px) {
+  .home-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .rd-hero-grid,
+  .rd-split {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 2.5rem;
+  }
+
+  .home-hero .rd-hero-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+  }
+
+  .rd-roles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .home-steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 899px) {
+  .life-pin,
+  .stage-pin {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rd :where(a, button) {
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+
+  .rd :where(a, button):hover {
+    transform: translateY(-1px);
+  }
+}
+
+[data-stagger="1"] { --stagger: 1; }
+[data-stagger="2"] { --stagger: 2; }
+[data-stagger="3"] { --stagger: 3; }
+
+[data-reveal],
+[data-step],
+.life-step {
+  opacity: 1;
+  transform: none;
+}
+
+html.js-io [data-reveal] {
+  opacity: 1;
+  transform: translateY(12px);
+  transition: transform var(--dur-mid) var(--ease-out);
+  transition-delay: calc(min(var(--stagger, 0), 3) * 70ms);
+}
+
+html.js-io [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+html.js-io:not(.js-timeline) .life-step circle {
+  opacity: 0.35;
+  transition: opacity var(--dur-diagram) var(--ease-out);
+}
+
+html.js-io:not(.js-timeline) .life-step.is-in circle {
+  opacity: 1;
+}
+
+html.js-io:not(.js-timeline) .life-progress {
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset var(--dur-diagram) var(--ease-out);
+}
+
+html.js-io:not(.js-timeline) .life-progress.is-drawn {
+  stroke-dashoffset: 0;
+}
+
+.life-scroll {
+  view-timeline-name: --life;
+  view-timeline-axis: block;
+}
+
+@supports (animation-timeline: view()) {
+  html.js-timeline .life-progress {
+    stroke-dashoffset: 100;
+    animation: life-draw linear both;
+    animation-timeline: --life;
+    animation-range: contain 0% contain 78%;
+  }
+
+  html.js-timeline .life-step circle {
+    opacity: 0.35;
+    animation: life-lit linear both;
+    animation-timeline: --life;
+  }
+
+  html.js-timeline .life-step[data-i="0"] circle { animation-range: contain 0% contain 16%; }
+  html.js-timeline .life-step[data-i="1"] circle { animation-range: contain 12% contain 32%; }
+  html.js-timeline .life-step[data-i="2"] circle { animation-range: contain 28% contain 48%; }
+  html.js-timeline .life-step[data-i="3"] circle { animation-range: contain 44% contain 64%; }
+  html.js-timeline .life-step[data-i="4"] circle { animation-range: contain 60% contain 80%; }
+}
+
+@keyframes life-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes life-lit {
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js-io [data-reveal],
+  html.js-io [data-step],
+  html.js-timeline .life-step circle,
+  html.js-timeline .life-progress,
+  html.js-io .life-progress {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+
+  .rd :where(a, button),
+  .rd :where(a, button):hover {
+    transform: none;
+    transition: none;
+  }
+}

@@ -225,13 +225,13 @@ describe("design token contract", () => {
   it("connects focus, touch targets, and reduced motion to named tokens", async () => {
     const css = await readFile(join(process.cwd(), "app", "globals.css"), "utf8")
 
-    expect(css).toContain("--color-focus: #7c3aed")
+    expect(css).toContain("--color-focus: #1d4ed8")
     expect(css).toContain("--color-blro-focus: var(--color-focus)")
     expect(css).toContain("--spacing-blro-12: var(--space-12)")
     expect(css).toContain("--radius-blro-control: var(--radius-control)")
     expect(css).toContain("--duration-blro-micro: var(--duration-micro)")
     expect(css).toContain("--duration-blro-spinner: var(--duration-spinner)")
-    expect(css).toContain("--duration-micro: 160ms")
+    expect(css).toContain("--duration-micro: 180ms")
     expect(css).toContain("font: var(--type-control)")
     expect(css).toContain("min-height: var(--signal-field-min-height)")
     expect(css).toMatch(/\.blro-button:focus-visible[\s\S]*var\(--color-focus\)/u)

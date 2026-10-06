@@ -35,7 +35,7 @@ export function InsightIndex({ insights }: InsightIndexProps) {
     <article className="insight-page insight-index">
       <Section aria-labelledby="insight-heading" className="insight-hero" spacing="generous">
         <Container>
-          <Eyebrow>APPROVED PRACTICAL INSIGHTS</Eyebrow>
+          <Eyebrow>공개된 실무 자료</Eyebrow>
           <Heading className="insight-hero__title" id="insight-heading" level={1}>결정을 앞당기는 실무 판단 자료</Heading>
           <Text className="insight-hero__lead" variant="lead">
             제품 소개보다 먼저, 전환과 운영에서 확인해야 할 조건·질문·검증 방식을 공개합니다. 승인된 자료만 제공합니다.

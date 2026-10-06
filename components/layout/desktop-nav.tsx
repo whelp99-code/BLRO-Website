@@ -111,7 +111,6 @@ export function DesktopNav({ pathname }: DesktopNavProps) {
                   ref={(element) => {
                     if (element) triggerRefs.current.set(item.href, element)
                   }}
-                  tabIndex={activeIndex === index ? 0 : -1}
                   type="button"
                 >
                   {item.label}
@@ -124,7 +123,6 @@ export function DesktopNav({ pathname }: DesktopNavProps) {
                   data-primary-control
                   href={item.href}
                   onKeyDown={(event) => handleControlKey(event, index)}
-                  tabIndex={activeIndex === index ? 0 : -1}
                 >
                   {item.label}
                 </a>

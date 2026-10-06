@@ -1,0 +1,124 @@
+/* v2.2 motion module. Transform, opacity, stroke-dashoffset only.
+   Final state is the default. Dimmed starts require html.js-io or html.js-timeline. */
+
+[data-reveal],
+[data-step],
+.life-step,
+.inst-layer,
+.stage-row {
+  opacity: 1;
+  transform: none;
+}
+
+.life-progress {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+
+html.js-io [data-reveal] {
+  opacity: 0.65;
+  transform: translateY(12px);
+  transition:
+    opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--stagger, 0) * 70ms);
+}
+html.js-io [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+html.js-io:not(.js-timeline) [data-step] {
+  opacity: 0.28;
+  transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.js-io:not(.js-timeline) [data-step].is-in { opacity: 1; }
+
+html.js-io:not(.js-timeline) .life-progress {
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.js-io:not(.js-timeline) .life-progress.is-drawn { stroke-dashoffset: 0; }
+
+.life-scroll {
+  view-timeline-name: --life;
+  view-timeline-axis: block;
+}
+
+@supports (animation-timeline: view()) {
+  html.js-timeline .life-progress {
+    stroke-dashoffset: 100;
+    animation: life-draw linear both;
+    animation-timeline: --life;
+    animation-range: contain 0% contain 78%;
+  }
+  html.js-timeline .life-step circle {
+    opacity: 0.35;
+    animation: life-lit linear both;
+    animation-timeline: --life;
+  }
+  html.js-timeline .life-step:nth-child(3) circle { animation-range: contain 0% contain 16%; }
+  html.js-timeline .life-step:nth-child(4) circle { animation-range: contain 12% contain 32%; }
+  html.js-timeline .life-step:nth-child(5) circle { animation-range: contain 28% contain 48%; }
+  html.js-timeline .life-step:nth-child(6) circle { animation-range: contain 44% contain 64%; }
+  html.js-timeline .life-step:nth-child(7) circle { animation-range: contain 60% contain 80%; }
+
+  html.js-timeline .asm-scroll { view-timeline-name: --inst; view-timeline-axis: block; }
+  html.js-timeline .inst-layer {
+    opacity: 0.4;
+    transform: translateY(12px);
+    animation: inst-in linear both;
+    animation-timeline: --inst;
+    animation-range: contain calc(var(--i) * 14%) contain calc(22% + var(--i) * 16%);
+  }
+}
+
+@keyframes life-draw { to { stroke-dashoffset: 0; } }
+@keyframes life-lit { to { opacity: 1; } }
+@keyframes inst-in { to { opacity: 1; transform: none; } }
+
+@view-transition { navigation: auto; }
+::view-transition-old(root) {
+  animation: 300ms cubic-bezier(0.22, 1, 0.36, 1) both vt-out;
+}
+::view-transition-new(root) {
+  animation: 300ms cubic-bezier(0.22, 1, 0.36, 1) both vt-in;
+}
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
+header.site { view-transition-name: site-header; }
+
+@media (min-width: 801px) {
+  html.js-io .stage-row td { color: var(--muted); transition: color 300ms linear, background-color 300ms linear; }
+  html.js-io .stage-row.is-active td { color: var(--ink); background: var(--partner-wash); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  html.js-io [data-reveal],
+  html.js-io [data-step],
+  html.js-timeline .life-step circle,
+  html.js-timeline .inst-layer,
+  html.js-timeline .life-progress,
+  html.js-io .life-progress {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+  html.js-io .stage-row td {
+    color: inherit;
+    background: transparent;
+    transition: none;
+  }
+}
+
+@media (max-width: 800px) {
+  html.js-io .stage-row td { color: inherit; background: transparent; }
+}
