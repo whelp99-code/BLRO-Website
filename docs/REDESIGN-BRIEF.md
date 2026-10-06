@@ -37,7 +37,7 @@ v2 is the content target. v1 motion system still applies. Role routes stay separ
 | `/contact` | Role first, then the checklist for that role swaps without layout animation. |
 | `/insights`, AI | Keep, but not first-nav. AI is a solution item, not a home headline. |
 
-Recommended home sentence (v1, still open): "제품 공급과 전환 검증을 한 경로로 맡깁니다." v2 title is role-connection. Owner has not closed this. Do not invent a third slogan.
+Home sentence that ships: "기업 IT의 도입, 전환, 구축, 운영, 기술 지원을 역할에 맞게 연결합니다." The earlier alternate recommendation is not used. Do not invent a third slogan.
 
 ## Motion spec
 
@@ -82,7 +82,6 @@ Imagery: CSS/SVG diagrams (lifecycle, R&R, HCI layers, material flow). No genera
 
 ## TODO facts only the owner can supply
 
-- Which sentence is canonical: v2 role-connection title, or the public diagnostic line as subtitle.
 - Whether Insights and global-vendor Korea entry stay in primary nav.
 - Public case material. If none, do not add a case section.
 - Partner program terms (tier, margin, registration, co-brand).
@@ -92,7 +91,6 @@ Imagery: CSS/SVG diagrams (lifecycle, R&R, HCI layers, material flow). No genera
 - Current Sangfor HCI specs (official page was blocked on 2026-09-30).
 - Whether AGENTS motion rule may relax for explanatory diagrams.
 - Whether to generate the five atmosphere images in `v2/images/PROMPTS.md` (not evidence of real work).
-- Which home sentence is canonical. Until the owner chooses, the preview shows only the v2 role-connection title. The v1 line "제품 공급과 전환 검증을 한 경로로 맡깁니다." stays in this brief and is not shown on the page.
 - Whether "21" is the actual offering list or only a design target. The v2 proposal summarizes a design target (Sangfor 15 product/services, Cisco·Juniper switches, Fortinet firewall, GIGABYTE·KAYTUS servers, HIWARE server access control) in `docs/redesign-2026-09-motion/v2/BLRO-REDESIGN-PROPOSAL-V2-KO.md`. This repo does not contain a 21-row catalog. Do not print the count on the site until the owner confirms the list and what it means.
 - Form storage retention. The worker sets `leads.expires_at` with `RETENTION_DAYS = 90` and a daily cron deletes expired rows (`workers/lead-gateway/wrangler.jsonc`). The 2026-07-14 architecture note calls 90 days a recommended default pending legal and business approval. The previous public sentence also said “처리 완료 후 90일 중 먼저”, which that worker does not implement. The privacy page does not state a day count until the owner confirms live retention.
 - B02/B03 supply scope and the live inquiry owner.

@@ -15,3 +15,16 @@ As of 2026-07-13, `pnpm audit --prod` reports one moderate advisory: [GHSA-qx2v-
 - Removal condition: upgrade Next.js to a reviewed version whose production audit no longer contains the advisory.
 
 This moderate advisory does not weaken the blocking high/critical release threshold.
+
+## Accepted high advisory with no published patch
+
+As of 2026-10-06, `pnpm audit` reports [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) on `braces@3.0.3`. npm `latest` is still `3.0.3` (published 2024-05-21). The advisory's patched range, `>=3.0.4`, is not a published release, so it cannot be overridden.
+
+- Path: `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces`, and `react-doctor` → `deslop-js` → `fast-glob` → `micromatch` → `braces`. Both parents are devDependencies.
+- Exposure: stack exhaustion while expanding a deeply nested brace pattern. Lint and `react-doctor` run on the developer or CI machine. The static site and the lead worker do not import `braces`. `pnpm audit --prod` does not report this advisory.
+- Decision: keep the documented `auditIgnoreGhsa` entry until a real release exists. Do not pretend `3.0.4` is installable.
+- Owner: BLRO Website Maintainer.
+- Review date: 2026-11-06.
+- Removal condition: publish and lock `braces >=3.0.4`, or drop both dependents, then delete the register entry. `pnpm audit:high` fails if the entry expires or the advisory disappears while the entry remains.
+
+The same review overrode published fixes for the other high and critical findings: `source-map-js@1.2.2`, `proxy-addr@2.0.8`, and `compression@1.8.2`.

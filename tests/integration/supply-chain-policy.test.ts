@@ -15,5 +15,6 @@ describe("supply-chain policy register", () => {
     // Then
     expect(result.status).toBe(0)
     expect(result.stdout).toContain(expectedReceipt)
+    expect(result.stdout).toContain("Audit advisory exceptions: 1.")
   })
 })

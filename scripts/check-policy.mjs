@@ -63,6 +63,7 @@ async function validateSupplyChainRegister() {
     readYamlList(workspaceSource, setting).map((packageName) => `${setting}:${packageName}`),
   )
   const registered = []
+  const auditIgnored = []
   const violations = []
   const today = new Date().toISOString().slice(0, 10)
 
@@ -79,7 +80,13 @@ async function validateSupplyChainRegister() {
       }
     }
 
-    if (typeof entry.setting === "string" && typeof entry.package === "string") {
+    if (entry.setting === "auditIgnoreGhsa") {
+      if (typeof entry.package !== "string" || !/^GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}$/u.test(entry.package)) {
+        violations.push("supply-chain register: auditIgnoreGhsa package must be a GHSA id")
+      } else {
+        auditIgnored.push(entry.package)
+      }
+    } else if (typeof entry.setting === "string" && typeof entry.package === "string") {
       registered.push(`${entry.setting}:${entry.package}`)
     }
     if (typeof entry.introducedDate === "string" && !/^\d{4}-\d{2}-\d{2}$/u.test(entry.introducedDate)) {
@@ -94,7 +101,7 @@ async function validateSupplyChainRegister() {
     }
   }
 
-  if (new Set(registered).size !== registered.length) {
+  if (new Set(registered).size !== registered.length || new Set(auditIgnored).size !== auditIgnored.length) {
     violations.push("supply-chain register: duplicate exception entry")
   }
   const missing = active.filter((entry) => !registered.includes(entry))
@@ -106,7 +113,7 @@ async function validateSupplyChainRegister() {
     violations.push(`supply-chain register: inactive exception ${entry}`)
   }
 
-  return { activeCount: active.length, violations }
+  return { activeCount: active.length, auditCount: auditIgnored.length, violations }
 }
 
 const files = [...rootFiles, ...(await Promise.all(roots.map(collectFiles))).flat()]
@@ -138,4 +145,5 @@ if (violations.length > 0) {
   console.log(
     `Supply-chain exception register matched ${supplyChain.activeCount} active exceptions.`,
   )
+  console.log(`Audit advisory exceptions: ${supplyChain.auditCount}.`)
 }
