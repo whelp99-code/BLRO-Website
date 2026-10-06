@@ -8,7 +8,6 @@ describe("contact page", () => {
     render(<ContactPage />)
 
     expect(screen.getByRole("heading", { level: 1, name: /역할을 먼저 고릅니다/u })).toBeVisible()
-    expect(screen.getByText("기업 고객, 국내 파트너, 기술 엔지니어는 확인 목록이 다릅니다. 목록만 바뀌고, 칸의 높이를 애니메이션으로 밀지 않습니다.")).toBeVisible()
     expect(screen.getByRole("link", { name: "기업 고객" })).toHaveAttribute("aria-current", "page")
     expect(screen.queryByText(/할지보다/u)).not.toBeInTheDocument()
     expect(screen.queryByText(/하는지를/u)).not.toBeInTheDocument()

@@ -4,14 +4,14 @@ import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "기술 엔지니어",
-  description: "설치, 운영·장애, 호환과 포트, 승인된 자료 경로입니다. 없는 파일은 만들지 않습니다.",
+  description: "설치, 운영·장애 대응, 호환과 포트에 필요한 자료 및 기술 지원 경로를 안내합니다.",
   ...canonicalMetadata("/engineer"),
 }
 
 const FLOWS = [
   ["작업 선택", "설치·구축, 운영·장애, 호환·포트, 기술 지원 중 하나를 고릅니다."],
-  ["자료 검색", "이 저장소에서 확인되는 공개 글은 인사이트입니다."],
-  ["공식 확인", "버전, 포트, 호환은 제조사 공식 문서의 현재본으로 확인합니다. 포트 번호는 여기 적지 않습니다."],
+  ["자료 검색", "공개 기술 글은 인사이트에서 확인할 수 있습니다."],
+  ["공식 확인", "버전, 포트, 호환은 제조사 공식 문서의 현재본으로 확인합니다."],
   ["파일 있음", "승인된 파일만 연결합니다. 지금은 연결된 공개 파일이 없습니다."],
   ["없으면 문의", "제품, 버전, 증상, 이미 확인한 단계를 적습니다."],
 ] as const
@@ -23,9 +23,9 @@ export default function EngineerPage() {
         <div className="rd-wrap rd-hero-grid">
           <div>
             <p className="rd-kicker" style={{ color: "var(--engineer)" }}>기술 엔지니어</p>
-            <h1 className="blro-heading blro-heading--h1">작업 종류로 자료를 찾고, 없는 파일은 빈칸으로 남깁니다.</h1>
+            <h1 className="blro-heading blro-heading--h1">작업에 필요한 자료와 기술 지원을 찾습니다.</h1>
             <p className="rd-lead">설치·구축 자료는 준비물, 순서, 확인 지점을 다룹니다. 운영·장애 대응은 증상, 수집할 로그, 에스컬레이션 대상을 다룹니다.</p>
-            <p>승인된 다운로드와 릴리스 노트는 제조사 공식 경로 또는 BLRO가 배포를 승인한 파일만 연결합니다. 새 제품에 가짜 검색 결과를 만들지 않습니다.</p>
+            <p>다운로드와 릴리스 노트는 제조사 공식 경로 또는 BLRO가 배포를 승인한 자료를 이용해 주세요.</p>
             <p>
               공개된 기술 글은 <Link href="/insights">인사이트</Link>에 있습니다. 대표 제품 예시는 <Link href="/solutions/hci">Sangfor HCI</Link>입니다.
             </p>

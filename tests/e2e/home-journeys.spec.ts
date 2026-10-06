@@ -31,7 +31,7 @@ for (const viewport of VIEWPORTS) {
       }),
     ).toBeVisible()
     await expect(page.getByRole("heading", { level: 2, name: "역할을 고릅니다." })).toBeVisible()
-    await expect(page.getByRole("heading", { level: 2, name: "그림은 일을 설명해야 합니다." })).toBeVisible()
+    await expect(page.locator("#hci-door-heading")).toBeVisible()
 
     const homeActions = page.locator(".home-hero")
     for (const [label, href] of HOME_ACTIONS) {
@@ -112,11 +112,16 @@ test("loads analytics and sends an allowlisted event only after consent", async 
 
   await page.getByRole("button", { name: "동의" }).click()
   await expect(page.locator('script[data-blro-analytics="cloudflare"]')).toHaveCount(1)
+  const analyticsRequest = page.waitForRequest(
+    (request) => new URL(request.url()).pathname === "/v1/analytics",
+    { timeout: 10_000 },
+  )
   await page.getByTestId("hero-primary-cta").click()
 
-  await expect.poll(() => analyticsPayload).toMatchObject({
+  const deliveredPayload: unknown = (await analyticsRequest).postDataJSON()
+  expect(deliveredPayload).toMatchObject({
     name: "cta_clicked",
     properties: { ctaId: "hero-customer-diagnostic", landingPath: "/", placement: "hero" },
   })
-  expect(analyticsPayload).not.toHaveProperty("properties.email")
+  expect(deliveredPayload).not.toHaveProperty("properties.email")
 })

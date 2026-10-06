@@ -11,7 +11,7 @@ import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "역할별 상담",
-  description: "역할을 먼저 고르면 그 역할의 확인 목록이 바뀝니다. 목록 교체에 자리 이동 애니메이션은 없습니다.",
+  description: "기업 고객, 국내 파트너, 기술 엔지니어가 상담 전에 준비할 내용과 문의 경로를 안내합니다.",
   ...canonicalMetadata("/contact"),
 }
 
@@ -32,7 +32,7 @@ export default function ContactPage() {
               역할을 먼저 고릅니다.
             </Heading>
             <Text variant="lead">
-              기업 고객, 국내 파트너, 기술 엔지니어는 확인 목록이 다릅니다. 목록만 바뀌고, 칸의 높이를 애니메이션으로 밀지 않습니다.
+              역할을 선택하면 상담 전에 준비할 내용을 확인할 수 있습니다.
             </Text>
             <p className="rd-actions">
               <a className="rd-btn rd-btn-primary" href="#inquiry-form">상담 요청 작성</a>

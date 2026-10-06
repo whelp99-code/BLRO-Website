@@ -22,7 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "NEXT_PUBLIC_LEAD_API_URL=${NEXT_PUBLIC_LEAD_API_URL:-http://127.0.0.1:4173} NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN=${NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN:-test-analytics-token} pnpm build && pnpm exec wrangler pages dev out --port 4173 --compatibility-date=2026-07-15",
+    command: `NEXT_PUBLIC_LEAD_API_URL=\${NEXT_PUBLIC_LEAD_API_URL:-${baseURL}} NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN=\${NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN:-test-analytics-token} pnpm build && pnpm exec wrangler pages dev out --port ${new URL(baseURL).port || "4173"} --compatibility-date=2026-07-15`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

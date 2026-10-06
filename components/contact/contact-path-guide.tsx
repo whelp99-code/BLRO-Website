@@ -17,19 +17,23 @@ const CONTACT_CONTEXTS = {
   },
 } as const
 
-type ContactContextType = keyof typeof CONTACT_CONTEXTS
-
-function isContactContext(value: string | null): value is ContactContextType {
-  return value !== null && value in CONTACT_CONTEXTS
-}
-
 export function ContactPathGuide() {
   const searchParams = useSearchParams()
   const type = searchParams?.get("type") ?? null
-  const context = isContactContext(type) ? CONTACT_CONTEXTS[type] : CONTACT_CONTEXTS["customer-project"]
+  const role = searchParams?.get("role") ?? null
+  const context = type === "vendor-korea-entry"
+    ? CONTACT_CONTEXTS["vendor-korea-entry"]
+    : type === "partner-collaboration" || role === "partner"
+      ? CONTACT_CONTEXTS["partner-collaboration"]
+      : role === "engineer"
+        ? {
+            label: "기술 지원 문의",
+            detail: "제품과 버전, 증상, 이미 확인한 단계를 알려주세요.",
+          }
+        : CONTACT_CONTEXTS["customer-project"]
 
   return (
-    <aside aria-live="polite" className="contact-path-guide">
+    <aside aria-label={context.label} aria-live="polite" className="contact-path-guide">
       <span className="contact-path-guide__label">선택한 시작점</span>
       <strong>{context.label}</strong>
       <p>{context.detail}</p>

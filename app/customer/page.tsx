@@ -23,7 +23,7 @@ export default function CustomerPage() {
             <p className="rd-kicker" style={{ color: "var(--customer)" }}>기업 고객</p>
             <h1 className="blro-heading blro-heading--h1">상황에서 출발합니다. 제품이 정해지지 않아도 됩니다.</h1>
             <p className="rd-lead">이 페이지는 기업 IT 담당자가 도입과 운영을 맡길 범위를 정리하는 자리입니다. 파트너 협력 조건이나 설치 매뉴얼을 여기에 섞지 않습니다.</p>
-            <p>BLRO가 확인한 일의 뼈대는 제품 공급과 구축, 그리고 기술 지원으로의 연결입니다. 법인 업종만으로 모든 현장 수행이 가능하다고 쓰지 않습니다. 직접 수행 범위가 아직 확인되지 않은 항목은 상담에서 범위를 정하는 대상으로 남깁니다.</p>
+            <p>제품 공급과 구축, 기술 지원에 필요한 범위를 함께 정리합니다. 현재 환경과 요구 사항을 바탕으로 직접 수행할 범위와 협력할 역할을 상담에서 확인합니다.</p>
           </div>
           <figure className="rd-panel" data-reveal>
             <figcaption className="rd-kicker">설명 그림 · 고객 여정</figcaption>
@@ -61,7 +61,7 @@ export default function CustomerPage() {
         <div className="rd-wrap rd-split">
           <div data-reveal>
             <h2>솔루션과 서비스</h2>
-            <p>이번 미리보기는 HCI 상세만 새로 적습니다. 이미 공개된 검토 영역은 <Link href="/solutions">솔루션 목록</Link>에 있습니다.</p>
+            <p>HCI 구성과 도입 조건을 상세 안내에서 확인하세요. 다른 검토 영역은 <Link href="/solutions">솔루션 목록</Link>에서 살펴볼 수 있습니다.</p>
             <p>백업·DR과 업무 자동화 같은 기존 서비스 필요는 제품 목록 때문에 삭제하지 않습니다.</p>
             <Link className="rd-btn rd-btn-primary" href="/solutions/hci">Sangfor HCI 상세</Link>
           </div>
@@ -77,7 +77,7 @@ export default function CustomerPage() {
         <div className="rd-wrap rd-split">
           <div data-reveal>
             <h2>운영 지원</h2>
-            <p>운영 지원은 장비를 넘긴 뒤 누가 보고, 무엇을 기록하고, 어디를 통해 기술 지원으로 올라가는지입니다. BLRO가 24시간 관제나 특정 응답 시간을 제공한다는 문장은 확인된 사실이 없어 쓰지 않습니다.</p>
+            <p>운영 지원은 인수 후 담당, 기록할 항목, 기술 지원 연락 경로를 정하는 일입니다. 지원 시간과 대응 범위는 상담에서 확인합니다.</p>
             <p>인수 문서에 들어갈 최소 항목은 구성, 계정 권한의 주체, 백업과 복구의 담당, 알려진 예외입니다. 계정 비밀번호 원문은 웹 폼으로 받지 않습니다.</p>
           </div>
           <div className="rd-slot" data-reveal id="consult">
@@ -85,7 +85,7 @@ export default function CustomerPage() {
             <p>역할은 기업 고객입니다. 견적 금액은 이 페이지에 없습니다.</p>
             <p>박재민 · <a href="tel:010-8896-1260">010-8896-1260</a> · <a href="mailto:jm.park@blro.co.kr">jm.park@blro.co.kr</a> · 사업자등록번호 420-87-02727</p>
             <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer">도입·운영 상담하기</Link>
-            <p className="rd-caption">개인정보 처리 문구는 실제 수집이 시작되기 전에 현행 근거와 맞춰야 합니다. 웹 접수는 기존 문의 폼을 그대로 사용합니다.</p>
+            <p className="rd-caption">문의 접수 시 개인정보 처리 안내를 확인하고 동의해 주세요.</p>
           </div>
         </div>
       </section>

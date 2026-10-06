@@ -4,7 +4,7 @@ import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Sangfor HCI",
-  description: "업무 시스템을 실행하는 통합 인프라를 검토할 때 여는 페이지입니다. 사양 수치는 확인 전까지 비어 있습니다.",
+  description: "Sangfor HCI의 구성과 도입·운영 검토 항목, 제조사 공식 자료 및 상담 경로를 안내합니다.",
   ...canonicalMetadata("/solutions/hci"),
 }
 
@@ -20,7 +20,7 @@ const QUESTIONS = [
   "전환 중 멈출 수 있는 시간과 되돌릴 조건",
   "데이터 보호: 백업 주기, 보관 위치, 복구 담당",
   "랙, 전력, 냉각, 기존 네트워크 구분",
-  "국내 공급과 BLRO 수행 범위 (미확정, B02/B03)",
+  "국내 공급 조건과 BLRO 수행 범위",
 ] as const
 
 export default function HciPage() {
@@ -31,17 +31,17 @@ export default function HciPage() {
           <div>
             <p className="rd-kicker">제품 상세</p>
             <h1 className="blro-heading blro-heading--h1">Sangfor HCI</h1>
-            <p className="rd-lead">업무 시스템을 실행하는 통합 인프라를 검토할 때 여는 페이지입니다. 제조사 사양을 BLRO의 공급·수행 약속으로 바꾸지 않습니다.</p>
+            <p className="rd-lead">컴퓨트, 스토리지, 네트워크를 통합해 업무 시스템을 운영하는 인프라입니다. 현재 환경과 전환 조건을 기준으로 도입 범위를 함께 검토합니다.</p>
             <p className="rd-actions">
               <Link className="rd-btn rd-btn-primary" href="/contact?type=customer-project&role=customer&product=hci">도입·운영 상담하기</Link>
               <a className="rd-btn rd-btn-ghost" href="#talk">상담에 보낼 내용</a>
             </p>
             <p>
-              공식 URL:{" "}
+              제품 사양과 지원 조건은{" "}
               <a href="https://www.sangfor.com/cloud-and-infrastructure/products/hci-hyper-converged-infrastructure">
-                sangfor.com HCI
+                Sangfor HCI 공식 안내
               </a>
-              . 확인일: 2026-09-30 시도, Cloudflare에 차단되어 본문 사양을 재수집하지 못했습니다. 노드 수, 성능, 라이선스, 지원 하이퍼바이저는 그 확인 전에는 적지 않습니다.
+              에서 확인할 수 있습니다.
             </p>
           </div>
           <figure className="rd-panel">
@@ -54,7 +54,7 @@ export default function HciPage() {
                 </li>
               ))}
             </ol>
-            <p className="rd-caption">검토용 분해도입니다. 노드 수, 성능, 라이선스는 적지 않습니다.</p>
+            <p className="rd-caption">구성별 검토 항목입니다. 실제 구성과 지원 조건은 제품 버전과 도입 범위에 따라 확인합니다.</p>
           </figure>
         </div>
       </section>
@@ -63,7 +63,7 @@ export default function HciPage() {
         <div className="rd-wrap rd-split">
           <div data-reveal>
             <h2>역할</h2>
-            <p>HCI는 컴퓨트와 스토리지, 네트워크를 한 클러스터로 묶어 업무 시스템을 올리는 검토 출발점입니다. BLRO 페이지에서의 역할은 그 출발점을 고객의 현재 가상화, 전환 제약, 데이터 보호와 연결하는 것입니다. 마케팅 문구의 통합률이나 절감률은 확인된 수치가 없어 적지 않습니다.</p>
+            <p>HCI는 컴퓨트와 스토리지, 네트워크를 한 클러스터로 묶어 업무 시스템을 운영하는 기반입니다. 현재 가상화 환경, 전환 제약, 데이터 보호 요구를 함께 검토합니다.</p>
             <h2>검토 조건</h2>
             <ol className="rd-checklist">
               {QUESTIONS.map((item) => (
@@ -75,7 +75,7 @@ export default function HciPage() {
             <h2>관련 제품</h2>
             <p>aSV는 가상화 계층입니다. HCI와 같이 볼 조건이 있고, 같은 문장이 아닙니다. Sangfor SCP는 관리할 자원과 운영 담당의 플랫폼입니다. 관리 화면이 HCI 안에 보인다고 해서 SCP 검토가 끝난 것은 아닙니다. aDesk VDI는 사용자와 단말의 업무 화면입니다. aStor는 별도 스토리지 질문입니다.</p>
             <h2>적용 한계</h2>
-            <p>이 페이지는 특정 모델의 기능 보증이 아닙니다. 포트, 호환, 버전 동작은 공식 출처의 현재 문서로 확인해야 합니다. 외부 물리 장비(방화벽·스위치) 공급은 별도입니다. 제품 내 가상 네트워크·보안 기능은 그 공급과 같은 말이 아니며, 포함 범위는 공식 문서 확인 전이라 여기서 단정하지 않습니다. 서버 접근 제어도 HCI 도입에 자동으로 포함된다고 쓰지 않습니다. BLRO의 24시간 관제나 SLA를 의미하지 않습니다. 공급이 미확정이면 미확정이라고 적습니다.</p>
+            <p>포트, 호환성과 기능은 제품 버전의 공식 문서로 확인합니다. 외부 방화벽·스위치, 서버 접근 제어, 관제와 SLA는 별도 검토 항목입니다. 공급·구축·지원에 포함되는 범위는 상담에서 확인합니다.</p>
           </div>
         </div>
       </section>
@@ -84,9 +84,9 @@ export default function HciPage() {
         <div className="rd-wrap rd-split">
           <div data-reveal>
             <h2>도입 준비</h2>
-            <p>상담 전에 준비하면 좋은 것은 현재 클러스터 또는 서버 대수(대략), 주요 업무 시스템 이름, 가상화 제품명, 백업이 있는지, 중단 가능 창구입니다. 모델명이 없어도 상담은 열립니다. 잘못된 제품 ID를 견적 조건으로 저장하지 않습니다.</p>
-            <h2>실재 자료</h2>
-            <p>이 페이지에는 다운로드 파일이 없습니다. 승인된 한국어 자료가 연결되기 전에는 등록된 공개 파일 없음이 정직한 상태입니다.</p>
+            <p>현재 클러스터 또는 서버 대수, 주요 업무 시스템, 가상화 제품명, 백업 현황과 중단 가능한 시간을 준비해 주세요. 모델명이 정해지지 않아도 상담할 수 있습니다.</p>
+            <h2>제품 자료</h2>
+            <p>제품 정보는 제조사 공식 안내에서 확인할 수 있습니다. 필요한 한국어 자료는 상담 시 문의해 주세요.</p>
           </div>
           <div>
             <div className="rd-panel" data-reveal id="talk">

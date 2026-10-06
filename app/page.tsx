@@ -6,10 +6,10 @@ export const HOME_HEADING = "기업 IT의 도입, 전환, 구축, 운영, 기술
 
 const LIFE_STEPS = [
   ["도입", "상황과 범위를 적습니다. 제품이 정해지지 않아도 됩니다."],
-  ["전환", "제약과 데이터 보호를 먼저 적습니다. 일정이 정의를 대신하지 않습니다."],
+  ["전환", "운영 제약과 데이터 보호, 전환 일정을 함께 확인합니다."],
   ["구축", "합의한 공급과 설치만 수행합니다."],
-  ["운영", "담당과 인수 범위를 문서에 남깁니다. 확인되지 않은 응답 시간은 쓰지 않습니다."],
-  ["기술지원", "자료와 문의 경로를 연결합니다. 없는 파일은 만들지 않습니다."],
+  ["운영", "담당과 인수 범위를 문서에 남깁니다."],
+  ["기술지원", "기술 자료와 문의 경로를 연결합니다."],
 ] as const
 
 export default function Home() {
@@ -43,9 +43,9 @@ export default function Home() {
               </Link>
             </div>
             <p>
-              BLRO는 제품 이름만 나열하는 카탈로그가 아닙니다. 기업 고객은 지금 상황부터, 국내 파트너는 누가 무엇을 맡는지부터, 기술 엔지니어는 설치·장애·호환 자료부터 들어옵니다. 세 경험은 한 상담 페이지로 합치지 않습니다.
+              기업 고객은 현재 환경과 도입 과제부터, 국내 파트너는 공동 수행의 역할부터, 기술 엔지니어는 설치·장애·호환 자료부터 필요한 정보를 확인할 수 있습니다.
             </p>
-            <p>그림은 회사가 수행하는 일의 순서입니다. 방문자의 다음 행동을 대신하지 않습니다. 고객 수, 응답 시간, 절감률은 확인된 공개 사실이 없어 적지 않습니다.</p>
+            <p>도입 검토부터 전환, 구축, 운영 인수와 기술 지원까지 단계별로 필요한 범위를 함께 정리합니다.</p>
           </div>
           <LifecycleFigure />
         </div>
@@ -71,19 +71,19 @@ export default function Home() {
             <article className="rd-role customer" data-reveal>
               <p className="rd-who">기업 고객</p>
               <h3>도입·운영 상담하기</h3>
-              <p>서버 교체, 저장, 업무 데스크톱, 경계 보안처럼 상황부터 적습니다. 제품이 정해지지 않아도 상담할 수 있습니다. 수행 범위가 확인되지 않은 일은 약속으로 쓰지 않습니다.</p>
+              <p>서버 교체, 저장, 업무 데스크톱, 경계 보안 등 현재 상황에서 시작합니다. 제품이 정해지지 않아도 필요한 도입·운영 범위를 상담할 수 있습니다.</p>
               <Link className="rd-btn rd-btn-primary" href="/customer">고객 안내 보기</Link>
             </article>
             <article className="rd-role partner" data-reveal data-stagger="1">
               <p className="rd-who">국내 파트너</p>
               <h3>협력 제안하기</h3>
-              <p>공동 영업, 공동 제안과 PoC(개념 검증), 구축·운영에서 누가 고객을 만나고 누가 기술 범위를 쓰는지가 먼저입니다. 파트너 프로그램 약관은 아직 공개 사실이 아닙니다.</p>
+              <p>공동 영업, 공동 제안과 PoC(개념 검증), 구축·운영에 필요한 고객 접점과 기술 수행 역할을 함께 정리합니다.</p>
               <Link className="rd-btn rd-btn-ghost" href="/partner">역할 표 보기</Link>
             </article>
             <article className="rd-role engineer" data-reveal data-stagger="2">
               <p className="rd-who">기술 엔지니어</p>
               <h3>기술 자료 찾기</h3>
-              <p>설치, 장애, 호환과 포트, 승인된 다운로드와 릴리스 노트 경로. 없는 파일은 만들지 않습니다. 버전과 포트는 공식 출처 확인이 필요합니다.</p>
+              <p>설치, 장애, 호환과 포트에 필요한 기술 자료 및 제조사 공식 안내를 확인하고 기술 지원을 문의할 수 있습니다.</p>
               <Link className="rd-btn rd-btn-ghost" href="/engineer">자료 흐름 보기</Link>
             </article>
           </div>
@@ -114,8 +114,8 @@ export default function Home() {
             </svg>
           </figure>
           <div data-reveal>
-            <h2 id="hci-door-heading">그림은 일을 설명해야 합니다.</h2>
-            <p>본문의 그림은 라이프사이클, 고객 여정, 파트너 역할, HCI 구성, 자료 흐름입니다. 제조사 제품 사진과 로고는 사용 허가가 확인되기 전에는 두지 않습니다.</p>
+            <h2 id="hci-door-heading">HCI 도입과 운영을 살펴보세요.</h2>
+            <p>HCI 구성과 도입 전 확인할 항목을 현재 업무 환경에 맞춰 검토합니다.</p>
             <p>우선 살펴볼 제품 상세는 업무 시스템을 실행하는 통합 인프라인 HCI입니다. aSV, SCP, VDI, aStor와의 경계는 그 페이지에 적습니다.</p>
             <Link className="rd-btn rd-btn-primary" href="/solutions/hci">HCI 상세</Link>
           </div>
