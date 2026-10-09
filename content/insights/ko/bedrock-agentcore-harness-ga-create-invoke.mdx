@@ -1,0 +1,100 @@
+---
+contentId: insight-bedrock-agentcore-harness-ga-create-invoke
+title: "AgentCore Harness: 컨테이너 없이 올릴지 Runtime을 유지할지"
+summary: "AgentCore Harness GA를 CreateHarness와 InvokeHarness로 컨테이너 없이 올릴지, 기존 Runtime 컨테이너 경로를 유지할지를 이번 주에 가르는 리뷰 초안"
+slug: bedrock-agentcore-harness-ga-create-invoke
+locale: ko
+status: review
+updatedAt: 2026-09-08
+audience: [customer, partner]
+tags: [ai, bedrock, agentcore, harness, runtime]
+evidenceRefs:
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness.html"
+  - "https://docs.aws.amazon.com/cli/latest/reference/bedrock-agentcore-control/create-harness.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_InvokeHarness.html"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+이번 주에는 aws bedrock-agentcore-control create-harness로 harness가 생겼는지, InvokeHarness 또는 API POST /harnesses/invoke로 실행되는지, 컨테이너 이미지 빌드 단계가 전제에 남아 있는지를 확인한다.
+
+- 결정: Harness GA를 CreateHarness와 InvokeHarness로 컨테이너 없이 올릴지, 기존 Runtime 컨테이너 경로를 유지할지
+- 전제: Release Notes는 no orchestration code and no container to build라고 적는다
+- 경로: harness.html은 관리형 harness를 구성이라고 적고, 의존성이 필요하면 컨테이너를 가져올 수 있다고 적는다
+- 범위: Identity Consent Portal이나 Policy Guardrails 글이 아니라 CreateHarness와 InvokeHarness 경로
+
+## 문제 상황
+
+에이전트를 올리겠다고 하면, 관리형 harness 구성과 Runtime 컨테이너 빌드가 한 완료로 섞입니다.
+
+Release Notes의 AgentCore Harness is now Generally Available 절은 관리형 harness가 AgentCore를 지원하는 모든 AWS 리전에서 일반 공급이라고 적습니다. You can define an agent with CreateHarness and run it with InvokeHarness, with no orchestration code and no container to build. 이 절은 일반 공급일에 날짜를 붙이지 않습니다. 이 초안도 날짜를 만들지 않습니다.
+
+harness.html은 관리형 harness가 그 일을 구성으로 바꾼다고 적습니다. 모델, 도구, 스킬, 지시만 선언하고 환경, 컴퓨팅, 메모리, 신원, 네트워킹, 관측은 AgentCore가 다룬다고 안내합니다. 구성으로 부족하면 Strands 코드로 보내 AgentCore runtime에서 돌릴 수 있다고 적습니다. 의존성이 있는 사용자 환경이 필요하면 컨테이너를 가져올 수 있다고 적습니다. 기본 경로와 선택 컨테이너를 한 전제로 보지 않습니다.
+
+create-harness CLI는 --harness-name과 --execution-role-arn이 필수입니다. --environment-artifact는 선택입니다. InvokeHarness는 harnessArn으로 POST /harnesses/invoke를 받습니다. qualifier를 생략하면 DEFAULT 엔드포인트입니다. 이 API는 runtimeUserId를 runtime container로 넘긴다고 적습니다. 관리 런타임 언급과 운영자가 이미지를 빌드하는 전제를 같은 말로 보지 않습니다.
+
+## 지금 결정할 것
+
+- 대상 에이전트를 CreateHarness와 InvokeHarness로 올릴지, 기존 Runtime 컨테이너 경로에 둘지
+- create-harness에 컨테이너 아티팩트 없이 이름과 실행 역할만 둘지
+- InvokeHarness 또는 API로 실행을 확인할지
+- 구성으로 부족해 export to Strands 후 Runtime으로 내릴지
+- Identity Consent Portal, Policy Guardrails 과제를 이 승인과 묶지 말지
+
+## 의사결정 기준
+
+### 컨테이너 없는 Harness와 Runtime 이미지 빌드를 한 경로로 보지 않습니다
+
+Release Notes는 CreateHarness와 InvokeHarness에 오케스트레이션 코드와 빌드할 컨테이너가 없다고 적습니다. Harness를 쓰기로 했으면 이미지 빌드·배포를 필수 전제로 남기지 않습니다. 기존 Runtime 컨테이너를 유지하는 결정은 그 전제를 명시합니다.
+
+### 기본 구성과 선택 컨테이너를 한 완료로 보지 않습니다
+
+harness.html은 선언이 구성이고, 사용자 의존성이 있을 때만 컨테이너를 가져온다고 적습니다. create-harness의 --environment-artifact는 선택입니다. 선택 아티팩트가 있다고 기본 경로가 이미지 빌드라고 보지 않습니다.
+
+### 생성 API와 실행 API를 한 호출로 보지 않습니다
+
+생성은 bedrock-agentcore-control create-harness입니다. 실행은 InvokeHarness입니다. harness만 있고 호출이 없으면 올린 것이 아닙니다. qualifier 없는 DEFAULT와 이름 있는 엔드포인트를 한 대상으로 보지 않습니다.
+
+### GovCloud 가용과 전 리전 일반 공급 문장을 한 줄로 합치지 않습니다
+
+같은 Release Notes는 GovCloud US-West에서 harness를 쓸 수 있고 no orchestration code and no container to build라고 다시 적습니다. 일반 공급 절은 AgentCore를 지원하는 모든 AWS 리전이라고 적습니다. 계정 리전이 어디인지를 먼저 적습니다.
+
+## 실무 체크리스트
+
+1. 대상 에이전트를 Harness GA로 올릴지, Runtime 컨테이너로 유지할지 승인 조건에 적습니다.
+2. aws bedrock-agentcore-control create-harness에 --harness-name과 --execution-role-arn이 있는지 확인합니다.
+3. --environment-artifact를 넣었으면 선택 컨테이너 경로입니다. 기본 no container 전제와 나눕니다.
+4. InvokeHarness 또는 POST /harnesses/invoke로 실행 여부를 기록합니다. qualifier가 없으면 DEFAULT입니다.
+5. 구성으로 부족하면 harness.html의 export to Strands 후 Runtime 경로를 별도 과제로 적습니다.
+6. Identity Consent Portal과 Policy Guardrails는 이 목록에서 뺍니다.
+7. 일반 공급일을 Release Notes가 적지 않았으면 날짜를 만들지 않습니다.
+8. 「이번 주 운영 확인」 PASS = create-harness로 harness가 있고 InvokeHarness 또는 API로 실행되며 컨테이너 이미지 빌드 단계가 없다. FAIL = Harness GA를 쓰기로 했는데 Runtime 컨테이너 빌드·배포를 필수 전제로 남긴다.
+
+## 제외 범위
+
+- bedrock-agentcore-identity-consent-portal, bedrock-agentcore-policy-guardrails 글의 재작성
+- 특정 모델, 프레임워크, 에이전트 제품의 우열이나 가격 비교
+- 일반 공급일을 이 초안이 정하는 해석
+- 컨테이너 없이 올리면 품질, 보안, 비용이 보장된다는 주장
+- 고객별 런타임 성공의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: CreateHarness, InvokeHarness, 컨테이너 전제, Runtime 유지 여부를 현황화합니다.
+- 의사결정 산출물: Harness 구성 경로와 Runtime 컨테이너 경로를 담은 판단표를 만듭니다.
+- 운영 검증: create-harness 생성과 InvokeHarness 실행, 이미지 빌드 단계 없음을 확인합니다. 에이전트 품질이나 가용성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Harness를 컨테이너 없이 올릴지 Runtime을 유지할지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 AI 에이전트 경로 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Amazon Bedrock AgentCore Developer Guide, Release notes. AgentCore Harness is now Generally Available, CreateHarness, InvokeHarness, no orchestration code and no container to build. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html (확인일: 2026-09-08)
+- Amazon Bedrock AgentCore Developer Guide, AgentCore harness. 관리형 harness를 구성으로 안내, 선택 컨테이너, export to Strands 후 Runtime. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness.html (확인일: 2026-09-08)
+- AWS CLI Reference, create-harness. --harness-name, --execution-role-arn 필수, --environment-artifact 선택. https://docs.aws.amazon.com/cli/latest/reference/bedrock-agentcore-control/create-harness.html (확인일: 2026-09-08)
+- Amazon Bedrock AgentCore API Reference, InvokeHarness. POST /harnesses/invoke, harnessArn, qualifier 생략 시 DEFAULT. https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_InvokeHarness.html (확인일: 2026-09-08)
+
+위 출처는 AWS 공개 개발자 가이드와 API·CLI 문서를 설명합니다. 고객별 배포 성공이나 에이전트 품질을 보증하지 않습니다.
