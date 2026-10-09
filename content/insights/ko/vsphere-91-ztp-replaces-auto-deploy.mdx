@@ -1,0 +1,104 @@
+---
+contentId: insight-vsphere-91-ztp-replaces-auto-deploy
+title: "VCF 9.1 신규 호스트에 Auto Deploy를 계획하지 말 것"
+summary: "VCF 9.1 What’s new는 ZTP를 Auto Deploy의 전향 대체로 적는다. 신규 호스트 설치는 UEFI HTTPS ZTP로 옮기거나 Auto Deploy를 동결하는 리뷰 초안"
+slug: vsphere-91-ztp-replaces-auto-deploy
+locale: ko
+status: review
+updatedAt: 2026-09-07
+audience: [customer, partner]
+tags: [virtualization, vsphere, vcf, ztp, auto-deploy]
+evidenceRefs:
+  - "https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/release-notes/vmware-cloud-foundation-9-1-0-0-release-notes/what-s-new/whats-new-vsphere.html"
+  - "https://blogs.vmware.com/cloud-foundation/2026/05/12/whats-new-with-vsphere-9-1/"
+  - "https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/9-1/esx-installation-and-setup/installing-esxi/installing-esxi-using-vsphere-auto-deploy/using-zero-touch-provisioning.html"
+  - "https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/release-notes/vmware-cloud-foundation-9-1-0-0-release-notes.html"
+relatedContent: ["insight:virtualization-hci-migration-guide"]
+---
+
+## 한눈에 보기
+
+VCF 9.1 호스트 설치에서 신규 Auto Deploy PXE/TFTP를 계획하고 있으면, 이번 주에는 그 계획을 멈추고 Zero Touch Provisioning의 UEFI HTTPS 부트로 옮기거나 Auto Deploy를 문서화해 동결합니다.
+
+- 결정: VCF 9.1 신규 ESX 설치에 Auto Deploy를 더 늘리지 말고 ZTP로 옮길지, 기존 Auto Deploy만 동결할지
+- 전제: What’s new는 Auto Deploy가 VCF 9.0에서 deprecated이고 ZTP가 forward-looking replacement라고 적는다
+- 운영: 대상 호스트 UEFI의 HTTPS 부트 URL과, 신규 PXE/TFTP Auto Deploy 설계가 변경 기록에 남아 있는지를 본다
+- 범위: vSphere 8 vLCM baseline 글이나 NVIDIA 인증 글의 재작성이 아니다. 확인일 기준 GET으로 열리지 않은 ZTP 하위 How-to 경로는 근거로 쓰지 않는다
+
+## 문제 상황
+
+호스트를 설치했다고 보고하면, 레거시 Auto Deploy와 ZTP, PXE/TFTP와 UEFI HTTPS가 한 완료로 섞입니다.
+
+VMware Cloud Foundation 9.1 What’s New vSphere의 ESX New Features Installation은 Zero Touch Provisioning (ZTP) for ESX installation을 적습니다. VCF 9.1 introduces Zero Touch Provisioning (ZTP), using a secure UEFI and HTTPS-based network boot to provision ESX images on hosts at scale. ZTP는 PXE 인프라와 TFTP 같은 추가 네트워크 서비스를 피한다고 적습니다. With VCF 9.1, you can boot multiple servers from a single HTTPS URL using a static network configuration on bare metal. ZTP serves as a forward-looking replacement for legacy Auto Deploy, which is deprecated in VCF 9.0.
+
+Using Zero Touch Provisioning, vSphere 9.1, Last Updated September 3, 2026는 With Zero Touch Provisioning, also called vSphere Elastic Provisioning, you can install ESX on hosts at scale from a single UEFI HTTPS boot URL or a static network configuration on bare metal라고 적습니다. 이 장은 Installing ESX Using vSphere Auto Deploy 아래에 있고, Image ESX Hosts by Network with a UEFI HTTPS Boot URL Configured Directly in the UEFI Firmware를 하위 주제로 둡니다. 확인일 기준 이 장 허브만 GET으로 읽었고, 하위 How-to 경로를 열어 보지 않은 채 메뉴 이름을 만들지 않습니다.
+
+VMware Cloud Foundation 블로그 What’s New with vSphere in VMware Cloud Foundation 9.1, 2026-05-12는 Configuration Profiles provides host configuration when installing hosts using Zero Touch Provisioning and supports vSphere Distributed Switch configuration being bootstrapped during host deployment라고 적습니다. 이 글은 Auto Deploy 폐기 문장을 본문에 두지 않습니다. 폐기와 대체는 What’s new 문장으로만 적습니다.
+
+VMware Cloud Foundation 9.1 Release Notes 허브는 VMware Cloud Foundation 9.1 | 12 MAY 2026이고 What’s New에 vSphere를 포함합니다. 허브 본문에 ZTP 문장은 없습니다. 날짜와 What’s New 구성만 이 페이지에서 가져옵니다.
+
+## 지금 결정할 것
+
+- 이번 창의 대상이 VCF 9.1 신규 호스트 설치인지, 이미 Auto Deploy로 돌아가는 호스트인지
+- 신규 설치를 UEFI HTTPS ZTP로 옮길지
+- 기존 Auto Deploy를 동결하고 신규 PXE/TFTP를 추가하지 않을지
+- 베어메탈 정적 네트워크와 단일 HTTPS URL을 준비했는지
+- 호스트 설치 후 Configuration Profiles로 원하는 상태를 맞출지
+
+## 의사결정 기준
+
+### 신규 Auto Deploy와 잔존 Auto Deploy를 한 계획으로 보지 않습니다
+
+What’s new는 Auto Deploy가 VCF 9.0에서 deprecated이고 ZTP가 전향 대체라고 적습니다. 이미 돌아가는 Auto Deploy를 이번 주에 제거하라는 문장은 그 페이지에 없습니다. 신규 설계에 PXE/TFTP를 넣는 일과 잔존 환경을 동결하는 일을 한 승인으로 묶지 않습니다.
+
+### ZTP를 PXE 현대화로 적지 않습니다
+
+What’s new는 ZTP가 PXE와 TFTP를 피한다고 적습니다. PXE를 고쳤다고 ZTP로 바뀌었다고 보지 않습니다. 부트 방식은 UEFI HTTPS 또는 베어메탈 정적 네트워크입니다.
+
+### 블로그의 Configuration Profiles를 설치 완료로 보지 않습니다
+
+블로그는 ZTP로 호스트를 설치할 때 Configuration Profiles가 호스트 구성을 제공한다고 적습니다. 프로필만 준비했다고 UEFI HTTPS 부트가 끝났다고 보지 않습니다.
+
+### 열리지 않은 하위 How-to를 운영 메뉴로 적지 않습니다
+
+ZTP 장 허브는 하위 주제 제목만 보여 줍니다. 확인일 기준 GET으로 읽지 않은 경로의 클릭 순서를 만들지 않습니다.
+
+## 실무 체크리스트
+
+1. 이번 창의 호스트를 VCF 9.1 신규 설치와 기존 Auto Deploy 잔존으로 나눕니다.
+2. 신규 설치 설계에 PXE 또는 TFTP Auto Deploy가 남아 있으면 ZTP로 바꿀지, 동결할지 승인합니다.
+3. 대상 서버 UEFI에 HTTPS 부트 URL을 둘 수 있는지 기록합니다.
+4. 베어메탈 정적 네트워크와 단일 HTTPS URL을 What’s new 전제로 맞춥니다.
+5. 설치 후 Configuration Profiles로 Distributed Switch를 부트스트랩할지 블로그 문장과 대조합니다.
+6. 변경 기록에 Auto Deploy deprecated in VCF 9.0과 ZTP forward-looking replacement를 남깁니다.
+7. 확인일 기준 열리지 않은 ZTP 하위 문서를 절차서 URL로 넣지 않습니다.
+8. 주간 점검: 신규 호스트 계획에서 PXE/TFTP Auto Deploy가 빠졌는지를 확인합니다.
+
+## 제외 범위
+
+- vSphere 8 vLCM baseline 이미지 전환 글의 재작성
+- NVIDIA-Certified Hypervisor 인증 글의 재작성
+- 확인일 기준 GET으로 읽지 않은 ZTP 하위 How-to 경로
+- 고객 호스트의 설치 시간, 무중단, 성공률 보장
+- 하이퍼바이저 제품 우열, 가격 비교
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 신규 설치와 Auto Deploy 잔존, UEFI HTTPS URL, PXE/TFTP 설계 잔존을 현황화합니다.
+- 의사결정 산출물: ZTP 전환, Auto Deploy 동결, 근거 문장을 담은 판단표를 만듭니다.
+- 운영 검증: 신규 계획에서 Auto Deploy PXE/TFTP가 빠졌는지를 확인합니다. 설치 성공이나 다운타임을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+VCF 9.1 호스트 설치를 ZTP로 옮길지 Auto Deploy로 동결할지를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Broadcom, What’s New vSphere, VMware Cloud Foundation 9.1. ZTP UEFI·HTTPS, PXE/TFTP 회피, Auto Deploy deprecated in VCF 9.0, ZTP forward-looking replacement. https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/release-notes/vmware-cloud-foundation-9-1-0-0-release-notes/what-s-new/whats-new-vsphere.html (확인일: 2026-09-07)
+- VMware Cloud Foundation Blog, What’s New with vSphere in VMware Cloud Foundation 9.1, 2026-05-12. Configuration Profiles와 ZTP 호스트 설치, Distributed Switch 부트스트랩. https://blogs.vmware.com/cloud-foundation/2026/05/12/whats-new-with-vsphere-9-1/ (확인일: 2026-09-07)
+- Broadcom, Using Zero Touch Provisioning, vSphere 9.1, Last Updated September 3, 2026. vSphere Elastic Provisioning, 단일 UEFI HTTPS 부트 URL 또는 베어메탈 정적 네트워크. What’s new의 Using Zero Touch Provisioning 링크가 이 경로로 열림. https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/9-1/esx-installation-and-setup/installing-esxi/installing-esxi-using-vsphere-auto-deploy/using-zero-touch-provisioning.html (확인일: 2026-09-07)
+- Broadcom, VMware Cloud Foundation 9.1 Release Notes, 12 MAY 2026. What’s New에 vSphere 포함. 허브 본문에 ZTP 문장 없음. https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/release-notes/vmware-cloud-foundation-9-1-0-0-release-notes.html (확인일: 2026-09-07)
+
+이번 주 운영 확인: 신규 VCF 9.1 호스트 계획에 UEFI HTTPS 부트 URL 또는 문서화된 Auto Deploy 동결이 있고 신규 PXE/TFTP Auto Deploy가 빠져 있으면 PASS, 신규 설치에 Auto Deploy PXE/TFTP를 전제로 남겨 두면 FAIL.
+
+위 출처는 Broadcom과 VMware 공개 문서를 설명합니다. 고객별 설치 결과나 무중단을 보증하지 않습니다.
