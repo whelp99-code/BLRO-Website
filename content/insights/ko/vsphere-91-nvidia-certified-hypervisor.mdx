@@ -1,0 +1,100 @@
+---
+contentId: insight-vsphere-91-nvidia-certified-hypervisor
+title: "vSphere 9.1 NVIDIA-Certified Hypervisor: 인증과 vGPU 지원표를 한 승인으로 합치지 말 것"
+summary: "2026-08-27 Broadcom은 vSphere 9.1과 이후 vSphere 9를 NVIDIA-Certified Hypervisor로 발표했다. 인증 문장과 NVIDIA vGPU 지원표, ESXi 9.x가 VCF로만 배포된다는 전제를 가르는 리뷰 초안"
+slug: vsphere-91-nvidia-certified-hypervisor
+locale: ko
+status: review
+updatedAt: 2026-09-01
+audience: [customer, partner]
+tags: [vsphere, vcf, nvidia, hypervisor, virtualization]
+evidenceRefs:
+  - "https://blogs.vmware.com/cloud-foundation/2026/08/27/vcf-achieves-nvidia-hypervisor_certification/"
+  - "https://docs.nvidia.com/vgpu/20.0/grid-vgpu-release-notes-vmware-vsphere/validated-platforms.html"
+  - "https://docs.nvidia.com/vgpu/latest/product-support-matrix/vmware-vsphere.html"
+relatedContent: ["insight:virtualization-hci-migration-guide", "insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+VMware Cloud Foundation 블로그는 2026-08-27에 VMware vSphere 9.1과 이후 모든 vSphere 9 릴리스가 NVIDIA-Certified Hypervisor가 되었다고 적습니다.
+
+영향 범위는 GPU를 쓰는 vSphere 클러스터와 VCF 경로입니다. 전제는 ESXi 9.x가 더 이상 단독 제품이 아니라 VCF로만 배포된다는 점입니다. 검증 항목은 인증 발표와 NVIDIA vGPU 지원표를 같은 일반 공급으로 읽지 않는지, Blackwell SKU가 VCF 9.0.1 또는 ESXi 8.0 Update 3g를 요구하는지입니다.
+
+- 결정: 현재 GPU 클러스터를 VCF 9.1 인증 경로로 둘지, ESXi 8.0 또는 VCF 9.0 지원표에 남길지
+- 전제: NVIDIA 문서는 9.x 하이퍼바이저를 VCF로 부르고, 8.x는 vSphere로 부른다
+- 검증: 사용 GPU가 vGPU인지 pass-through인지, 지원표의 최소 열차와 맞는지
+- 범위: VCF 9.1 업그레이드 단방향 글의 재작성이 아니다. 인증과 지원표만 가른다
+
+## 문제 상황
+
+인증을 받았다고 보고하면, 블로그의 Certified Hypervisor 문장과 NVIDIA vGPU 지원표, ESXi 8.0 잔존 클러스터가 한 승인에 섞입니다.
+
+블로그는 vSphere 9.1이 NVIDIA가 정한 compute, memory, data-path, LLM inference 범주에서 성능 임계를 만족했다고 적습니다. 시험 범주는 GPU Collective Communication, GPU·CPU·Memory Bandwidth, Compute Performance, AI Inference, RDMA Data Path, Topology and Device-Mapping Evidence입니다. Blackwell과 Hopper 아키텍처를 인증 범위로 적습니다. near bare-metal이라는 문구는 이 시험 범주에 묶여 있습니다. 고객 클러스터의 측정값을 이 초안이 확정하지 않습니다.
+
+NVIDIA Virtual GPU Software 문서 Validated Platforms는 ESXi 9.x가 단독 제품이 아니고 VCF로만 배포된다고 적습니다. 9.x는 VCF, 8.x는 VMware vSphere로 부릅니다. VCF 9.1은 VCF에서 NVIDIA vGPU 소프트웨어를 지원하는 모든 GPU를 vGPU와 pass-through로 지원한다고 적습니다. VCF 9.0은 9.0.1 같은 이후 유지보수 릴리스를 포함합니다. NVIDIA RTX PRO 4500 Blackwell Server Edition, NVIDIA RTX PRO 6000 Blackwell Server Edition, NVIDIA RTX PRO 6000 Blackwell Server Edition liquid cooled는 VCF 9.0.1 이상이 필요하다고 적습니다. ESXi 8.0은 8.0u3 P06 이후만 지원하며, 같은 Blackwell SKU는 ESXi 8 Update 3g 이상이 필요하다고 적습니다.
+
+NVIDIA 최신 VMware vSphere 지원 행렬은 NVIDIA vGPU for VCF 9.1 행을 둡니다. 배포는 NVIDIA vGPU와 VMware vDGA입니다. 게스트는 Windows 11 25H2와 Windows 10 22H2를 적습니다. 가상화 제품은 Horizon, Citrix Virtual Apps and Desktops를 적습니다. ESXi 8.0 행도 따로 있습니다. 블로그의 Certified Hypervisor와 이 행렬의 vGPU 지원을 한 문장으로 합치지 않습니다.
+
+## 지금 결정할 것
+
+- GPU 클러스터를 VCF 9.1 인증 경로로 올릴지, ESXi 8.0 또는 VCF 9.0 지원표에 둘지
+- 사용 GPU가 vGPU인지 pass-through인지, 행렬의 어떤 행인지
+- Blackwell SKU면 VCF 9.0.1 또는 ESXi 8 Update 3g 하한을 만족하는지
+- ESXi 9.x를 단독 하이퍼바이저로 살 수 있다고 보고하지 않을지
+- 블로그의 near bare-metal 문구를 이번 창의 성능 보장으로 쓰지 않을지
+
+## 의사결정 기준
+
+### Certified Hypervisor와 vGPU 지원표를 한 일반 공급으로 보지 않습니다
+
+블로그는 vSphere 9.1과 이후 vSphere 9를 NVIDIA-Certified Hypervisor로 적습니다. NVIDIA 문서는 VCF 9.1에서 vGPU와 pass-through를 지원한다고 적습니다. 인증 발표가 모든 GPU SKU와 모든 게스트의 일반 공급을 뜻한다고 보지 않습니다.
+
+### ESXi 9.x를 단독 제품으로 보지 않습니다
+
+NVIDIA 문서는 9.0부터 ESXi가 단독 제품이 아니고 VCF로만 배포된다고 적습니다. 9.x 클러스터를 vSphere 단독 라이선스 경로로 계획하지 않습니다.
+
+### Blackwell 하한과 9.1 인증을 같은 조건으로 보지 않습니다
+
+Validated Platforms는 지정 Blackwell SKU에 VCF 9.0.1 또는 ESXi 8 Update 3g를 요구합니다. 인증 블로그의 Hopper·Blackwell 문장만 보고 현재 8.0 빌드가 충분하다고 보지 않습니다.
+
+### 성능 문구를 측정 결과로 옮기지 않습니다
+
+블로그는 NVIDIA가 정한 시험 범주에서 임계를 만족했다고 적습니다. 이 초안은 고객 워크로드의 처리량이나 지연을 확정하지 않습니다.
+
+## 실무 체크리스트
+
+1. GPU 클러스터의 현재 열차가 ESXi 8.0인지 VCF 9.0인지 VCF 9.1인지 기록합니다.
+2. 각 GPU를 vGPU와 pass-through로 나눕니다. NVIDIA 행렬의 VCF 9.1 행과 ESXi 8.0 행을 따로 대조합니다.
+3. RTX PRO 4500·6000 Blackwell Server Edition이면 VCF 9.0.1 또는 ESXi 8 Update 3g 이상인지 확인합니다.
+4. ESXi 9.x를 단독으로 올리려는 계획이 있으면 VCF 배포 전제로 바꿉니다.
+5. 블로그 인증을 이번 창의 목표로 쓸지, 지원표 충족만 목표로 쓸지를 승인자에게 알립니다.
+6. 게스트 OS가 행렬의 Windows 11 25H2 또는 Windows 10 22H2 범위인지 기록합니다. 다른 게스트는 이 초안이 확정하지 않습니다.
+7. Horizon 또는 Citrix Virtual Apps and Desktops를 쓰는지는 행렬 포인터로만 남깁니다. VDI 용량 글과 섞지 않습니다.
+8. near bare-metal 문구를 성능 보장 문장에 넣지 않습니다.
+
+## 제외 범위
+
+- VCF 9.1 단방향 업그레이드 글의 재작성
+- Hyper-V GPU-P·DDA 라이브 마이그레이션 글의 재작성
+- 고객 클러스터의 성능, 처리량, 지연 보장
+- NVIDIA 기술 백서 숫자를 읽은 것처럼 쓰는 해석
+- 하이퍼바이저 제품의 우열, 가격 비교
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 현재 열차, GPU 배치 방식, Blackwell 하한, VCF 배포 전제를 현황화합니다.
+- 의사결정 산출물: 인증 경로와 지원표 경로, 잔존 8.0 클러스터, 승인 근거를 담은 판단표를 만듭니다.
+- 운영 검증: 지원표 행과 현재 빌드를 시나리오로 확인합니다. 인증 효과와 성능을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+vSphere 9.1 NVIDIA-Certified Hypervisor 경로와 vGPU 지원표를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 서버 가상화 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Broadcom, VMware Cloud Foundation Achieves NVIDIA Certification: AI Workloads Validated to Operate at Near Bare Metal Performance. 2026-08-27. vSphere 9.1과 이후 vSphere 9를 NVIDIA-Certified Hypervisor로 발표, Blackwell·Hopper, 시험 범주 나열. https://blogs.vmware.com/cloud-foundation/2026/08/27/vcf-achieves-nvidia-hypervisor_certification/ (확인일: 2026-09-01). 이번 주 운영 확인 항목: 인증 문장을 고객 성능 보장으로 옮기지 않았는지.
+- NVIDIA, Validated Platforms, Virtual GPU Software Documentation 20.0. ESXi 9.x는 VCF로만 배포, VCF 9.1은 vGPU·pass-through 지원, 지정 Blackwell SKU는 VCF 9.0.1 또는 ESXi 8 Update 3g. https://docs.nvidia.com/vgpu/20.0/grid-vgpu-release-notes-vmware-vsphere/validated-platforms.html (확인일: 2026-09-01). 이번 주 운영 확인 항목: 현재 빌드가 8.0u3 P06 또는 VCF 9.0.1 하한을 만족하는지.
+- NVIDIA, VMware vSphere ESXi Support, latest product support matrix. NVIDIA vGPU for VCF 9.1 행, vGPU와 VMware vDGA, Windows 11 25H2·Windows 10 22H2, Horizon·Citrix Virtual Apps and Desktops. ESXi 8.0 행 별도. https://docs.nvidia.com/vgpu/latest/product-support-matrix/vmware-vsphere.html (확인일: 2026-09-01). 이번 주 운영 확인 항목: 사용 GPU가 VCF 9.1 행에 있는지 ESXi 8.0 행에 있는지.
+
+위 출처는 Broadcom 블로그와 NVIDIA 공개 문서를 설명합니다. 고객별 성능, 인증 효과, 업그레이드 결과를 보증하지 않습니다.
