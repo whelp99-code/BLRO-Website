@@ -1,0 +1,100 @@
+---
+contentId: insight-hyper-v-gpup-dda-live-migration
+title: "Windows Server 2025 Hyper-V: GPU-P와 DDA를 같은 카드에 얹지 말 것"
+summary: "Windows Server 2025 Hyper-V에서 물리 GPU를 DDA 전용과 GPU-P 분할로 가르고, 라이브 마이그레이션과 클러스터 HA 전제를 확인하는 리뷰 초안"
+slug: hyper-v-gpup-dda-live-migration
+locale: ko
+status: review
+updatedAt: 2026-08-28
+audience: [customer, partner]
+tags: [hyper-v, gpu, virtualization, windows-server]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/gpu-partitioning"
+  - "https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/plan/plan-for-gpu-acceleration-in-windows-server"
+  - "https://learn.microsoft.com/en-us/windows-server/get-started/whats-new-windows-server-2025"
+  - "https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda"
+relatedContent: ["service:hci-private-cloud", "insight:virtualization-hci-migration-guide"]
+---
+
+## 한눈에 보기
+
+Windows Server 2025 Hyper-V는 물리 GPU를 한 가상 머신에 통째로 주는 DDA와, 같은 장치를 여러 가상 머신에 나누는 GPU-P를 제공합니다. 이 글은 Azure Local GPU 글이 아니라 온프레미스 Hyper-V 할당 경계입니다.
+
+- 결정: 장치를 DDA로 전용할지, GPU-P로 분할할지
+- 전제: 같은 물리 GPU를 두 방식에 동시에 올리지 않음. 클러스터는 제조사와 모델, 분할 수가 같은 균질 구성
+- 라이브 마이그레이션: GPU-P는 Windows Server 2025부터. 계획된 이전은 독립 노드 사이도 가능
+- 비계획 HA: 클러스터에서 다른 노드로 자동 올리려면 Datacenter가 필요하다고 분할 문서가 적는다
+
+## 문제 상황
+
+GPU가 보이면 워크로드에 바로 붙이는 방식으로 가면, 한 장을 전용해야 하는 작업과 여러 가상 머신이 나눠 써야 하는 작업이 같은 카드에 겹칩니다.
+
+계획 문서는 DDA가 물리 GPU를 가상 머신에 전용하고 게스트가 네이티브 드라이버로 장치 기능에 가깝게 접근한다고 적습니다. 한 장은 기껏해야 가상 머신 하나에 가속을 줍니다. GPU-P는 한 장치의 일부를 각 가상 머신에 줍니다.
+
+분할 문서는 페이지 날짜 2026-05-05입니다. 같은 물리 GPU를 DDA와 분할 가능 GPU로 동시에 지정할 수 없고, 둘 중 하나만 고른다고 적습니다. 분할은 가상 머신에 자동 할당되며 특정 분할을 특정 가상 머신에 고를 수 없습니다. 클러스터 모든 서버의 GPU 제조사, 모델, 크기와 분할 수가 같아야 합니다.
+
+Windows Server 2025 새 기능은 GPU-P 고가용성으로 비계획 중단 때 다른 클러스터 노드에서 가상 머신을 올린다고 적습니다. GPU-P 라이브 마이그레이션은 계획된 중단이나 부하 분산을 위해 독립 노드와 클러스터 노드로 옮긴다고 적습니다. Azure Local 호스트 GPU 글의 미리보기 제목 불일치를 이 범위에 옮기지 않습니다.
+
+## 지금 결정할 것
+
+- 대상 워크로드가 장치 전용이 필요한지, 분할로 밀도를 높일지
+- 클러스터 모든 노드에 같은 모델 GPU와 같은 분할 수를 둘 수 있는지
+- 계획된 라이브 마이그레이션만 필요한지, 비계획 클러스터 HA까지 Datacenter를 전제로 할지
+- 분할을 Windows Admin Center로 둘지, PowerShell로 둘지. 분할 문서는 Admin Center를 권함
+- 게스트 OS와 GPU 모델이 분할 문서의 지원 목록에 있는지
+
+## 의사결정 기준
+
+### 같은 물리 GPU에 두 할당 방식을 섞지 않습니다
+
+DDA는 게스트가 벤더 드라이버로 장치 기능에 가깝게 접근합니다. GPU-P는 SR-IOV 기반 하드웨어 분할입니다. 한 장을 전용으로 준 뒤 나머지를 분할로 쓴다는 식으로 같은 장치를 두 방식에 올리지 않습니다. 분할을 여러 개 주면 게스트에는 GPU가 여러 장으로 보입니다.
+
+### 균질 클러스터가 분할 승인보다 앞섭니다
+
+분할 문서는 다른 제조사 GPU를 한 클러스터에 섞거나, 같은 제조사라도 제품군이 다른 모델을 섞으면 지원하지 않는다고 적습니다. 카드만 꽂힌 상태를 할당 가능으로 보지 않습니다. 분할은 자동 할당이므로 특정 물리 분할을 특정 가상 머신에 고정한다는 가정을 승인 조건에 넣지 않습니다.
+
+### 라이브 마이그레이션과 비계획 HA를 한 라이선스로 보지 않습니다
+
+분할 문서는 Windows Server 2025부터 GPU-P 라이브 마이그레이션을 지원한다고 적습니다. 독립 서버 사이 계획된 이전은 가능하고, 비계획 중단에 클러스터가 필요하면 Windows Server 2025 Datacenter를 써야 한다고 적습니다. 새 기능 페이지의 GPU-P HA 문장과 분할 문서의 Datacenter 전제를 같은 기록에 남깁니다. 프로세서 예시는 분할 문서의 IOMMU DMA 비트 추적 목록을 다시 엽니다.
+
+### 이 글은 Azure Local GPU 경계가 아닙니다
+
+계획 문서는 Azure Local에도 적용된다고 적지만, 이 초안은 Windows Server Hyper-V의 DDA와 GPU-P 선택입니다. Azure Local 관리 문서의 미리보기 제목이나 포털 탈부착 재시작을 여기 승인 근거로 쓰지 않습니다.
+
+## 실무 체크리스트
+
+1. 호스트 GPU 제조사, 모델, 크기를 노드별로 목록화합니다.
+2. 워크로드를 DDA 전용, GPU-P 분할, GPU 불필요로 나눕니다.
+3. 같은 물리 GPU를 두 방식에 올리지 않도록 장치별 할당표를 만듭니다.
+4. 클러스터면 모델과 분할 수가 같은지 확인하고, 다르면 할당 범위를 줄입니다.
+5. 계획된 라이브 마이그레이션과 비계획 HA의 에디션 전제를 나눕니다.
+6. 게스트 OS와 GPU 모델을 분할 문서 지원 목록과 대조합니다.
+7. 분할 설정 도구를 Windows Admin Center 또는 PowerShell로 기록합니다.
+8. 승인 근거가 Windows Server 2025 Hyper-V 문서인지, Azure Local 문서인지를 남깁니다.
+
+## 제외 범위
+
+- Azure Local 호스트 GPU DDA·분할 글의 재작성
+- VMware와 Nutanix의 기능, 가격, 성능 비교
+- 특정 GPU 모델의 우열이나 처리량 순위
+- 고객별 카탈로그 적합성, 드라이버 호환성, 무중단 이전의 확정
+- 기존 가상화 HCI 마이그레이션 안내를 다시 쓰는 범위
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 호스트 GPU 모델, DDA와 GPU-P 선택, 클러스터 균질성, 라이브 마이그레이션과 HA 전제를 현황화합니다.
+- 의사결정 산출물: 장치별 할당 방식, 에디션 전제, 문서 근거를 담은 판단표를 만듭니다.
+- 운영 검증: 할당, 계획된 이전, 재시작 후 게스트 인식 여부를 시나리오로 확인합니다. 성능, 밀도, 호환성 또는 완료 시간을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+온프레미스 Hyper-V GPU 할당 방식을 정하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 서버 가상화 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, Partition and share GPUs with virtual machines on Hyper-V, 페이지 날짜 2026-05-05. GPU-P 라이브 마이그레이션은 Windows Server 2025부터, 비계획 클러스터는 Datacenter, 균질 구성, 같은 물리 GPU를 DDA와 분할로 동시 지정 불가, 분할 자동 할당. https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/gpu-partitioning (확인일: 2026-08-28)
+- Microsoft Learn, Plan for GPU acceleration in Windows Server. DDA 전용과 GPU-P 분할 비교. 확인일 기준 페이지는 200으로 열렸고 교육 카탈로그로 바뀌지 않음. https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/plan/plan-for-gpu-acceleration-in-windows-server (확인일: 2026-08-28)
+- Microsoft Learn, What's new in Windows Server 2025. GPU-P HA와 라이브 마이그레이션. https://learn.microsoft.com/en-us/windows-server/get-started/whats-new-windows-server-2025 (확인일: 2026-08-28)
+- Microsoft Learn, Deploy graphics devices by using Discrete Device Assignment. DDA는 장치 하나를 게스트에 넘김. https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda (확인일: 2026-08-28)
+
+위 출처는 Microsoft Learn 공개 문서를 설명합니다. 고객별 하드웨어 적합성, 성능, 운영 결과를 보증하지 않습니다.

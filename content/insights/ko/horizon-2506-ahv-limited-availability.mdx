@@ -1,0 +1,102 @@
+---
+contentId: insight-horizon-2506-ahv-limited-availability
+title: "Horizon 2506 AHV: Limited Availability를 GA로 보지 말 것"
+summary: "Horizon 8 2506의 Nutanix AHV Limited Availability와 2512 문서의 LA 없는 지원 문구를 가르고, GA로 보지 않는 리뷰 초안"
+slug: horizon-2506-ahv-limited-availability
+locale: ko
+status: review
+updatedAt: 2026-08-28
+audience: [customer, partner]
+tags: [horizon, vdi, workspace, omnissa]
+evidenceRefs:
+  - "https://docs.omnissa.com/bundle/Desktops-and-Applications-in-HorizonVmulti/page/Nutanix_CreateandManageAutomatedPools.html"
+  - "https://docs.omnissa.com/bundle/Desktops-and-Applications-in-HorizonVmulti/page/Nutanix_PreparingaGoldenImage.html"
+  - "https://docs.omnissa.com/bundle/Desktops-and-Applications-in-HorizonV2512/page/Nutanix_CreateandManageAutomatedPools.html"
+  - "https://www.omnissa.com/insights/blog/horizon-8-2506-release-features-improved-control/"
+relatedContent: ["service:vdi-digital-workspace", "insight:vdi-capacity-planning"]
+---
+
+## 한눈에 보기
+
+Omnissa Horizon 8 2506 문서 묶음은 Nutanix AHV 자동 풀을 Limited Availability로 표시합니다. 2512 묶음 같은 제목은 LA 라벨 없이 지원한다고 적습니다.
+
+- 결정: vSphere에 남을지, 2506 LA 접근을 요청할지, 2512 이상 문서 지원을 기다릴지
+- 2506 전제: Connection Server 2506, Prism Central 2024.3, AOS 7.0, AHV 10.0. 온프레미스와 NC2 AWS
+- 2512 전제: Connection Server 2512 이상. 최소 Nutanix 버전은 같고 권장 버전을 괄호로 적음
+- 범위: 하이퍼바이저 우열이 아니라 지원 경계. LA를 GA로 보지 않는다
+
+## 문제 상황
+
+AHV 위에 Horizon을 올릴 수 있다는 한 문장만 보면, 판매 요청이 필요한 Limited Availability와 이후 묶음의 문서 지원이 같은 승인으로 묶입니다.
+
+2506 자동 풀 문서는 제목부터 Limited Availability입니다. Horizon 8의 Nutanix 통합이 limited availability이며, 현재 고객은 영업 또는 파트너에게, 비고객은 getHorizon8NutanixLA@omnissa.com으로 접근을 요청하라고 적습니다. 관리자는 Horizon 인프라를 AHV에 두고 Prism Central과 자동 풀 프로비저닝·전원 관리를 연동할 수 있으며, 온프레미스와 NC2 AWS를 지원한다고 적습니다. Unified Access Gateway와 Horizon Edge Gateway도 AHV에 둘 수 있다고 적습니다.
+
+골든 이미지 문서도 같은 LA 문구를 반복합니다. 골든 이미지는 SCSI 디스크 버스, Windows 11은 Secure Boot, 풀 생성 때 고른 스냅샷이 Nutanix 템플릿의 활성 버전을 가리켜야 한다고 적습니다. 에이전트 설치 때 This machine will be used as a Golden Image를 켜라고 적습니다.
+
+2512 자동 풀 문서는 제목에 Limited Availability가 없습니다. Horizon 8 supports the Nutanix AHV Hypervisor platform이라고 적고, Connection Server는 Horizon 8 2512 이상을 전제로 합니다. 최소 버전은 Prism Central 2024.3, AOS 7.0, AHV 10.0이며 괄호에 이후 권장 버전을 둡니다. NC2는 AWS로 한정하지 않고 on premises and NC2라고 적습니다. 2506 문서의 LA 요청 문장과 2512 문서의 지원 문장을 한 공급 상태로 읽지 않습니다.
+
+docs.omnissa.com HTML은 JS 셸입니다. 확인일 기준 같은 주제는 로그인 없이 공개 문서 백엔드에서 본문이 열렸습니다. 마케팅 블로그는 이번 확인에서 200으로 열렸고, 2506에서 Horizon 8 on Nutanix AHV Limited Availability를 소개한다고 적습니다. 이전 자동 수집에서는 Access Denied가 난 기록이 있어, 운영 근거는 문서 묶음을 우선합니다.
+
+## 지금 결정할 것
+
+- 현재 풀을 vSphere에 유지할지, AHV 경로를 검토할지
+- 2506 LA 접근을 영업·파트너 또는 안내 메일로 요청할지
+- Connection Server를 2512 이상으로 올린 뒤 2512 문서 지원을 전제로 할지
+- 골든 이미지 버스, Secure Boot, 활성 템플릿 스냅샷 전제를 만족할지
+- LA 기능 목록을 GA 약속으로 내부 보고할지
+
+## 의사결정 기준
+
+### Limited Availability를 일반 공급으로 옮기지 않습니다
+
+2506 문서는 기능 접근을 요청하라고 적습니다. 요청 메일이 있다고 해서 모든 사이트에 열린 상태가 아닙니다. 2512 문서가 LA 라벨을 빼도, 이 초안은 라이선스나 지역 GA를 확정하지 않습니다. 내부 보고에 GA, 전면 지원, 하이퍼바이저 교체 완료를 쓰지 않습니다.
+
+### 2506 전제와 2512 전제를 한 버전 표로 합치지 않습니다
+
+2506는 Connection Server 2506과 NC2 AWS를 적습니다. 2512는 Connection Server 2512 이상과 NC2를 적습니다. 최소 Nutanix 버전 숫자는 같아 보여도 권장 버전과 풀 마법사 전제가 다릅니다. 어떤 묶음 페이지를 승인 근거로 썼는지 남깁니다.
+
+### 이 글은 하이퍼바이저 선정 비교가 아닙니다
+
+vSphere에 남는 선택은 지원 경계를 유지하는 운영 결정입니다. AHV가 이겼다는 순위나 VMware 대비 가격·성능 비교를 넣지 않습니다. Citrix VDA 글이나 Azure Virtual Desktop 글과 다른 제품 경계입니다.
+
+### 골든 이미지 전제를 풀 생성과 같은 작업으로 보지 않습니다
+
+SCSI 버스, Windows 11 Secure Boot, 활성 템플릿 스냅샷, OS 최적화 도구와 에이전트 옵션이 빠지면 풀 마법사만으로 끝나지 않습니다. 확인일 기준 골든 이미지 문서에 적힌 Copilot 제거 명령은 고객 환경 호환을 이 초안이 검증하지 않았습니다.
+
+## 실무 체크리스트
+
+1. 현재 Horizon 버전, Connection Server 빌드, 하이퍼바이저를 기록합니다.
+2. 목표가 2506 LA 요청인지, 2512 이상 문서 지원인지, vSphere 유지인지 나눕니다.
+3. 2506를 검토하면 영업·파트너 또는 문서의 요청 메일 경로를 적습니다.
+4. Nutanix 최소 버전 Prism Central 2024.3, AOS 7.0, AHV 10.0을 대조합니다.
+5. 골든 이미지의 디스크 버스, Secure Boot, 활성 템플릿 스냅샷을 확인합니다.
+6. ADAM 파티션 이름과 데스크톱 네트워크의 AD 사이트 매핑을 문서 전제와 대조합니다.
+7. LA를 GA로 보고했는지 내부 문구를 고칩니다.
+8. 승인 근거가 2506 묶음인지 2512 묶음인지를 남깁니다.
+
+## 제외 범위
+
+- VMware와 Nutanix 하이퍼바이저 우열, 가격, 성능 비교
+- Citrix Entra SSO VDA 글이나 Azure Virtual Desktop 글의 재작성
+- LA를 일반 공급이나 전 고객 사용 가능으로 해석
+- 고객별 라이선스, 계약, 호환성, 마이그레이션 완료 시점의 확정
+- 비공개 지원 포털 릴리스 노트를 공식 출처로 인용
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Horizon 열차, Connection Server, Nutanix 버전, LA 요청 여부, 골든 이미지 전제를 현황화합니다.
+- 의사결정 산출물: vSphere 유지, 2506 LA 요청, 2512 이상 대기 중 선택과 문서 근거를 담은 판단표를 만듭니다.
+- 운영 검증: 문서 전제와 현재 구성 불일치를 시나리오로 확인합니다. 풀 생성 성공, 성능, 하이퍼바이저 적합을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Horizon의 AHV 지원 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 VDI 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Omnissa Docs, Limited Availability Create and Manage Automated Pools on Nutanix, HorizonVmulti. LA, Connection Server 2506, PC 2024.3, AOS 7.0, AHV 10.0, 온프레미스와 NC2 AWS. HTML 셸은 JS 렌더이며 공개 문서 백엔드에서 본문 확인. https://docs.omnissa.com/bundle/Desktops-and-Applications-in-HorizonVmulti/page/Nutanix_CreateandManageAutomatedPools.html (확인일: 2026-08-28)
+- Omnissa Docs, Limited Availability Preparing a Golden Image Nutanix. 같은 LA 요청 문구, SCSI, Windows 11 Secure Boot, 활성 템플릿 스냅샷. https://docs.omnissa.com/bundle/Desktops-and-Applications-in-HorizonVmulti/page/Nutanix_PreparingaGoldenImage.html (확인일: 2026-08-28)
+- Omnissa Docs, Nutanix Create and Manage Automated Pools, HorizonV2512. Horizon 8 supports the Nutanix AHV Hypervisor platform, Connection Server 2512 이상, LA 라벨 없음. https://docs.omnissa.com/bundle/Desktops-and-Applications-in-HorizonV2512/page/Nutanix_CreateandManageAutomatedPools.html (확인일: 2026-08-28)
+- Omnissa Blog, Horizon 8 2506 featuring improved control. 이번 확인에서 200으로 열림. 2506 AHV Limited Availability 소개. 이전 자동 수집 Access Denied 기록이 있어 운영 근거는 문서 묶음 우선. https://www.omnissa.com/insights/blog/horizon-8-2506-release-features-improved-control/ (확인일: 2026-08-28)
+
+위 출처는 Omnissa 공개 문서와 공개 블로그를 설명합니다. 고객별 라이선스, LA 승인, 운영 결과를 보증하지 않습니다.
