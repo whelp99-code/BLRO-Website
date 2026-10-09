@@ -1,0 +1,102 @@
+---
+contentId: insight-bedrock-agentcore-identity-consent-portal
+title: "AgentCore Consent Portal: 직접 callback을 둘지 정할 것"
+summary: "Gateway 3LO에서 직접 OAuth callback 인프라를 유지할지, JWT Gateway와 openid 스코프를 전제로 한 관리형 Consent Portal로 옮길지를 가르는 리뷰 초안"
+slug: bedrock-agentcore-identity-consent-portal
+locale: ko
+status: review
+updatedAt: 2026-09-06
+audience: [customer, partner]
+tags: [ai, bedrock, agentcore, identity, consent-portal]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/09/amazon-bedrock-agentcore/"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-terminology.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal-prerequisites.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-create-consent-portal.html"
+relatedContent: ["insight:ai-governance-decision-operating-model"]
+---
+
+## 한눈에 보기
+
+직접 OAuth callback 인프라를 유지할지, AgentCore Gateway의 3LO를 관리형 Consent Portal로 옮길지부터 정합니다.
+
+- 결정: 게이트웨이마다 호스티드 포털과 portalUrl을 쓸지, 직접 호스팅하는 OAuth callback 인프라를 계속 둘지
+- 전제: 포털은 JWT inbound Gateway 하나와, 그 authorizer와 같은 OIDC issuer를 가리키는 OAuth2 credential provider가 필요하다. IdP 허용 스코프에 openid가 있어야 한다
+- 효과: 포털은 OAuth 흐름을 서버 쪽에 두고 브라우저는 토큰을 갖지 않는다. create-consent-portal 뒤 status가 ACTIVE일 때 portalUrl을 받는다
+- 범위: AgentCore Policy Guardrails 재작성이 아니라 Gateway 3LO의 콜백 주최를 가르는 결정
+
+## 문제 상황
+
+에이전트가 GitHub, Salesforce, Slack 같은 외부 도구에 사용자 대신 붙으려면 OAuth 2.0 3LO가 필요합니다. 2026-09-01 What's New는 예전에 직접 callback 인프라를 만들고 호스팅해야 했다고 적고, 관리형 Consent Portal이 그 일을 없앤다고 안내합니다. 게이트웨이마다 호스티드 웹 클라이언트와 credential provider 목록이 생기고, 관리자는 세션 전에 포털 URL을 공유할 수 있습니다. IDE 기반 클라이언트처럼 동의 URL을 직접 보여 주지 못하는 경로도 이 포털을 인가 면으로 쓸 수 있다고 적습니다.
+
+릴리스 노트 September 2026 Consent Portal for AgentCore Identity는 사용자를 portalUrl로 보내고, JWT inbound Gateway와 permitted scopes에 openid가 있는 IdP가 필요하다고 적습니다. 운영은 create, get, list, update, delete consent-portal로 합니다.
+
+Configure a consent portal 페이지는 포털이 호스티드·AWS 관리형이며, 소스 Gateway 하나에 붙고, 게이트웨이 inbound JWT authorizer가 신뢰하는 같은 IdP를 OAuth2 credential provider로 가리킨다고 적습니다. AgentCore Identity terminology의 Consent portal 항목도 호스티드·AWS 관리형, JWT inbound Gateway, 서버 측 OAuth로 정의하고 Configure a consent portal을 가리킵니다. 전제 페이지는 기본 IdP가 JWT access token을 발행해야 한다고 적습니다. GitHub, Slack, Salesforce, Atlassian, LinkedIn처럼 ID 토큰과 OIDC discovery가 없는 OAuth2-only 공급자는 기본 IdP가 될 수 없고, 게이트웨이 타깃의 outbound provider로는 남을 수 있습니다. What's New의 도구 연결과 포털의 기본 IdP를 한 승인으로 묶지 않습니다.
+
+## 지금 결정할 것
+
+- 대상 Gateway 3LO를 관리형 Consent Portal로 둘지, 기존 callback 인프라를 유지할지
+- 게이트웨이 inbound를 JWT로 두고, OAuth2 credential provider가 같은 OIDC issuer를 가리키게 할지
+- IdP 애플리케이션 허용 스코프에 openid를 넣을지. 포털은 idpConfig.scopes에 더해 openid를 항상 요청한다
+- create-consent-portal 뒤 get-consent-portal로 ACTIVE와 portalUrl을 받을 책임자를 둘지
+- 기본 IdP 콜백을 portalUrl/callback으로 등록할지. 끝에 슬래시를 붙이면 IdP가 거부한다고 CLI 문서가 적는다
+
+## 의사결정 기준
+
+### 관리형 포털과 직접 callback 호스팅을 같은 운영으로 보지 않습니다
+
+What's New는 직접 인프라를 없애는 쪽으로 안내합니다. 이미 자체 OAuth callback을 호스팅 중이면 포털로 옮기는 창과 잔여 엔드포인트 폐기를 따로 적습니다. 포털을 켜도 기존 콜백이 자동으로 사라지지는 않습니다.
+
+### JWT Gateway와 기본 IdP issuer를 한 줄로 합치지 않습니다
+
+전제 페이지는 소스가 정확히 하나의 agentcore-gateway이고 inbound authentication type이 JWT여야 한다고 적습니다. 생성 시 게이트웨이 authorizer와 idpConfig의 OAuth2 credential provider가 같은 OIDC issuer를 가리키는지 검증합니다. inbound가 JWT가 아니면 이 경로를 쓰지 않습니다.
+
+### openid와 도구 스코프를 한 목록으로 대충 두지 않습니다
+
+CLI 문서는 포털이 설정 스코프에 더해 openid를 항상 요청하고, IdP에 정의·허용되지 않으면 invalid_scope로 실패한다고 적습니다. 스코프 목록에 openid를 넣으라고 안내합니다. 도구용 outbound 스코프와 기본 IdP 스코프를 한 IAM 문장으로 적지 않습니다.
+
+### 기본 IdP와 outbound 공급자를 같은 자격으로 보지 않습니다
+
+전제 페이지는 사용자가 로그인하는 기본 IdP와, 에이전트가 자원에 쓰는 outbound credential provider를 나눕니다. GitHub·Slack·Salesforce는 What's New의 연결 대상이지, 포털 기본 IdP가 아닙니다. 기본 IdP는 authorization-code와 client secret이 있는 OIDC 웹 애플리케이션이어야 합니다.
+
+## 실무 체크리스트
+
+1. 대상 AgentCore Gateway의 inbound authentication type이 JWT인지 기록합니다.
+2. OAuth2 credential provider가 그 JWT authorizer와 같은 OIDC issuer를 가리키는지 확인합니다.
+3. IdP 애플리케이션 허용 스코프에 openid가 있는지 확인합니다. CLI 문서는 목록에 openid를 넣으라고 적습니다.
+4. 기본 IdP가 JWT access token과 OIDC discovery를 주는지 확인합니다. OAuth2-only 공급자는 기본 IdP로 두지 않습니다.
+5. aws bedrock-agentcore-control create-consent-portal에 execution-role-arn, idp-config, name, sources type agentcore-gateway를 줍니다.
+6. aws bedrock-agentcore-control get-consent-portal --consent-portal-identifier로 status가 ACTIVE가 될 때까지 보고 portalUrl을 받습니다. FAILED면 statusReason을 봅니다.
+7. 기본 IdP에 portalUrl/callback을 등록합니다. 끝 슬래시 없이 그대로 넣습니다.
+8. 「이번 주 운영 확인」 PASS = get-consent-portal이 status ACTIVE와 portalUrl을 주고, 게이트웨이 inbound가 JWT이며 IdP 허용 스코프에 openid가 있다. FAIL = 포털이 CREATING에 머물거나 FAILED이거나, inbound가 JWT가 아니거나, openid 없이 인가가 invalid_scope로 거절된다.
+
+## 제외 범위
+
+- AgentCore Policy Guardrails 글을 다시 쓰는 범위
+- Bedrock Web Search 송신 경계 글을 다시 쓰는 범위
+- 특정 IdP, 에이전트 프레임워크, 오케스트레이션의 우열이나 가격 비교
+- 포털만 켜면 3LO와 토큰 유출이 사라진다는 보장
+- 고객별 규제 적합, 라이선스, 운영 결과의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Gateway inbound, credential provider issuer, openid 스코프, 포털 status·portalUrl, 기존 callback 잔여를 현황화합니다.
+- 의사결정 산출물: 포털 이전 여부, JWT·openid 전제, 콜백 등록, 기본 IdP와 outbound 분리를 담은 판단표를 만듭니다.
+- 운영 검증: get-consent-portal의 ACTIVE와 portalUrl을 확인합니다. 동의율이나 보안 완결을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Gateway 3LO를 관리형 Consent Portal로 옮길지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 AI 에이전트 신원 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, Amazon Bedrock AgentCore Identity now offers a managed consent portal, 2026-09-01. 직접 OAuth callback 인프라 대신 관리형 포털, 게이트웨이별 호스티드 클라이언트. https://aws.amazon.com/about-aws/whats-new/2026/09/amazon-bedrock-agentcore/ (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, Release notes, September 2026 Consent Portal for AgentCore Identity. portalUrl, JWT inbound Gateway, openid, create·get·list·update·delete consent-portal. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, Configure a consent portal. 호스티드 포털, Gateway 하나, 서버 측 OAuth, 브라우저는 토큰을 갖지 않음. GET 본문 확인. 스텁 경로 configure-consent-portal.html·consent-portal.html은 쓰지 않음. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal.html (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, AgentCore Identity terminology. Consent portal 정의, JWT inbound Gateway, 서버 측 OAuth, Configure a consent portal 교차 참조. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-terminology.html (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, Consent portal prerequisites. JWT inbound, 같은 OIDC issuer, openid, OAuth2-only는 기본 IdP 불가. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-consent-portal-prerequisites.html (확인일: 2026-09-06)
+- Amazon Bedrock AgentCore Developer Guide, Create a consent portal with the AWS CLI. create-consent-portal, get-consent-portal, ACTIVE와 portalUrl, portalUrl/callback, invalid_scope. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-create-consent-portal.html (확인일: 2026-09-06)
+
+위 출처는 AWS 공개 공지와 운영 문서를 설명합니다. 고객별 인가 성공, 규제 적합, 공급자 우위를 보증하지 않습니다.
