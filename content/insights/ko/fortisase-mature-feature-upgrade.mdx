@@ -1,0 +1,100 @@
+---
+contentId: insight-fortisase-mature-feature-upgrade
+title: "FortiSASE Mature를 Feature로 올릴 창과 DNS를 가를 것"
+summary: "FortiSASE Mature에서 Feature로 가는 모범 사례 업그레이드의 유지보수 창, 전용 IP, DNS 프로토콜 변경을 가르는 리뷰 초안"
+slug: fortisase-mature-feature-upgrade
+locale: ko
+status: review
+updatedAt: 2026-08-25
+audience: [customer, partner]
+tags: [fortisase, fortinet, sase, mature, feature]
+evidenceRefs:
+  - "https://docs.fortinet.com/document/fortisase/latest/mature-administration-guide/846113/new-major-features-available"
+  - "https://docs.fortinet.com/document/fortisase/26.1.73/feature-administration-guide/13465"
+  - "https://docs.fortinet.com/document/fortisase/latest/release-notes/216859/resolved-issues"
+relatedContent: ["service:sase-global-connectivity", "insight:sase-sdwan-roles"]
+---
+
+## 한눈에 보기
+
+FortiSASE는 Mature 인스턴스에서 New major features available 모범 사례를 적용해야 Feature 기능이 열립니다. 25.2.c 이후 신규 인스턴스는 Feature가 기본입니다.
+
+- 결정: 지금 Mature를 유지할지, 유지보수 창을 열고 Feature로 올릴지
+- 창: 월요일 00:00부터 금요일 23:59 UTC, 주요 공휴일 제외. 보안 PoP 수에 따라 1시간에서 3시간
+- 불일치: 업그레이드 후 버전 툴팁을 7.4로 적는 페이지와 Feature로 적는 페이지가 있음
+- 범위: Prisma Access 에이전트 없는 접근이나 ION 양자내성 글이 아니라 FortiSASE 인스턴스 유형
+
+## 문제 상황
+
+FortiSASE 포털의 업그레이드 알림을 일반 패치처럼 승인하면, 사용자 트래픽 중단과 DNS 프로토콜 변경과 전용 공인 IP가 한 창에 섞입니다.
+
+Mature 관리 가이드는 감사 페이지에 New major features available가 나타나면 유지보수 창과 인프라 업데이트가 필요하다고 적습니다. 그 창 동안 사용자 트래픽이 영향을 받습니다. 적용 가능 시간은 월요일 00:00부터 금요일 23:59 UTC이고 주요 공휴일은 제외됩니다. 그 밖에는 단계 링크가 비활성입니다. 보안 PoP가 8개 이하면 1시간, 9개에서 16개면 2시간, 16개를 넘으면 3시간으로 안내합니다.
+
+Standard 구독이고 전용 IP가 없으면, 인가된 FortiExtender나 LAN 확장 FortiGate를 먼저 해제해야 합니다. 같은 조건이면 업그레이드가 전용 공인 IP를 추가 라이선스 없이 켭니다. 원격 VPN과 에지 장치 사용자 식별도 켜집니다. 기본 원격 사용자 IP 범위는 100.65.0.0/16입니다. 기존 온램프 터널은 업그레이드 후 재설정이 필요할 수 있습니다.
+
+업그레이드 후 Standard이고 전용 IP가 없었던 인스턴스는 보안 웹 게이트웨이 포트가 9443으로 바뀝니다. 사용자 지정 PAC나 PAC 없는 프록시는 클라이언트를 고쳐야 합니다. SSL VPN 인스턴스 일부는 DNS가 UDP 대신 TLS와 HTTPS를 씁니다. VPN DNS와 SWG·에지 DNS가 다르면 이름 해석이 갈립니다. 암시적 DNS 규칙은 VPN 쪽 서버로 덮입니다.
+
+릴리스 노트 소개는 이 문서를 FortiSASE 26.2.2.b 곧 7.4의 새 기능과 알려진 문제로 안내합니다. Feature 관리 가이드 26.1.73은 업그레이드 후 툴팁이 Feature를 보여 준다고 적습니다. Mature 가이드는 업그레이드 후 툴팁이 7.4를 보여 준다고 적습니다. 운영 승인은 포털 툴팁과 릴리스 번호를 같은 기록에 남깁니다.
+
+## 지금 결정할 것
+
+- Mature를 유지할지, Feature 기능을 위해 모범 사례 업그레이드를 할지
+- 유지보수 창을 UTC 평일로 잡을지. 공휴일에는 진행할 수 없음
+- Standard 구독에서 에지 장치를 먼저 해제할지
+- SWG 포트 9443과 PAC 파일 수정을 같은 창에 넣을지
+- SSL VPN DNS를 DOT와 DOH로 둘지, UDP 53으로 되돌릴지
+
+## 의사결정 기준
+
+### Mature와 Feature를 버전 숫자만으로 합치지 않습니다
+
+25.2.c 이후 신규 인스턴스는 Feature가 기본입니다. 기존 Mature는 감사 페이지의 모범 사례를 적용해야 Feature 전용 기능이 열립니다. Feature 가이드는 에이전트 기반 ZTNA, 예약 업그레이드 슬롯, IPsec 전제 기능을 목록으로 둡니다. Mature에 없는 기능을 이미 쓸 수 있다고 적지 않습니다.
+
+### 창과 트래픽 영향을 숨기지 않습니다
+
+가이드는 사용자 트래픽이 창 동안 영향을 받는다고 적습니다. PoP 수에 따라 안내 시간이 다릅니다. 권장 단계를 빼면 마이그레이션이 막힙니다. 확인 창에서 영향을 이해한다고 눌러야 예약됩니다.
+
+### DNS와 프록시 포트를 터널과 따로 적습니다
+
+SSL VPN 시나리오에서 VPN DNS와 SWG·에지 DNS가 달랐다면, 업그레이드 후 한쪽으로 덮입니다. DOT와 DOH를 지원하지 않는 DNS는 UDP 53을 다시 켜야 합니다. SWG 포트 9443은 Standard이고 전용 IP가 없었던 경로의 후속 작업입니다. 전용 IP가 이미 있는 인스턴스에 같은 포트 변경을 단정하지 않습니다.
+
+### 툴팁 표기가 페이지마다 다릅니다
+
+Mature 가이드는 업그레이드 후 7.4를 보여 준다고 적습니다. Feature 가이드는 Feature를 보여 준다고 적습니다. 릴리스 노트는 26.2.2.b를 7.4로 부릅니다. 적용 확인은 포털 왼쪽 아래 툴팁과 릴리스 노트 번호를 같이 기록합니다.
+
+## 실무 체크리스트
+
+1. 인스턴스를 Mature, Feature, 25.2.c 이후 신규로 표시합니다.
+2. 보안 PoP 수, Standard 여부, 전용 IP, 에지 장치 인가를 기록합니다.
+3. UTC 평일 창과 공휴일 제외를 변경 달력에 넣습니다.
+4. 온램프 터널 재설정과 원격 사용자 IP 범위 100.65.0.0/16 변경 필요를 적습니다.
+5. PAC 파일과 SWG 포트 9443 대상 사용자를 나눕니다.
+6. SSL VPN DNS가 DOT와 DOH를 쓰는지, UDP 53으로 되돌릴지를 정합니다.
+7. Feature 전용 기능 중 이번에 쓸 항목만 승인 범위에 넣습니다.
+8. 업그레이드 후 툴팁, 공인 IP 허용 목록, 메일 안내 수신자를 확인합니다.
+
+## 제외 범위
+
+- Prisma Access 에이전트 없는 접근 글이나 Prisma SD-WAN ION 양자내성 글의 재작성
+- SASE와 SD-WAN 역할 구분 글의 재작성
+- 특정 SASE 제품의 우열, 가격, 성능 비교
+- 업그레이드가 보안 효과를 높이거나 무중단이라는 보장
+- 고객별 테넌트, 계정, 웹훅, 전용 IP의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 인스턴스 유형, PoP 수, 구독, DNS, 프록시 포트, 창 제약을 현황화합니다.
+- 의사결정 산출물: Mature 유지와 Feature 전환, DNS와 PAC 후속 작업을 담은 판단표를 만듭니다.
+- 운영 검증: 창 후 포털 로그인, DNS 해석, 프록시 접속 실패 지점을 시나리오로 확인합니다. 보안 효과, 규제 적합성, 사용자 경험을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+FortiSASE Mature와 Feature 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 SASE 인스턴스 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Fortinet, New major features available, FortiSASE Mature Administration Guide. 유지보수 창, PoP 시간, 전용 IP, DNS 변경, 업그레이드 후 툴팁 7.4. https://docs.fortinet.com/document/fortisase/latest/mature-administration-guide/846113/new-major-features-available (확인일: 2026-08-25)
+- Fortinet, New features, FortiSASE Feature Administration Guide 26.1.73. 25.2.c 이후 신규는 Feature, 업그레이드 후 툴팁은 Feature. https://docs.fortinet.com/document/fortisase/26.1.73/feature-administration-guide/13465 (확인일: 2026-08-25)
+- Fortinet, FortiSASE Release Notes Introduction, 26.2.2.b 곧 7.4. 새 기능과 알려진 문제를 적용 전에 읽으라고 안내. https://docs.fortinet.com/document/fortisase/latest/release-notes/216859/resolved-issues (확인일: 2026-08-25)
+
+위 출처는 Fortinet 공개 문서를 설명합니다. 고객별 적용, 라이선스, 운영 결과를 보증하지 않습니다.
