@@ -1,0 +1,103 @@
+---
+contentId: insight-azure-search-knowledge-base-ga-extractive
+title: "Azure AI Search: 추출형 Knowledge Base와 미리보기를 가를 것"
+summary: "2026-04-01 안정판의 추출형 Knowledge Base와 답변 합성·질의 계획 미리보기를 가르고, 포털이 미리보기만 남는 불일치를 남기는 리뷰 초안"
+slug: azure-search-knowledge-base-ga-extractive
+locale: ko
+status: review
+updatedAt: 2026-08-29
+audience: [customer, partner]
+tags: [ai, azure-ai-search, knowledge-base, agentic-retrieval, extractive]
+evidenceRefs:
+  - "https://learn.microsoft.com/en-us/azure/search/whats-new"
+  - "https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-migrate"
+  - "https://learn.microsoft.com/en-us/azure/search/agentic-knowledge-source-overview"
+  - "https://learn.microsoft.com/en-us/azure/search/search-api-migration"
+relatedContent: ["insight:ai-governance-decision-operating-model"]
+---
+
+## 한눈에 보기
+
+Azure AI Search What's New의 April 2026 항목은 Knowledge bases가 일반 공급이며, REST API 2026-04-01이 일반 공급 Knowledge Source 종류의 추출형 검색을 지원한다고 적습니다. 질의 계획, 답변 합성, 설정 가능한 reasoning effort는 미리보기 전용으로 남고 2025-11-01-preview가 필요하다고 적습니다.
+
+- 결정: 추출형 안정판으로 옮길지, 답변 합성과 질의 계획을 위해 미리보기 API에 남을지
+- 전제: 지식 원본 개요는 일부 agentic retrieval이 2026-04-01에서 프로그래밍 접근으로 일반 공급이라고 적는다
+- 불일치: Azure portal과 Microsoft Foundry portal은 모든 agentic retrieval 기능에 미리보기 접근만 제공한다
+- 범위: Model Router나 Foundry 에이전트 신원 글이 아니라 Knowledge Base API 경계
+
+## 문제 상황
+
+Knowledge Base를 켰다고 보고하면, 추출 결과만 받는 안정판과 답변 합성이 있는 미리보기가 한 화면 이름으로 섞입니다.
+
+What's New April 2026은 Search Service 2026-04-01을 안정 REST API로 두고, Knowledge bases, Search index, Blob, OneLake, Web Knowledge Source를 일반 공급으로 적습니다. Blob과 OneLake의 ingestionPermissionOptions 문서 수준 권한은 미리보기로 남고 2025-11-01-preview가 필요하다고 적습니다. Web Knowledge Source는 2026-04-01에서 지식 베이스가 웹 요약용 모델 참조를 포함해야 한다고 적습니다.
+
+지식 원본 개요는 같은 일반 공급을 프로그래밍 접근으로 한정하고, Azure portal과 Microsoft Foundry portal은 계속 미리보기만 제공한다고 적습니다. 같은 페이지 상단은 2026-05-01-preview 배너도 둡니다. What's New June 2026은 그 미리보기 API의 새 Knowledge Source 종류를 적습니다. 미리보기 API를 하나로 합쳐 읽지 않습니다.
+
+마이그레이션 문서는 미리보기 코드를 유지해도 되지만, 답변 합성, 최소가 아닌 reasoning effort, 다중 턴 messages에 의존하면 2026-04-01로 옮기기 전에 변경을 검토하라고 적습니다. 그 기능은 미리보기에 남습니다. 마이그레이션은 기존 객체를 덮어쓰지 않고 새 이름으로 다시 만드는 경로입니다. 2026-04-01 Knowledge Base에서는 outputMode, answerInstructions, retrievalInstructions를 빼고, retrieve는 messages 대신 intents를 쓰며 retrievalReasoningEffort와 alwaysQuerySource를 제거합니다. 응답은 합성 답이 아니라 추출형 grounding입니다.
+
+API 마이그레이션 문서는 2026-04-01이 agentic retrieval의 첫 안정 REST이며, 2025-11-01-preview에서 답변 합성, 질의 계획, 설정 가능한 reasoning effort가 빠지고 추출형만 남는다고 적습니다. semanticSearch=standard만 있는 서비스는 올리기 전에 knowledgeRetrieval=standard를 명시해야 한다고 적습니다.
+
+## 지금 결정할 것
+
+- 이번 과제가 추출형 grounding만으로 충분한지, 답변 합성과 질의 계획이 필요한지
+- 2026-04-01로 객체를 다시 만들지, 미리보기 API 버전을 유지할지
+- 포털과 Foundry portal이 미리보기만 남는 상태를 운영 경로로 둘지, 프로그래밍 접근만 안정판으로 볼지
+- 어느 미리보기 API를 남길지. What's New April은 2025-11-01-preview를, 개요와 June 항목은 2026-05-01-preview도 적는다
+- Web Knowledge Source를 쓰면 모델 참조를 안정판 객체에 둘지
+- knowledgeRetrieval 과금 동의를 안정판 전환 전에 명시할지
+
+## 의사결정 기준
+
+### 일반 공급 이름과 포털 사용 가능을 같은 승인으로 보지 않습니다
+
+What's New는 Knowledge bases 일반 공급을 적습니다. 지식 원본 개요는 그 일반 공급을 2026-04-01 프로그래밍 접근으로 한정하고, Azure portal과 Microsoft Foundry portal은 미리보기만 남긴다고 적습니다. 포털에서 객체를 만들었다고 해서 안정판으로 보지 않습니다.
+
+### 추출형 안정판과 답변 합성 미리보기를 한 Knowledge Base로 묶지 않습니다
+
+마이그레이션 문서는 2026-04-01이 답변 생성 설정을 빼고 추출형만 돌려준다고 적습니다. 답변 합성, 최소가 아닌 reasoning effort, 다중 턴 messages가 필요하면 미리보기에 남습니다. 안정판으로 옮긴 뒤 합성 답이 나올 것으로 내부 보고하지 않습니다.
+
+### 미리보기 API 버전을 하나로 평탄화하지 않습니다
+
+April What's New는 미리보기 전용 기능에 2025-11-01-preview가 필요하다고 적습니다. 개요 페이지와 June What's New는 2026-05-01-preview를 적습니다. 어떤 기능이 어느 미리보기 버전에 있는지를 같은 기록에 남깁니다.
+
+### 마이그레이션은 덮어쓰기가 아니라 재생성입니다
+
+마이그레이션 문서는 속성이 추가되거나 삭제되면 기존 객체를 덮어쓰지 못한다고 적습니다. 새 이름의 Knowledge Source와 Knowledge Base를 만들고, 클라이언트는 intents와 추출형 응답을 처리하도록 바꿉니다. 미리보기 객체는 검증이 끝난 뒤에만 지웁니다.
+
+## 실무 체크리스트
+
+1. 현재 Knowledge Base가 쓰는 REST API 버전과 생성 경로를 포털, Foundry portal, 프로그래밍으로 나눕니다.
+2. 답변 합성, 질의 계획, reasoning effort, 다중 턴 messages 의존 여부를 과제별로 적습니다.
+3. 추출형만 필요하면 2026-04-01로 새 객체를 만드는 일정을 정합니다.
+4. outputMode, answerInstructions, retrievalInstructions를 안정판 정의에서 빼는지 확인합니다.
+5. retrieve 호출을 messages에서 intents로 바꾸는지, 후속 질문을 새 semantic intent로 보내는지 확인합니다.
+6. Web Knowledge Source를 쓰면 모델 참조를 남기는지 확인합니다.
+7. knowledgeRetrieval 과금 동의와 semanticSearch 값을 전환 전에 대조합니다.
+8. 포털이 미리보기인 상태를 운영 승인 조건에 남기고, 누가 프로그래밍 경로를 검증하는지 정합니다.
+
+## 제외 범위
+
+- Foundry 에이전트 신원 게시 경계, Model Router, Bedrock Web Search 글의 재작성
+- 특정 검색 제품이나 모델의 우열, 가격, 품질 비교
+- 포털이 곧 안정판이 된다는 일정 단정
+- 고객별 규제 적용, 검색 품질, 답변 정확성의 사전 보장
+- Sangfor 사례나 고객 로고
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Knowledge Base API 버전, 포털과 프로그래밍 경로, 추출형과 합성 의존, 과금 동의를 현황화합니다.
+- 의사결정 산출물: 안정판 전환 여부, 남을 미리보기 기능, 재생성 대상 객체를 담은 판단표를 만듭니다.
+- 운영 검증: intents 추출형 retrieve와 포털 미리보기 경로를 시나리오로 확인합니다. 답변 품질과 일반 공급 포털 일정을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+추출형 Knowledge Base와 미리보기 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 AI 검색 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Microsoft Learn, What's New in Azure AI Search, April 2026. Knowledge bases 일반 공급, 2026-04-01 추출형, 질의 계획·답변 합성·reasoning effort는 2025-11-01-preview. June 2026은 2026-05-01-preview. https://learn.microsoft.com/en-us/azure/search/whats-new (확인일: 2026-08-29)
+- Microsoft Learn, Migrate agentic retrieval code. 합성·비최소 reasoning·messages면 미리보기 유지, 객체 재생성, outputMode 등 제거, retrieve는 intents. https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-migrate (확인일: 2026-08-29)
+- Microsoft Learn, What is a Knowledge Source. 2026-04-01 프로그래밍 일반 공급, Azure portal과 Microsoft Foundry portal은 미리보기만. https://learn.microsoft.com/en-us/azure/search/agentic-knowledge-source-overview (확인일: 2026-08-29)
+- Microsoft Learn, Upgrade to the latest REST API in Azure AI Search. 2026-04-01이 agentic retrieval 첫 안정판, 추출형과 intents, knowledgeRetrieval 과금 동의. https://learn.microsoft.com/en-us/azure/search/search-api-migration (확인일: 2026-08-29)
+
+위 출처는 Microsoft Learn 공개 문서를 설명합니다. 고객별 적용, 검색 품질, 포털 일정을 보증하지 않습니다.

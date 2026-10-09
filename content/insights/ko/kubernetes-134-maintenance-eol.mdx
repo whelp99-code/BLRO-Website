@@ -1,0 +1,104 @@
+---
+contentId: insight-kubernetes-134-maintenance-eol
+title: "Kubernetes 1.34: 유지보수 종료 전에 마이너를 옮길 것"
+summary: "1.34가 유지보수에 들어간 뒤 EOL 전에 유지 중인 마이너로 옮길지, HTML 최신 패치와 GitHub CHANGELOG 불일치를 남기는 리뷰 초안"
+slug: kubernetes-134-maintenance-eol
+locale: ko
+status: review
+updatedAt: 2026-08-29
+audience: [customer, partner]
+tags: [infrastructure, kubernetes, release-lifecycle, maintenance, version-skew]
+evidenceRefs:
+  - "https://kubernetes.io/releases/1.34/"
+  - "https://kubernetes.io/releases/"
+  - "https://raw.githubusercontent.com/kubernetes/kubernetes/master/CHANGELOG/CHANGELOG-1.34.md"
+  - "https://github.com/kubernetes/kubernetes/releases/tag/v1.34.11"
+  - "https://kubernetes.io/releases/version-skew-policy/"
+---
+
+## 한눈에 보기
+
+kubernetes.io의 1.34 릴리스 페이지는 이 릴리스가 2026-08-27에 유지보수 모드에 들어갔고, End of Life가 2026-10-27이라고 적습니다. 유지보수 모드에서는 치명적 보안 수정만 받는다고 적습니다.
+
+- 결정: EOL 전에 지금 유지 중인 마이너로 올릴지, 1.34에 남을지
+- 전제: 프로젝트가 유지하는 최근 마이너는 1.37, 1.36, 1.35다. 목표 마이너를 하나로 단정하지 않는다
+- 불일치: HTML은 최신 패치를 1.34.9(2026-06-09)로 두고 예정 패치 1.34.10(2026-07-14)도 이미 지난 날짜다
+- 범위: EKS CA 교체나 AKS Azure Files 글이 아니라 업스트림 마이너 수명
+
+## 문제 상황
+
+1.34를 최신으로 두고 있으면, 유지보수 창과 HTML에 적힌 패치 번호가 같은 운영 기준으로 보입니다. 이 확인일에는 그 둘이 갈립니다.
+
+1.34 페이지는 유지보수 시작 2026-08-27, EOL 2026-10-27, 최신 패치 1.34.9(2026-06-09)를 표에 둡니다. Upcoming Patch는 1.34.10, Cherry Pick Deadline 2026-07-10, Target Date 2026-07-14입니다. 확인일 기준으로 그 예정일은 이미 지났습니다. HTML의 latest patch를 운영 패치로 쓰지 않습니다.
+
+릴리스 목록 페이지는 프로젝트가 최근 세 마이너 1.37, 1.36, 1.35의 릴리스 브랜치를 유지한다고 적습니다. 1.37.0은 2026-08-26 릴리스입니다. 같은 페이지에서 1.34 Latest Release는 여전히 1.34.9(2026-06-09)입니다. 1.36.2와 1.35.6도 2026-06-09로 적혀 있습니다.
+
+GitHub 태그 v1.34.11은 2026-08-20에 게시되었습니다. 마스터 CHANGELOG-1.34.md는 v1.34.11 절과 Changelog since v1.34.10을 담고, Go 1.26 빌드와 golang.org/x/text, golang.org/x/net 보안 업데이트를 적습니다. GitHub blob HTML은 이 확인일에서 본문이 비어 있어 raw CHANGELOG를 읽었습니다. HTML 1.34.9와 GitHub v1.34.11을 한 숫자로 합치지 않습니다.
+
+Version Skew Policy는 유지 브랜치를 다시 1.37, 1.36, 1.35로 적습니다. kubelet은 kube-apiserver보다 최신이면 안 되고, 최대 세 마이너까지 낮을 수 있습니다. 예시에서 kube-apiserver 1.37일 때 kubelet은 1.37부터 1.34까지입니다. 컨트롤 플레인을 올리기 전에 kubelet이 세 마이너 뒤처져 있으면 먼저 올려야 한다고 경고합니다. 목표 마이너를 1.37로 단정하지 않습니다. 유지 중인 셋 가운데 어디로 갈지는 클러스터 구성과 왜곡 한도를 보고 고릅니다.
+
+## 지금 결정할 것
+
+- 1.34를 EOL 2026-10-27 전에 유지 중인 마이너로 올릴지
+- 목표 마이너를 1.37, 1.36, 1.35 중 어디로 둘지. 하나를 필수 목표로 단정하지 않는다
+- 운영 패치 번호를 HTML 1.34.9로 둘지, GitHub CHANGELOG의 v1.34.11을 대조할지
+- kube-apiserver, kubelet, kube-proxy 왜곡이 정책 한도 안에 있는지
+- 컨트롤 플레인보다 kubelet이 세 마이너 뒤인지, 그 경우 노드를 먼저 올릴지
+- 1.34에 남는 동안 치명적 보안 수정만 받는 상태를 변경 창에 남길지
+
+## 의사결정 기준
+
+### HTML 최신 패치를 운영 패치로 보지 않습니다
+
+1.34 페이지와 릴리스 목록은 최신을 1.34.9로 보여 줍니다. GitHub 태그와 CHANGELOG는 v1.34.11을 2026-08-20 게시에 둡니다. 예정 패치 1.34.10의 대상일도 이미 지났습니다. 포털 HTML 숫자만 인용해 패치 수준을 보고하지 않습니다.
+
+### 유지보수 모드와 유지 중인 마이너를 같은 상태로 보지 않습니다
+
+1.34는 유지보수이며 EOL이 2026-10-27입니다. 프로젝트가 패치를 받는 브랜치는 1.37, 1.36, 1.35입니다. 1.34에 남는 것은 치명적 보안 수정만 받는 선택입니다. 그 선택을 최신 유지와 같은 말로 쓰지 않습니다.
+
+### 목표 마이너를 하나로 단정하지 않습니다
+
+세 유지 마이너가 있습니다. Version Skew Policy는 구성 요소 사이 최대 왜곡과 업그레이드 순서를 적습니다. 배포 도구가 더 좁은 제한을 둘 수 있다고도 적습니다. 이 글은 특정 마이너를 필수 목표로 지정하지 않습니다.
+
+### 컨트롤 플레인과 노드 왜곡을 한 변경 요청으로 묶지 않습니다
+
+정책은 kube-apiserver를 먼저 올리고, kubelet은 그다음이거나 더 낮은 마이너에 남을 수 있다고 적습니다. kubelet 마이너 업그레이드 전에 노드를 드레인하라고 적습니다. 마이너만 고르고 순서를 빼지 않습니다.
+
+## 실무 체크리스트
+
+1. 클러스터 구성 요소의 현재 마이너와 패치를 HTML이 아니라 실제 바이너리와 GitHub 태그로 대조합니다.
+2. 1.34라면 유지보수 시작일과 EOL 2026-10-27을 변경 창에 적습니다.
+3. 목표를 1.37, 1.36, 1.35 가운데 고르고, 필수 목표를 단정하지 않습니다.
+4. HTML 1.34.9와 CHANGELOG v1.34.11 불일치를 운영 기록에 남깁니다.
+5. kube-apiserver, kubelet, kube-proxy, kubectl 왜곡이 정책 한도 안인지 계산합니다.
+6. kubelet이 세 마이너 뒤면 컨트롤 플레인보다 노드를 먼저 올리는지 정합니다.
+7. 배포 도구가 더 좁은 왜곡 제한을 두는지 별도로 확인합니다.
+8. EOL 이후 보안 업데이트가 없다고 릴리스 목록이 적는 문장을 잔존 1.34 클러스터 목록에 붙입니다.
+
+## 제외 범위
+
+- EKS 클러스터 CA 교체, AKS Azure Files 신원, Arc Kubernetes 워크로드 신원 글의 재작성
+- 특정 클라우드 관리형 Kubernetes 상품의 우열이나 가격 비교
+- 목표 마이너를 1.37로 고정하는 업그레이드 명령
+- 패치 적용이 취약을 제거한다는 보장
+- 고객 클러스터 식별자나 업그레이드 절차의 공개
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 마이너와 패치, HTML과 CHANGELOG 불일치, 왜곡, EOL 일정을 현황화합니다.
+- 의사결정 산출물: 유지 마이너 선택과 구성 요소 순서를 담은 판단표를 만듭니다. 필수 목표 마이너는 단정하지 않습니다.
+- 운영 검증: 실제 태그 번호와 왜곡 한도를 시나리오로 확인합니다. 업그레이드 성공과 보안 공백 부재를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+1.34 유지보수와 마이너 이동 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 인프라 수명 주기 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Kubernetes, Kubernetes 1.34 release page. 유지보수 2026-08-27, EOL 2026-10-27, HTML 최신 패치 1.34.9(2026-06-09), 예정 1.34.10(2026-07-14). https://kubernetes.io/releases/1.34/ (확인일: 2026-08-29)
+- Kubernetes, Releases. 유지 마이너 1.37, 1.36, 1.35. 1.37.0은 2026-08-26. 1.34 Latest는 1.34.9. https://kubernetes.io/releases/ (확인일: 2026-08-29)
+- kubernetes/kubernetes CHANGELOG-1.34.md raw. v1.34.11 절, Changelog since v1.34.10. blob HTML은 이 확인일에서 본문 없음. https://raw.githubusercontent.com/kubernetes/kubernetes/master/CHANGELOG/CHANGELOG-1.34.md (확인일: 2026-08-29)
+- GitHub, kubernetes/kubernetes v1.34.11. Published 2026-08-20. https://github.com/kubernetes/kubernetes/releases/tag/v1.34.11 (확인일: 2026-08-29)
+- Kubernetes, Version Skew Policy. 유지 브랜치 1.37, 1.36, 1.35. kubelet 왜곡과 업그레이드 순서. Last modified April 14, 2026. https://kubernetes.io/releases/version-skew-policy/ (확인일: 2026-08-29)
+
+위 출처는 Kubernetes 프로젝트 공개 릴리스 페이지와 CHANGELOG를 설명합니다. 고객별 업그레이드 결과와 보안 공백 부재를 보증하지 않습니다.

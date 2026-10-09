@@ -1,0 +1,103 @@
+---
+contentId: insight-gcp-filestore-cmek-backup-vault
+title: "GCP Filestore: CMEK 볼트 백업을 둘지 정할 것"
+summary: "Filestore를 CMEK 백업 볼트에 둘지 Google 관리 볼트에 둘지, 볼트 생성 시에만 CMEK를 고르는 경계를 가르는 리뷰 초안"
+slug: gcp-filestore-cmek-backup-vault
+locale: ko
+status: review
+updatedAt: 2026-08-29
+audience: [customer, partner]
+tags: [backup, disaster-recovery, gcp, filestore, cmek]
+evidenceRefs:
+  - "https://docs.cloud.google.com/backup-disaster-recovery/docs/release-notes"
+  - "https://docs.cloud.google.com/backup-disaster-recovery/docs/concepts/cmek"
+  - "https://docs.cloud.google.com/backup-disaster-recovery/docs/cloud-console/filestore/filestore-instance-backup"
+  - "https://docs.cloud.google.com/backup-disaster-recovery/docs/configuration/set-up-cmek"
+relatedContent: ["insight:gcp-backup-vault-project-lien", "service:backup-disaster-recovery"]
+---
+
+## 한눈에 보기
+
+Google Cloud Backup and DR 릴리스 노트는 2026-08-24에 Filestore 인스턴스를 CMEK가 켜진 백업 볼트로 보내는 지원이 일반 공급이라고 적습니다. 그 백업은 볼트의 CMEK 키로 암호화된다고 적습니다.
+
+- 결정: Filestore를 CMEK 볼트에 둘지, Google 관리 암호화 볼트에 둘지
+- 전제: 개념 문서는 Filestore가 볼트 CMEK를 쓰고, CMEK는 볼트 생성 시에만 설정된다고 적는다
+- 불일치: 기존 볼트에는 CMEK를 켜거나 끄거나 바꿀 수 없다. 기본 볼트는 Google 관리 암호화다
+- 범위: 2026-11-01 프로젝트 선 글이 아니라 Filestore와 볼트 CMEK 경계
+
+## 문제 상황
+
+Filestore 백업을 볼트에 넣었다고 보면, 키를 누가 관리하는지가 이미 정해진 것처럼 보입니다. 키는 볼트를 만들 때 고정됩니다.
+
+2026-08-24 릴리스 노트는 CMEK로 암호화된 Filestore 인스턴스의 백업 볼트 지원이 일반 공급이며, CMEK 볼트로 보낸 백업은 볼트 CMEK 키로 암호화된다고 적습니다. 같은 페이지 2026-08-17 항목은 2026-11-01부터 강제 보존 볼트 프로젝트에 프로젝트 선이 자동으로 걸린다고 적습니다. 그 선 일정은 이 글의 결정이 아닙니다.
+
+CMEK 개념 문서는 Backup and DR가 워크로드 종류에 따라 볼트 수준 CMEK 또는 원본 수준 CMEK를 쓴다고 적습니다. Filestore instance는 Backup vault CMEK, 지원됨입니다. enhanced backups는 Backup and DR 서비스 에이전트로 볼트 CMEK를 쓴다고 적습니다. CMEK는 볼트 생성 시에만 구성할 수 있고, 기존 볼트에서 켜거나 끄거나 바꿀 수 없습니다. 키는 볼트와 같은 위치여야 합니다. 기본 백업 볼트와 기본 백업 플랜은 Google 관리 암호화를 쓰므로 CMEK를 쓰려면 새 볼트를 만들고 명시적으로 켜야 합니다.
+
+Filestore 백업 방법은 CMEK 볼트에 저장할 때 볼트 프로젝트의 Backup and DR 서비스 에이전트에 볼트 CMEK 키의 Cloud KMS CryptoKey Encrypter/Decrypter 역할을 주라고 적습니다. 구성 가이드도 같은 역할과, CMEK는 생성 시에만 켤 수 있다는 문을 반복합니다. 키가 꺼지거나 권한이 회수되면 새 백업과 복원이 실패할 수 있다고 적습니다.
+
+Filestore 네이티브 백업 체인의 CMEK 제한 페이지는 이 작업에서 열지 않았습니다. 그 제품 경로의 한도를 이 볼트 사실에 섞지 않습니다.
+
+## 지금 결정할 것
+
+- 새 Filestore 백업을 CMEK 볼트에 둘지, Google 관리 볼트에 둘지
+- CMEK가 없는 기존 볼트를 수용할지, 생성 시 CMEK가 켜진 새 볼트를 만들지
+- 키 위치와 볼트 위치를 같게 둘지
+- Backup and DR 서비스 에이전트에 cryptoKeyEncrypterDecrypter를 키에 부여할지
+- 키 회전 뒤에도 예전 키 버전을 복원용으로 남길지
+- 프로젝트 선 일정과 이 CMEK 결정을 같은 변경 요청에 넣을지
+
+## 의사결정 기준
+
+### 볼트 CMEK와 원본 CMEK를 한 키로 보지 않습니다
+
+개념 문서는 Filestore가 볼트 CMEK를 쓴다고 적습니다. Compute Engine 디스크나 Cloud SQL처럼 원본 키를 상속하는 경로와 다릅니다. Filestore 인스턴스 키가 있다고 해서 볼트 키가 같아지지 않습니다. 백업 암호화 주체를 볼트 키로 적습니다.
+
+### 기존 볼트에 CMEK를 나중에 켜지 않습니다
+
+CMEK는 생성 시에만 설정됩니다. 기본 볼트는 Google 관리 암호화입니다. 이미 만든 볼트에 키를 붙이거나 바꾸려는 계획을 승인 조건으로 두지 않습니다. CMEK가 필요하면 새 볼트와 새 백업 플랜을 만듭니다.
+
+### 서비스 에이전트 권한과 볼트 생성 성공을 같은 검증으로 보지 않습니다
+
+Filestore 백업 방법은 볼트 키에 Backup and DR 서비스 에이전트 역할을 주라고 적습니다. 볼트만 만들고 키 IAM을 빼면 백업이 키를 쓰지 못합니다. 키를 끄거나 권한을 회수하면 새 백업과 복원이 막힐 수 있습니다.
+
+### 프로젝트 선 글과 이 결정을 한 이슈로 합치지 않습니다
+
+릴리스 노트의 2026-08-17 항목은 2026-11-01 강제 보존 볼트 프로젝트 선을 적습니다. 그 내용은 기존 프로젝트 선 글의 범위입니다. 이 글은 Filestore를 CMEK 볼트에 둘지입니다.
+
+## 실무 체크리스트
+
+1. Filestore 인스턴스와 대상 백업 볼트의 암호화 유형을 목록화합니다.
+2. 볼트가 생성 시 CMEK인지, Google 관리인지, 기본 볼트인지 나눕니다.
+3. CMEK가 필요하면 같은 위치의 키로 새 볼트를 만들지 결정합니다.
+4. 서비스 에이전트 service-프로젝트번호@gcp-sa-backupdr.iam.gserviceaccount.com에 키 역할을 부여했는지 확인합니다.
+5. 백업 플랜이 CMEK 볼트를 가리키는지 확인합니다.
+6. 키 회전 시 과거 버전을 복원용으로 남기는지 정합니다.
+7. 키 회수 시 백업 실패와 복원 실패를 누구에게 알리는지 정합니다.
+8. 프로젝트 선 일정은 별도 판단으로 두고 이 변경 요청에 섞지 않습니다.
+
+## 제외 범위
+
+- GCP 백업 볼트 프로젝트 선 글의 재작성
+- Filestore 네이티브 백업 체인 CMEK 제한. 그 페이지는 이 작업에서 열지 않음
+- 특정 백업 제품, 클라우드, 키 관리 방식의 우열이나 가격 비교
+- 키가 랜섬웨어나 내부자 위협을 제거한다는 보장
+- 고객별 규제 적용, 복구 성공의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Filestore 위치, 볼트 암호화, 키 위치, 서비스 에이전트 역할, 기본 볼트 사용을 현황화합니다.
+- 의사결정 산출물: CMEK 볼트 신설 여부, 키 IAM, 선 일정과의 분리를 담은 판단표를 만듭니다.
+- 운영 검증: 키 권한과 볼트 생성 시점 고정을 시나리오로 확인합니다. 복구 시간과 불변성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Filestore와 CMEK 볼트 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 백업과 재해복구 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Google Cloud Backup and DR Service release notes, August 24, 2026. Filestore CMEK 볼트 백업 일반 공급, 백업은 볼트 CMEK 키로 암호화. https://docs.cloud.google.com/backup-disaster-recovery/docs/release-notes (확인일: 2026-08-29)
+- Google Cloud, Overview of Customer-managed encryption keys (CMEK) with Backup and DR. Filestore는 볼트 CMEK, 생성 시에만 설정, 기존 볼트 변경 불가, 키와 볼트 위치 동일. https://docs.cloud.google.com/backup-disaster-recovery/docs/concepts/cmek (확인일: 2026-08-29)
+- Google Cloud, Back up Filestore instances to a backup vault. 볼트 키에 Backup and DR 서비스 에이전트 cryptoKeyEncrypterDecrypter. https://docs.cloud.google.com/backup-disaster-recovery/docs/cloud-console/filestore/filestore-instance-backup (확인일: 2026-08-29)
+- Google Cloud, Use customer-managed encryption keys to protect your backups. CMEK는 볼트 생성 시에만. 키 회수 시 백업·복원 실패. https://docs.cloud.google.com/backup-disaster-recovery/docs/configuration/set-up-cmek (확인일: 2026-08-29)
+
+위 출처는 Google Cloud 공개 문서와 릴리스 노트를 설명합니다. 고객별 적용, 복구 결과, 규제 적합성을 보증하지 않습니다.

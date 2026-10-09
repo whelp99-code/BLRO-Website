@@ -16,3 +16,37 @@
 2026-08-19T00:00:15+09:00 confirm review slugs absent from sitemap.xml and generateStaticParams
 2026-08-19T00:00:16+09:00 verdict final_review_ready
 2026-08-19T00:00:17+09:00 improvement next run 2026-08-20 must rotate to AI, cloud, infra, backup/DR; do not repeat today's 5 areas
+2026-08-28T08:10:00+09:00 start run=2026-08-28 branch=cursor/ko-review-insights-2026-08-28-6963 from current main not stacked on PR8 or PR9
+2026-08-28T08:10:01+09:00 check content/insights/ko and open PRs #8 #9 slugs absent: citrix-netscaler-cve-2026-8452-kev hyper-v-gpup-dda-live-migration nutanix-nci-76-security-profiles horizon-2506-ahv-limited-availability cisco-secure-access-universal-ztna
+2026-08-28T08:10:02+09:00 skip-rule none of the five slugs exist on main or open PRs; write review-only MDX
+2026-08-28T08:10:03+09:00 source-recheck pass citrix-netscaler-cve-2026-8452-kev KEV added 2026-08-26 due 2026-08-29 ransomware Unknown forensic triage No NVD JSON 9.8 vs KEV DoS discrepancy CTX696604 login-wall Loading
+2026-08-28T08:10:04+09:00 source-recheck pass hyper-v-gpup-dda-live-migration GPU-P page 2026-05-05 plan-for-gpu 200 not catalog-redirect WS2025 live migration Datacenter HA same GPU not both
+2026-08-28T08:10:05+09:00 source-recheck pass nutanix-nci-76-security-profiles TME blog public PC 7.6 Apply predefined Security Profiles AOS 7.6 thin no profile name portal hardening guide login-wall
+2026-08-28T08:10:06+09:00 source-recheck pass horizon-2506-ahv-limited-availability docs HTML JS-shell docs-be public 2506 LA 2512 no-LA-label blog 200 this run
+2026-08-28T08:10:07+09:00 source-recheck pass cisco-secure-access-universal-ztna 225858 2026-05-06 140154 last updated 2026-08-27 TND 225407 TAC feature flag
+2026-08-28T08:10:08+09:00 write MDX status=review updatedAt=2026-08-28 count=5
+2026-08-28T08:10:09+09:00 write research notes count=5 plus 2026-08-28.md
+2026-08-28T08:10:10+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
+2026-08-28T08:10:11+09:00 improvement Citrix/Omnissa/Nutanix support-portal login-wall pages are not official-3; public-open pages only. CISA KEV short text vs NVD CVSS impact must be written as a discrepancy, not flattened
+2026-08-28T08:10:12+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage Sangfor untouched no merge no deploy no public approval recommended contact send dead
+2026-08-28T08:18:00+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-28T08:18:01+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-28T08:18:02+09:00 confirm review slugs absent from sitemap.xml.body and generateStaticParams
+2026-08-28T08:18:03+09:00 verdict final_review_ready
+2026-08-29T08:20:00+09:00 start run=2026-08-29 branch=cursor/ko-review-insights-2026-08-29-c1f1 from current main not stacked on PR8 PR9 or PR10
+2026-08-29T08:20:01+09:00 check content/insights/ko and open PRs #8 #9 #10 slugs absent: azure-search-knowledge-base-ga-extractive eks-multiple-oidc-identity-providers kubernetes-134-maintenance-eol gcp-filestore-cmek-backup-vault prometheus-314-otlp-label-collision
+2026-08-29T08:20:02+09:00 skip-rule none of the five slugs exist on main or open PRs; write review-only MDX
+2026-08-29T08:20:03+09:00 source-recheck pass azure-search-knowledge-base-ga-extractive April 2026 KB GA extractive 2026-04-01 preview synthesis query-planning reasoning 2025-11-01-preview portal Foundry preview-only migrate recreate intents
+2026-08-29T08:20:04+09:00 source-recheck pass eks-multiple-oidc-identity-providers WhatsNew 2026-08-24 up-to-10 no-version-gate UserGuide 1.32-or-later 12KB IAM-cannot-disable public-issuer UPDATING prefixes
+2026-08-29T08:20:05+09:00 source-recheck pass kubernetes-134-maintenance-eol maintenance 2026-08-27 EOL 2026-10-27 HTML latest 1.34.9 upcoming 1.34.10 past GitHub v1.34.11 published 2026-08-20 maintained 1.37 1.36 1.35
+2026-08-29T08:20:06+09:00 source-recheck pass gcp-filestore-cmek-backup-vault RN 2026-08-24 Filestore CMEK vault GA vault-key concepts creation-time-only how-to cryptoKeyEncrypterDecrypter not native backup-chain
+2026-08-29T08:20:07+09:00 source-recheck pass prometheus-314-otlp-label-collision v3.14.0 dated 2026-08-17 published 2026-08-18 18957 collision warning counter OTLP guide body present first_over_time separate
+2026-08-29T08:20:08+09:00 write MDX status=review updatedAt=2026-08-29 count=5
+2026-08-29T08:20:09+09:00 write research notes count=5 plus 2026-08-29.md
+2026-08-29T08:20:10+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
+2026-08-29T08:20:11+09:00 improvement body is operator decision not changelog dump; do not invent dates or GA not read today
+2026-08-29T08:20:12+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage Sangfor untouched no merge no deploy no public approval recommended contact send dead
+2026-08-29T08:30:00+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-29T08:30:01+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-29T08:30:02+09:00 confirm review slugs absent from sitemap.xml.body listing artifacts and generateStaticParams
+2026-08-29T08:30:03+09:00 verdict final_review_ready
