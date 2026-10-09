@@ -16,3 +16,19 @@
 2026-08-19T00:00:15+09:00 confirm review slugs absent from sitemap.xml and generateStaticParams
 2026-08-19T00:00:16+09:00 verdict final_review_ready
 2026-08-19T00:00:17+09:00 improvement next run 2026-08-20 must rotate to AI, cloud, infra, backup/DR; do not repeat today's 5 areas
+
+2026-08-26T00:00:00+09:00 start run=2026-08-26 new branch from current main, not stacked on PR #8
+2026-08-26T00:00:01+09:00 rotation ai cloud infrastructure backup/DR observability; skip security virtualization HCI VDI SASE
+2026-08-26T00:00:02+09:00 skip-open-pr-8-slugs oracle-http-weblogic-proxy-kev vcf-91-forward-only-upgrade nutanix-nci-76-external-storage citrix-entra-sso-vda-2607 fortisase-mature-feature-upgrade
+2026-08-26T00:00:03+09:00 write MDX status=review updatedAt=2026-08-26 count=5
+2026-08-26T00:00:04+09:00 slugs foundry-model-router-agentic-pool gcp-mcp-org-policy-iam-deny eks-cluster-ca-rotation-lifecycle aws-backup-s3-access-point-read gcp-telemetry-api-otlp-ga
+2026-08-26T00:00:05+09:00 vendor-mix Azure GCP AWS AWS GCP
+2026-08-26T00:00:06+09:00 write research notes count=5
+2026-08-26T00:00:07+09:00 firstPass pass=5 fail=0 secondPass pass=5 fail=0
+2026-08-26T00:00:08+09:00 publication-gate public-approvals.json untouched approved insight MDX untouched homepage/Sangfor untouched no merge no deploy
+2026-08-26T00:00:09+09:00 validate pending before first push
+2026-08-26T00:00:10+09:00 validate pnpm content:validate PASS 4 files 46 tests
+2026-08-26T00:00:11+09:00 validate pnpm build PASS public insight routes remain 17
+2026-08-26T00:00:12+09:00 confirm review slugs absent from sitemap.xml and out/insights
+2026-08-26T00:00:13+09:00 verdict final_review_ready
+2026-08-26T00:00:14+09:00 improvement next run must not repeat these five slugs or 2026-08-25 security/virtualization/HCI/VDI/SASE; do not stack onto PR #8 or PR #9

@@ -1,0 +1,96 @@
+---
+contentId: insight-eks-cluster-ca-rotation-lifecycle
+title: "EKS 클러스터 CA: 자동 순환과 고객 책임을 가를 것"
+summary: "2026-08-20 EKS 클러스터 CA 순환에서 Auto Mode·Fargate 자동 갱신과 관리 노드·외부 클라이언트 책임을 가르는 리뷰 초안"
+slug: eks-cluster-ca-rotation-lifecycle
+locale: ko
+status: review
+updatedAt: 2026-08-26
+audience: [customer, partner]
+tags: [infrastructure, eks, certificate-authority, kubernetes, operations]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-eks-certificate-authority-ca-rotation-automated-lifecycle-management/"
+  - "https://docs.aws.amazon.com/eks/latest/userguide/certificate-authority-rotation.html"
+  - "https://aws.amazon.com/blogs/containers/deep-dive-into-amazon-eks-certificate-authority-rotation/"
+relatedContent: ["insight:infrastructure-consulting-baseline"]
+---
+
+## 한눈에 보기
+
+Amazon EKS는 2026-08-20에 클러스터 인증 기관 순환을 발표했습니다. 제어면과 Auto Mode, Fargate는 AWS가 갱신하고, 관리 노드와 외부 클라이언트는 활성화 전에 고객이 갱신해야 합니다.
+
+- 결정: 지금 후속 CA를 붙일지, AWS 자동 일정에 맡길지, 활성화 전에 어떤 클라이언트를 갱신할지
+- 전제: 원본 CA는 10년, 후속 CA는 5년이며 상용 리전에서 제공된다고 운영 문서가 적는다
+- 불일치: What's New는 워커 노드 교체를 고객 책임으로 적고, 사용 설명서는 Auto Mode·Fargate와 drift가 켜진 Karpenter를 다르게 적는다
+- 범위: ACME TLS나 Arc 워크로드 신원이 아니라 클러스터 API 서버 신뢰 번들
+
+## 문제 상황
+
+2018년 이후 만든 EKS 클러스터 CA는 10년 유효입니다. 그 시기의 클러스터는 순환 준비를 시작해야 한다고 공지가 적습니다. AWS가 제어면을 유지해도, 신뢰 번들을 안 바꾼 노드와 kubeconfig는 활성화 이후 API 서버에 붙지 못합니다.
+
+사용 설명서는 후속 CA를 붙인 뒤 이중 신뢰 기간을 두고, 배포가 끝나야 활성화할 수 있다고 적습니다. AWS는 제어면, Auto Mode, Fargate, EKS Capabilities를 자동 갱신합니다. 고객은 관리형 노드 그룹, drift가 꺼진 Karpenter, 자체 관리 노드, 하이브리드 노드와 워크스테이션, CI/CD, GitOps를 갱신합니다.
+
+자동 보호는 만료 약 2년 전 후속 CA 추가, 약 6개월 전 자동 활성화, 롤백 후 만료 45일 전 최종 활성화입니다. 2018-2019 클러스터는 알림 일정이 다르다고 적습니다. 공지는 워커 노드 교체를 한 문장으로 적습니다. 운영 문서는 노드 유형별로 롤링 교체, drift, 부트스트랩 갱신을 나눕니다.
+
+## 지금 결정할 것
+
+- 지금 후속 CA를 붙일지, AWS 자동 추가를 기다릴지
+- 관리 노드와 외부 클라이언트 목록을 활성화 전에 끝낼지
+- Auto Mode 또는 Fargate만 있다고 외부 클라이언트 갱신을 생략할지
+- 활성화 일정을 고객이 고를지, 자동 활성화에 맡길지
+- 단일 CA 고정 검증을 이중 신뢰 번들로 바꿀지
+
+## 의사결정 기준
+
+### AWS가 유지하는 가용성과 클라이언트가 유지하는 연결을 한 문장으로 보지 않습니다
+
+공지와 블로그는 클러스터 가용성은 AWS 보호로 남는다고 적습니다. 사용 설명서 FAQ는 제어면은 살아 있어도, 후속 CA를 신뢰하지 않는 노드와 외부 클라이언트는 연결을 잃는다고 적습니다. 성공 기준은 제어면 생존이 아니라 운영 클라이언트의 연결입니다.
+
+### What's New의 노드 교체 문장과 운영 문서의 노드 유형을 덮지 않습니다
+
+What's New는 고객이 워커 노드를 교체한다고 적습니다. 사용 설명서는 Auto Mode와 Fargate는 AWS가 갱신하고, 관리형 노드 그룹은 버전 업데이트, Karpenter는 drift 설정, 자체 관리와 하이브리드는 부트스트랩 갱신이라고 적습니다. 운영 승인은 사용 설명서의 공유 책임 절을 엽니다.
+
+### 자동 활성화와 롤백 창을 같은 여유로 보지 않습니다
+
+자동 활성화는 만료 약 6개월 전입니다. 그 뒤 롤백은 가능하지만, 만료 45일 전 최종 활성화 이후에는 롤백이 없습니다. 최종 활성화 전에 관리 노드와 외부 클라이언트를 끝내지 않으면 복구 수단이 사라집니다.
+
+### 클러스터 CA와 애플리케이션 TLS를 섞지 않습니다
+
+이 순환은 API 서버 신뢰 루트입니다. BYOCA는 지원하지 않는다고 적습니다. ACM Private CA나 ACME 인증서 자동화와 한 과제로 묶지 않습니다. 파드 간 통신은 이 CA 변경의 대상이 아니라고 FAQ가 적습니다.
+
+## 실무 체크리스트
+
+1. 클러스터별 CA 만료일과 생성 연도를 list-certificate-authorities로 적습니다.
+2. 데이터 플레인이 Auto Mode, Fargate, 관리형 노드, Karpenter, 자체 관리, 하이브리드 중 무엇인지 나눕니다.
+3. kubeconfig, CI/CD, GitOps, 모니터링 등 외부 클라이언트를 목록화합니다.
+4. 후속 CA를 지금 붙일지 AWS 자동 추가를 기다릴지 정합니다.
+5. 배포 완료 전에는 활성화하지 않는다는 운영 문서 문장을 변경 요청서에 붙입니다.
+6. 단일 CA 고정 검증과 EC2 사용자 데이터 16KB 한도를 확인합니다.
+7. 버전 업그레이드와 CA 순환을 동시에 하지 않는다고 일정을 갈라 적습니다.
+8. 롤백 가능 여부와 최종 자동 활성화 일정을 describe-certificate-authority로 확인합니다.
+
+## 제외 범위
+
+- ACM ACME 하이브리드 TLS 자동화 글을 다시 쓰는 범위
+- Arc Kubernetes 워크로드 신원이나 AKS 파일 공유 신원 글을 다시 쓰는 범위
+- 특정 노드 그룹, GitOps 제품, 인증 기관 상품의 우열 비교
+- 순환이 무중단과 보안을 보장한다는 주장
+- 고객별 규제 적용, 계약, 라이선스의 확정 판정
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: CA 만료, 노드 유형, 외부 클라이언트, 자동 일정, 문서 책임 차이를 현황화합니다.
+- 의사결정 산출물: 지금 순환과 자동 일정, 노드·클라이언트 갱신 범위를 담은 판단표를 만듭니다.
+- 운영 검증: 후속 CA를 포함한 kubeconfig 연결과 미갱신 실패를 시나리오로 확인합니다. 무중단, 보안 효과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+EKS 클러스터 CA 순환의 책임 경계를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 인프라 인증서 수명 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS What's New, Amazon EKS now supports certificate authority rotation, 2026-08-20. 2018년 클러스터 10년 CA, 공유 책임, 상용 리전. https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-eks-certificate-authority-ca-rotation-automated-lifecycle-management/ (확인일: 2026-08-26)
+- 운영 기준: 노드 유형별 책임과 자동 일정은 Amazon EKS User Guide, Rotate the EKS cluster certificate authority를 연다. What's New의 워커 노드 교체 문장은 요약으로만 기록한다. https://docs.aws.amazon.com/eks/latest/userguide/certificate-authority-rotation.html (확인일: 2026-08-26)
+- AWS Containers Blog, Deep dive into Amazon EKS certificate authority rotation. 이중 신뢰, 외부 클라이언트, 후속 CA 5년. https://aws.amazon.com/blogs/containers/deep-dive-into-amazon-eks-certificate-authority-rotation/ (확인일: 2026-08-26)
+
+위 출처는 AWS 공개 공지와 운영 문서, 공식 블로그를 설명합니다. 고객별 적용, 호환성, 운영 결과를 보증하지 않습니다.
