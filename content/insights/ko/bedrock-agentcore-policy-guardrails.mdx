@@ -1,0 +1,96 @@
+---
+contentId: insight-bedrock-agentcore-policy-guardrails
+title: "Bedrock AgentCore Policy: Guardrails를 게이트웨이에 둘 것"
+summary: "2026년 6월 AgentCore Policy의 Bedrock Guardrails에서 게이트웨이 실행 역할의 InvokeGuardrailChecks, forbid와 suppressOutput, 리전 지원 표를 가르는 리뷰 초안"
+slug: bedrock-agentcore-policy-guardrails
+locale: ko
+status: review
+updatedAt: 2026-09-04
+audience: [customer, partner]
+tags: [ai, bedrock, agentcore, guardrails, policy]
+evidenceRefs:
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-guardrails-in-policies.html"
+  - "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html"
+relatedContent: ["insight:ai-governance-decision-operating-model"]
+---
+
+## 한눈에 보기
+
+2026년 6월 AgentCore 릴리스 노트는 AgentCore Policy가 Bedrock Guardrails를 정책에서 지원한다고 적습니다. 검사는 에이전트 코드 밖 게이트웨이 계층에서 돌아갑니다.
+
+- 결정: 에이전트를 키우기 전에 Guardrails 검사를 AgentCore Gateway 정책에 둘지, 에이전트 코드 안에만 둘지
+- 전제: 게이트웨이에 붙인 실행 역할에 bedrock:InvokeGuardrailChecks가 있어야 Policy 데이터 면이 FAS로 Guardrails API를 호출한다
+- 효과: permit·forbid는 요청 인가, suppressOutput은 인가된 동작이 돌려준 출력을 가린다
+- 범위: AI 거버넌스 운영 모델 재작성이 아니라 게이트웨이 정책에 Guardrails를 둘지와 효과·IAM·리전 표
+
+## 문제 상황
+
+에이전트 코드에 가드레일을 넣으면 우회와 누락이 같은 구현 안에 남습니다. 6월 릴리스 노트는 인가된 에이전트 동작의 출력과 게이트웨이 대상으로 가는 입력을 프롬프트 주입, 유해 콘텐츠, 민감 정보 노출에 대해 평가한다고 적습니다. 모든 도구와 컨텍스트 소스가 게이트웨이를 지나므로, 새 에이전트 능력도 같은 보안 계층을 탄다고 안내합니다.
+
+가드레일 인정책 문서는 지금 정책에 넣을 수 있는 종류를 prompt attack, content filter, sensitive information으로 적습니다. 게이트웨이 실행 역할은 bedrock-agentcore 작업과 bedrock:InvokeGuardrailChecks가 같이 필요합니다. Policy 데이터 면이 그 역할에서 만든 FAS 자격 증명으로 Guardrails API를 대신 호출하기 때문입니다. 정책만 붙이고 역할에 그 Action이 없으면 검사가 서지 않습니다.
+
+같은 문서는 permit·forbid를 인가 요청에, suppressOutput을 도구·에이전트·모델이 돌려준 데이터를 가리는 새 효과로 나눕니다. suppressOutput은 인가가 끝난 뒤에 출력을 평가합니다. Policy 개요는 Cedar와 자연어 작성, Dogwood의 입력·세션·제공자 조건을 말합니다. Guardrails는 평가 시점에 점수를 내는 정보 제공자로 적혀 있습니다. 코드 안 필터와 게이트웨이 정책, 인가 거부와 출력 억제를 한 승인으로 묶지 않습니다.
+
+## 지금 결정할 것
+
+- Guardrails 검사를 AgentCore Gateway 정책에 둘지, 에이전트 구현에만 둘지
+- 게이트웨이 실행 역할에 bedrock:InvokeGuardrailChecks를 줄지
+- 입력 차단을 forbid로 둘지, 출력 가림을 suppressOutput으로 둘지
+- ContentFilter, PromptAttack, SensitiveInformation 중 어떤 범주와 임계값을 쓸지
+- 가드레일 인정책 지원 표에서 Yes인 리전에만 이 경로를 둘지
+
+## 의사결정 기준
+
+### 게이트웨이 정책과 에이전트 코드 가드레일을 같은 경계로 보지 않습니다
+
+릴리스 노트는 검사가 에이전트 코드 밖에서 돌아가 에이전트가 우회하지 못한다고 적습니다. 코드 안 가드레일은 구현을 바꾸면 빠질 수 있습니다. 운영 승인은 게이트웨이 정책에 둘지부터 적습니다.
+
+### 정책 연결과 실행 역할 Action을 한 완료로 보지 않습니다
+
+가드레일 문서는 게이트웨이 실행 역할에 bedrock:InvokeGuardrailChecks가 필요하다고 적습니다. 정책 엔진만 연결하고 역할에서 그 Action을 빼면 FAS 호출이 거부됩니다. 역할 정책과 가드레일 정책을 같은 변경 기록에 남깁니다.
+
+### forbid와 suppressOutput을 한 효과로 쓰지 않습니다
+
+permit·forbid는 요청 인가를 가릅니다. suppressOutput은 인가된 동작이 끝난 뒤 출력을 가립니다. 입력 쪽 프롬프트 주입은 forbid, 응답의 주민번호·카드 번호는 suppressOutput처럼 경계를 나눕니다. 인가 거부를 출력 억제로 대신했다고 보지 않습니다.
+
+### 리전 지원 표 밖을 일반 공급으로 옮기지 않습니다
+
+가드레일 인정책 페이지의 표에서 Yes인 리전은 US East (N. Virginia), Asia Pacific (Sydney), Asia Pacific (Tokyo), Europe (London), Europe (Stockholm)입니다. 나머지 표 칸은 No입니다. 이 초안은 AgentCore 제품 전체의 리전 일반 공급을 확정하지 않습니다. 운영 리전이 표의 Yes인지 승인 전에 확인합니다.
+
+## 실무 체크리스트
+
+1. 대상 게이트웨이에 정책 엔진이 연결되어 있는지 기록합니다.
+2. 게이트웨이 실행 역할에 Action bedrock:InvokeGuardrailChecks가 있는지 확인합니다.
+3. 정책 효과가 forbid인지 suppressOutput인지 동작별로 적습니다.
+4. ContentFilter, PromptAttack, SensitiveInformation 범주와 임계값을 적습니다. 문서 기본값은 Content Filter 0.2, Prompt Attack Detection 0.4, Sensitive Information 0.2입니다.
+5. when guardrails 블록과 일반 Cedar when 블록을 한 정책에 섞지 않습니다. 제한 절은 둘을 섞을 수 없다고 적습니다.
+6. 호출 리전이 가드레일 인정책 표의 Yes인지 확인합니다.
+7. LOG_ONLY로 임계값을 시험할지, 바로 강제할지를 승인 조건으로 남깁니다.
+8. 「이번 주 운영 확인」 PASS = 게이트웨이 실행 역할 정책에 Action bedrock:InvokeGuardrailChecks가 있다. FAIL = 가드레일 정책은 붙어 있는데 역할에 그 Action이 없다.
+
+## 제외 범위
+
+- AI 거버넌스 운영 모델 글을 다시 쓰는 범위
+- Bedrock Web Search 송신 경계 글을 다시 쓰는 범위
+- 특정 모델, 오케스트레이션, 가드레일 제품의 우열이나 가격 비교
+- 표에 No인 리전을 가드레일 인정책 일반 공급으로 보는 해석
+- 정책만 붙이면 프롬프트 주입과 민감 정보 유출이 사라진다는 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 게이트웨이·정책 엔진, 실행 역할 Action, forbid·suppressOutput, 범주·임계값, 리전 표를 현황화합니다.
+- 의사결정 산출물: 게이트웨이 검사 여부, IAM, 효과 분리, 표의 Yes 리전을 담은 판단표를 만듭니다.
+- 운영 검증: 역할에 InvokeGuardrailChecks가 있는지를 확인합니다. 차단율이나 규제 적합을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+에이전트를 키우기 전에 Guardrails를 게이트웨이 정책에 둘지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 AI 에이전트 정책 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Amazon Bedrock AgentCore Developer Guide, Release notes. 2026년 6월 AgentCore Policy Now Supports Bedrock Guardrails, 게이트웨이 계층 검사. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html (확인일: 2026-09-04)
+- Amazon Bedrock AgentCore Developer Guide, Guardrails in policies. InvokeGuardrailChecks, permit·forbid·suppressOutput, 리전 지원 표. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-guardrails-in-policies.html (확인일: 2026-09-04)
+- Amazon Bedrock AgentCore Developer Guide, Policy in Amazon Bedrock AgentCore. 게이트웨이에서 정책 평가, Cedar·자연어, Guardrails를 정보 제공자로 안내. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html (확인일: 2026-09-04)
+
+위 출처는 AWS 공개 문서를 설명합니다. 고객별 차단 효과, 규제 적합, 공급자 우위를 보증하지 않습니다.

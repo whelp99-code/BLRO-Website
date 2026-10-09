@@ -1,0 +1,96 @@
+---
+contentId: insight-grafana-alloy-119-servicemonitor-file-access
+title: "Grafana Alloy 1.19: ServiceMonitor 파일 경로를 걷을 것"
+summary: "Alloy v1.19.0부터 ServiceMonitor의 bearerTokenFile과 tlsConfig 파일 참조가 기본 거부되므로, 시크릿 이전과 allow_arbitrary_file_access를 가르는 리뷰 초안"
+slug: grafana-alloy-119-servicemonitor-file-access
+locale: ko
+status: review
+updatedAt: 2026-09-04
+audience: [customer, partner]
+tags: [observability, grafana, alloy, servicemonitor, prometheus]
+evidenceRefs:
+  - "https://github.com/grafana/alloy/releases/tag/v1.19.0"
+  - "https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.operator.servicemonitors/"
+  - "https://raw.githubusercontent.com/grafana/alloy/main/CHANGELOG.md"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+Grafana Alloy v1.19.0 릴리스(2026-08-21)는 prometheus.operator.servicemonitors가 기본적으로 bearerTokenFile, tlsConfig.caFile, tlsConfig.certFile, tlsConfig.keyFile로 로컬 파일을 가리키는 ServiceMonitor 엔드포인트를 거부한다고 적습니다.
+
+- 결정: 1.19.x로 올리기 전에 파일 경로를 Secret·ConfigMap 참조로 옮길지, 신뢰하는 작성자에만 allow_arbitrary_file_access=true를 줄지
+- 전제: 컴포넌트 문서에서 이 인수의 기본값은 false이다
+- 운영: false이면 해당 ServiceMonitor 스크레이프 설정만 거부되고, 거절 사유는 컴포넌트 디버그 정보와 경고 로그에 남는다
+- 범위: 전체 관측 파이프라인 대체가 아니라 ServiceMonitor 로컬 파일 참조와 업그레이드 전제
+
+## 문제 상황
+
+Prometheus Operator 관례로 노드의 토큰·인증서 파일을 그대로 가리키던 ServiceMonitor가 있으면, Alloy를 1.19로 올린 뒤 그 대상만 수집이 끊깁니다. 릴리스 노트와 CHANGELOG는 이전 동작을 유지하려면 allow_arbitrary_file_access = true를 신뢰하는 ServiceMonitor 작성자에 한해 쓰라고 적습니다.
+
+컴포넌트 문서는 기본값이 멀티테넌트 클러스터를 염두에 둔다고 적습니다. ServiceMonitor를 만드는 사람과 Alloy를 실행하는 사람의 권한이 다를 수 있기 때문입니다. false이면 로컬 파일을 가리킨 ServiceMonitor의 생성 스크레이프 설정만 거부하고, 다른 ServiceMonitor와 다른 컴포넌트는 계속 돌아갑니다. 경고 로그에는 네임스페이스, 이름, 엔드포인트 인덱스, 필드가 들어갑니다.
+
+같은 문서는 bearerTokenSecret, authorization, TLS Secret과 ConfigMap 참조를 쓰라고 적습니다. true로 켜도 로컬 파일을 가리키는 ServiceMonitor가 바뀌어 재조정되면 경고 로그는 남습니다. 업그레이드만 하고 파일 경로를 그대로 두면, 기본 false에서 스크레이프가 거절됩니다.
+
+## 지금 결정할 것
+
+- 1.19.x로 올리기 전에 bearerTokenFile과 tlsConfig 파일 필드를 쓰는 ServiceMonitor를 목록화할지
+- 파일 경로를 Secret·ConfigMap 참조로 옮길지
+- 옮기지 못할 대상에만 allow_arbitrary_file_access=true를 줄지, 기본 false를 유지할지
+- true를 줄 작성자와 ServiceMonitor 목록을 문서화할지
+- 거절된 엔드포인트를 컴포넌트 디버그에서 확인할 책임자를 둘지
+
+## 의사결정 기준
+
+### 기본 false와 명시적 true를 같은 상태로 보지 않습니다
+
+릴리스와 CHANGELOG는 기본이 거부라고 적습니다. 컴포넌트 문서는 기본 false입니다. 설정에 인수를 안 쓰면 false입니다. true는 신뢰하는 ServiceMonitor가 로컬 파일이 필요할 때만 켭니다.
+
+### 파일 참조와 Secret·ConfigMap 참조를 가릅니다
+
+문서는 bearerTokenSecret, authorization, TLS Secret과 ConfigMap을 대안으로 적습니다. 업그레이드 창 전에 파일 필드를 쓰는 엔드포인트를 옮기는 쪽을 기본 경로로 둡니다. 옮기지 못한 항목만 예외 목록에 올립니다.
+
+### 한 ServiceMonitor 거부가 Alloy 전체 중지로 보이지 않습니다
+
+false일 때 거부되는 것은 해당 ServiceMonitor의 생성 스크레이프 설정입니다. 다른 대상은 계속 수집됩니다. 일부 타깃만 비는 상태를 Alloy 장애로 보고하지 말고, 디버그 정보와 경고 로그의 네임스페이스·이름·필드를 확인합니다.
+
+### 1.19 파일 접근 변경과 다른 1.19 파괴적 변경을 한 승인으로 묶지 않습니다
+
+CHANGELOG는 같은 버전에 memory_limiter 메트릭 이름 변경과 prometheus.write.queue 제거도 적습니다. 이 초안은 ServiceMonitor 파일 접근만 다룹니다. 다른 파괴적 변경은 별도 창으로 둡니다.
+
+## 실무 체크리스트
+
+1. 실행 중 Alloy 버전이 1.19.0 이상인지 기록합니다.
+2. ServiceMonitor 엔드포인트에 bearerTokenFile, tlsConfig.caFile, tlsConfig.certFile, tlsConfig.keyFile이 있는지 검색합니다.
+3. 파일 필드를 bearerTokenSecret, authorization, Secret·ConfigMap TLS로 바꿀 대상을 정합니다.
+4. 바꾸지 못할 대상이 있으면 신뢰 작성자 목록과 allow_arbitrary_file_access=true 사유를 적습니다.
+5. 기본 false를 유지할 경우 컴포넌트 디버그에서 거절 사유를 확인하는 절차를 적습니다.
+6. true를 켜도 재조정 때 경고 로그가 남는다는 안내를 운영 기록에 남깁니다.
+7. 1.19의 다른 파괴적 변경은 이 목록과 분리합니다.
+8. 「이번 주 운영 확인」 PASS = Alloy 설정에서 allow_arbitrary_file_access가 없거나 false이고 ServiceMonitor 엔드포인트가 로컬 파일을 가리키지 않는다. 또는 true이더라도 문서화된 신뢰 ServiceMonitor 목록만 해당한다. FAIL = Alloy가 1.19 이상이고 기본 false인데 ServiceMonitor가 여전히 bearerTokenFile 또는 tlsConfig.*File을 쓰며 컴포넌트 디버그에 스크레이프 거절이 남는다.
+
+## 제외 범위
+
+- Prometheus, Grafana, 다른 수집기의 우열이나 가격 비교
+- Alloy 1.19의 다른 파괴적 변경을 이 글에서 처리하는 범위
+- CloudWatch PromQL 수집 경로 글을 다시 쓰는 범위
+- allow_arbitrary_file_access=true가 멀티테넌트 위험을 제거한다는 주장
+- 수집 완전성, 알림 정확도의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Alloy 버전, ServiceMonitor 파일 필드, allow_arbitrary_file_access, 시크릿 이전 가능 여부를 현황화합니다.
+- 의사결정 산출물: 이전 대상, 예외 true 목록, 디버그 확인 절차를 담은 판단표를 만듭니다.
+- 운영 검증: 파일 필드 부재 또는 문서화된 true 예외를 확인합니다. 메트릭 완전성을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Alloy 1.19로 올리기 전 ServiceMonitor 파일 경로를 걷을지를 가르려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 관측 수집 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- grafana/alloy GitHub Releases, v1.19.0, 2026-08-21. ServiceMonitor 로컬 파일 참조 기본 거부, allow_arbitrary_file_access = true는 신뢰 작성자용. https://github.com/grafana/alloy/releases/tag/v1.19.0 (확인일: 2026-09-04)
+- Grafana Alloy documentation, prometheus.operator.servicemonitors. allow_arbitrary_file_access 기본 false, Secret·ConfigMap 안내, 디버그·경고 로그. https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.operator.servicemonitors/ (확인일: 2026-09-04)
+- grafana/alloy CHANGELOG.md raw, 1.19.0 절. 동일 파괴적 변경 문구. https://raw.githubusercontent.com/grafana/alloy/main/CHANGELOG.md (확인일: 2026-09-04)
+
+위 출처는 Grafana 공개 릴리스와 문서를 설명합니다. 고객별 수집 완전성, 보안 효과, 공급자 우위를 보증하지 않습니다.
