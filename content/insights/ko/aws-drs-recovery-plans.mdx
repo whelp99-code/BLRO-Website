@@ -1,0 +1,114 @@
+---
+contentId: insight-aws-drs-recovery-plans
+title: "DRS Recovery Plans로 다계층 기동 순서를 한 번에 돌려라 — 드릴 인스턴스는 자동 삭제가 없다"
+summary: "2026-08-27 DRS가 최대 20스텝·100대 서버의 Recovery Plans를 모든 DRS 리전에 추가 비용 없이 제공한다. 실행 전 검증은 all-or-nothing이고 드릴/복구 인스턴스는 플랜이 끝나도 과금이 남는다."
+slug: aws-drs-recovery-plans
+locale: ko
+status: review
+updatedAt: 2026-08-31
+audience: [customer, partner]
+tags: [backup-dr, aws, drs, disaster-recovery, recovery-plans]
+evidenceRefs:
+  - "https://aws.amazon.com/about-aws/whats-new/2026/08/elastic-disaster-recovery-plans/"
+  - "https://docs.aws.amazon.com/drs/latest/userguide/drs-service-release-notes.html"
+  - "https://docs.aws.amazon.com/drs/latest/userguide/recovery-plans-executing.html"
+  - "https://docs.aws.amazon.com/drs/latest/userguide/recovery-plans-validation.html"
+relatedContent: ["insight:backup-dr-decision-checklist", "insight:recovery-objectives-guide"]
+---
+
+## 한눈에 보기
+
+AWS What's New는 2026-08-27에 AWS Elastic Disaster Recovery가 Recovery Plans를 모든 DRS 리전에 제공하고, DRS 사용 요금 외에 추가 비용이 없다고 적습니다.
+
+영향 범위는 다계층 기동 순서가 있는 복구·드릴입니다. 전제는 플랜이 최대 20개 순서 스텝과 100대 서버이며, 스텝 안에서는 병렬이고 서버를 critical 또는 optional로 표시한다는 점입니다. 검증 항목은 실행 전 검증이 Optional 서버까지 all-or-nothing인지, 대기 스텝 1–120분을 첫 스텝에 두지 않는지, 고정한 recovery point가 스텝 시작 때 다시 검증되는지, 드릴 인스턴스를 누가 삭제하는지입니다.
+
+- 결정: 다계층 기동을 Recovery Plans 한 실행으로 둘지, 서버를 하나씩 살릴지
+- 전제: 플랜이 띄운 인스턴스는 드릴 포함 자동 종료되지 않고 EC2·EBS 과금이 남는다
+- 검증: 실행 시작 검증은 all-or-nothing이며 Optional도 실패하면 아무 서버도 복구하지 않는다
+- 범위: 백업·DR 체크리스트와 RPO·RTO 글의 재작성이 아니다. 플랜 실행과 정리만 가른다
+
+## 문제 상황
+
+플랜을 한 번 돌렸다는 보고만 있으면, 기동 성공과 드릴 인스턴스 잔존 과금, 실행 전 검증 실패가 한 결과로 섞입니다.
+
+What's New 2026-08-27은 Recovery Plans가 복구와 드릴에서 다중 서버 애플리케이션을 순서대로 자동 기동한다고 적습니다. 모든 DRS 제공 리전에서 쓸 수 있고 DRS 사용 외 추가 비용은 없다고 적습니다.
+
+서비스 릴리스 노트 2026년 8월은 플랜이 최대 20개 순서 스텝과 최대 100대 소스 서버를 담는다고 적습니다. 각 서버 스텝은 서버를 병렬로 복구하고 끝나야 다음 스텝이 시작됩니다. 서버를 critical 또는 optional로 표시해 실패가 플랜을 멈출지를 정합니다. 드릴 또는 복구로 실행하고 스텝·서버별 진행을 보며 retry, skip, cancel을 할 수 있다고 적습니다.
+
+실행 문서는 DRS가 플랜이 띄운 인스턴스를 종료하지 않는다고 적습니다. 드릴 인스턴스도 포함합니다. 실행이 끝나거나 취소되거나 시간 초과돼도 정리하지 않습니다. 띄운 인스턴스는 종료할 때까지 Amazon EC2, Amazon EBS와 관련 과금이 남습니다. 플랜은 한 번에 최대 100대를 띄울 수 있으므로 드릴 뒤에 정리하라고 적습니다.
+
+검증 문서는 실행 시작 때 플랜 전체를 한 번 검증하고, 서버 스텝이 시작될 때 그 스텝의 서버를 다시 검증한다고 적습니다. 검증은 all-or-nothing이며 impact level이 적용되지 않습니다. Optional로 표시한 서버가 시작 검증에서 실패해도 실행 전체가 실패하고 아무 서버도 복구하지 않습니다. 스텝 재검증이 실패하면 그 스텝 전체는 실패하고 그 스텝의 서버는 복구되지 않습니다.
+
+대기 스텝은 1–120분이며 첫 스텝이 될 수 없습니다. 서버를 띄우기 전에만 기다리는 칸으로 두지 말고, 앞 스텝이 끝난 뒤에만 둡니다.
+
+고정한 recovery point는 실행 시작 때만이 아니라 해당 스텝이 시작되는 순간에 다시 검증됩니다. 긴 플랜에서는 시작 때 있던 시점이 보존 기간을 벗어나거나 삭제될 수 있고, 그때 스텝이 실패하고 플랜이 멈춥니다. 특정 시점이 필요할 때만 고정하고, 스텝이 돌 때도 보존 창 안에 남을 시점을 고릅니다.
+
+## 지금 결정할 것
+
+- 다계층 기동을 Recovery Plans 한 실행으로 둘지
+- 스텝을 20개, 서버를 100대 한도 안에서 어떻게 나눌지
+- 서버를 critical로 둘지 optional로 둘지
+- 대기 스텝 1–120분을 어디에 둘지, 첫 스텝으로 두지 않을지
+- 실행 전 검증이 Optional까지 막으면 드릴을 먼저 돌릴지
+- 고정 recovery point를 스텝 시작 때까지 보존할지
+- 드릴·복구 인스턴스를 누가, 언제 종료할지
+
+## 의사결정 기준
+
+### 플랜 한도와 병렬은 릴리스 노트가 출처입니다
+
+플랜은 최대 20 스텝, 100대입니다. 스텝 안은 병렬이고 스텝 사이는 순차입니다. What's New의 순서 기동 한 줄만 보고 한도를 추정하지 않습니다.
+
+### Optional은 실행 전 검증을 건너뛰지 않습니다
+
+검증은 all-or-nothing입니다. Optional 서버가 시작 검증에서 실패해도 실행이 시작되지 않고 아무 서버도 복구되지 않습니다. optional을 실패해도 나머지를 살린다고 보지 않습니다.
+
+### 대기 스텝을 첫 칸에 두지 않습니다
+
+대기 스텝은 1–120분이며 첫 스텝이 될 수 없습니다. 기동 전 대기만 있는 플랜을 만들지 않습니다.
+
+### 고정 시점은 스텝이 시작될 때 다시 유효해야 합니다
+
+실행 문서는 고정한 recovery point를 스텝 시작 순간에 다시 검증한다고 적습니다. 시작 때 보였다고 몇 시간 뒤 스텝에서도 있다고 보지 않습니다.
+
+### 드릴 종료와 플랜 완료를 같은 상태로 보지 않습니다
+
+DRS는 플랜이 띄운 인스턴스를 종료하지 않습니다. 드릴도 같습니다. 플랜이 초록이어도 EC2·EBS 과금은 종료할 때까지 남습니다. 정리 담당을 실행 승인에 넣습니다.
+
+## 실무 체크리스트
+
+1. 애플리케이션 기동 순서를 20 스텝, 100대 한도 안에서 나눕니다. 스텝 안 병렬과 스텝 사이 순서를 적습니다.
+2. 서버마다 critical 또는 optional을 표시합니다. optional이 시작 검증을 통과해야 실행이 시작된다는 점을 승인자에게 알립니다.
+3. 대기 스텝이 있으면 1–120분인지, 첫 스텝이 아닌지 확인합니다.
+4. 실행 전에 모든 서버의 복제 상태와 recovery point 존재를 확인합니다. 검증 문서는 복구 모드 전에 드릴을 먼저 돌리라고 적습니다.
+5. 특정 시점을 고정하면 그 스텝이 시작할 때도 보존 창 안에 있는지 계산합니다.
+6. 드릴 또는 복구 실행 뒤에 Recovery instances 페이지에서 종료할 담당자와 시점을 적습니다. DRS가 자동 삭제하지 않습니다.
+7. 한 플랜에 실행이 하나뿐인지, 서버가 다른 활성 실행에 묶여 있지 않은지 확인합니다.
+8. 플랜 완료와 인스턴스 정리를 같은 완료 보고로 합치지 않습니다.
+
+## 제외 범위
+
+- 백업·DR 결정 체크리스트 글의 재작성
+- RPO·RTO 합의 글의 재작성
+- DRS와 다른 DR 제품의 우열, 가격, 성능 비교
+- 드릴 인스턴스가 플랜 종료와 함께 사라진다는 해석
+- 복구 시간, 데이터 손실, 과금 한도의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: 기동 순서, 스텝·서버 한도, critical·optional, 검증 실패 지점, 드릴 정리 책임을 현황화합니다.
+- 의사결정 산출물: 플랜 구조, 대기 스텝 위치, 시점 고정 여부, 종료 담당을 담은 판단표를 만듭니다.
+- 운영 검증: 드릴 실행, 시작 검증, 인스턴스 잔존을 시나리오로 확인합니다. 복구 시간과 과금 결과를 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+DRS Recovery Plans 기동 순서와 드릴 정리 범위를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 백업·DR 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- AWS, AWS Elastic Disaster Recovery introduces Recovery Plans for orchestrated application recovery. 게시 2026-08-27, 모든 DRS 리전, DRS 사용 외 추가 비용 없음. https://aws.amazon.com/about-aws/whats-new/2026/08/elastic-disaster-recovery-plans/ (확인일: 2026-08-31)
+- AWS, AWS Elastic Disaster Recovery Service Release Notes, August 2026. 최대 20 순서 스텝·100대 서버, 스텝 안 병렬, critical·optional. https://docs.aws.amazon.com/drs/latest/userguide/drs-service-release-notes.html (확인일: 2026-08-31)
+- AWS, Running a recovery plan. 플랜이 띄운 인스턴스(드릴 포함) 미종료, EC2·EBS 과금 지속, 고정 recovery point는 스텝 시작 때 재검증. https://docs.aws.amazon.com/drs/latest/userguide/recovery-plans-executing.html (확인일: 2026-08-31)
+- AWS, Validation that runs before a server is recovered. 실행 시작 검증은 all-or-nothing, Optional 실패여도 전 서버 미복구, 스텝 시작 재검증 실패 시 해당 스텝 전체 실패. https://docs.aws.amazon.com/drs/latest/userguide/recovery-plans-validation.html (확인일: 2026-08-31)
+
+위 출처는 AWS 공개 문서를 설명합니다. 고객별 복구 시간, 과금, 드릴 결과를 보증하지 않습니다.

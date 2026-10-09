@@ -1,0 +1,108 @@
+---
+contentId: insight-grafana-adaptive-profiles-ga
+title: "Grafana Cloud Adaptive Profiles GA — 기본 10% 샘플, 끄면 바로 100% 과금"
+summary: "2026-08-11 Adaptive Profiles가 Grafana Cloud GA. 켜면 서비스당 기본 10% 프로파일, 배포 감지 시 5분 100% 부스트. 비활성화하면 전 서비스 100%로 돌아가니 비용 가드가 필요하다."
+slug: grafana-adaptive-profiles-ga
+locale: ko
+status: review
+updatedAt: 2026-08-31
+audience: [customer, partner]
+tags: [observability, grafana, profiling, adaptive-telemetry, pyroscope]
+evidenceRefs:
+  - "https://grafana.com/whats-new/2026-08-07-adaptive-profiles-is-generally-available-in-grafana-cloud/"
+  - "https://grafana.com/docs/grafana-cloud/observe-and-act/adaptive-telemetry/adaptive-profiles/introduction/"
+  - "https://grafana.com/docs/grafana-cloud/observe-and-act/adaptive-telemetry/adaptive-profiles/boost-services/"
+relatedContent: []
+---
+
+## 한눈에 보기
+
+Grafana What's New는 Adaptive Profiles 일반 공급일을 2026-08-11로 적고, Self-managed release는 없다고 적습니다. Grafana Cloud에서만 일반 공급입니다.
+
+영향 범위는 Grafana Cloud로 프로파일을 보내는 서비스입니다. 전제는 기능을 켜면 모든 서비스가 기본 10%로 샘플되고, 샘플되지 않은 프로파일은 합계는 남기고 스택 트레이스는 버린다는 점입니다. 검증 항목은 배포 감지 시 5분 100% 자동 부스트를 쓰는지, 기능을 끄면 전 서비스가 바로 100%로 돌아가는지, 그 전환을 비용 가드로 볼지입니다.
+
+- 결정: Adaptive Profiles를 켤지, 끄면 100%로 돌아가는 비용을 누가 승인할지
+- 전제: 일반 공급은 Grafana Cloud만이다. 셀프 매니지드 릴리스는 없다
+- 동작: 켜면 기본 10%, 새 버전 감지 시 5분 100% 부스트, 끄면 전 서비스 100%
+- 범위: 관측 제품 전체 비교가 아니다. 샘플 비율과 비활성화 과금만 가른다
+
+## 문제 상황
+
+Adaptive Profiles를 켰다는 보고만 있으면, 기본 10%와 What's New의 용량 감소 문구, 끄면 100%로 돌아가는 과금이 한 승인에 섞입니다.
+
+What's New는 2026-08-11 Grafana Cloud 일반 공급이며 셀프 매니지드 릴리스가 없다고 적습니다. 같은 글은 저장된 용량을 85-90% 줄인다고 적습니다. 이 수치는 What's New 주장으로만 남기고, 운영 설정은 문서의 샘플 비율을 따릅니다. 85-90%를 내부 절감 목표로 단정하지 않습니다.
+
+도입 문서는 기능을 켜면 모든 서비스가 기본 10%로 샘플된다고 적습니다. 샘플되지 않은 프로파일은 통째로 버리지 않습니다. 합계는 남기고 상세 스택 트레이스만 제거합니다. 사용량 합계와 서비스 목록은 유지된다고 적습니다. 기능을 끄면 서비스가 100%로 샘플됩니다.
+
+자동 부스트는 새 서비스 버전을 감지하면 해당 서비스를 5분 동안 100%로 올립니다. 문서는 BuildId 필드 또는 service_git_ref 레이블로 배포를 본다고 적습니다. What's New는 동작 변화 감지 시 100%로 올린다고 적습니다. 운영 절차는 문서의 5분·새 버전 감지를 따릅니다. 동작 변화라는 문구를 별도 감지 엔진이 항상 있다고 확장하지 않습니다.
+
+부스트 문서는 수동 부스트 기간을 운영자가 고르고, 만료 후 기본 샘플 비율로 돌아간다고 적습니다. 부스트는 서비스 하나이며 동시에 하나만 활성입니다. 샘플이 늘면 사용량과 비용이 일시적으로 오를 수 있다고 적습니다. Adaptive Profiles가 꺼져 있으면 Drilldown의 Boost service가 보이지 않습니다.
+
+비활성화는 Administration의 Adaptive Profiles 플러그인에서 Enable Adaptive Profiles를 끄는 경로입니다. 끄면 모든 서비스가 100%로 돌아갑니다. 개요 페이지는 다시 켜라는 경고를 보여 줍니다. 기능을 잠깐 끈다고 과금이 기본 10%에 남는다고 보지 않습니다.
+
+## 지금 결정할 것
+
+- Grafana Cloud에서 Adaptive Profiles를 켤지, 셀프 매니지드에 없다고 전제를 남길지
+- 기본 10%를 비용 기본값으로 둘지
+- 배포 감지 5분 100% 부스트를 허용할지
+- 수동 부스트 기간과 동시 하나 한도를 누가 승인할지
+- 기능을 끄면 전 서비스 100%로 돌아가는 전환을 비용 가드로 둘지
+- What's New의 85-90% 용량 감소를 내부 목표로 쓰지 않을지
+
+## 의사결정 기준
+
+### 일반 공급은 Grafana Cloud만입니다
+
+What's New는 Self-managed release를 No로 적습니다. 셀프 매니지드 Grafana에 같은 일반 공급이 있다고 보고하지 않습니다.
+
+### 기본 10%와 끄면 100%를 같은 상태로 보지 않습니다
+
+도입 문서는 켜면 모든 서비스 10%, 끄면 100%라고 적습니다. 기능을 비활성화하는 것이 절감 상태를 유지하는 동작이 아닙니다. 끄기 전에 100% 과금 전환을 승인합니다.
+
+### 샘플되지 않은 프로파일은 합계가 남습니다
+
+문서는 샘플되지 않은 프로파일의 합계를 유지하고 스택 트레이스만 제거한다고 적습니다. 10%로 줄었다고 서비스가 목록에서 사라진다고 보지 않습니다. 상세 스택이 필요한 조사는 부스트 창을 따로 둡니다.
+
+### 자동 부스트는 문서의 5분·새 버전을 따릅니다
+
+도입 문서와 부스트 문서는 새 버전 감지 시 5분 100%라고 적습니다. What's New의 동작 변화 문구를 더 넓은 감지로 확장하지 않습니다. 수동 부스트는 기간을 고르고 서비스당 하나입니다.
+
+### 85-90%는 What's New 주장입니다
+
+용량 감소 85-90%는 What's New에만 있습니다. 운영 체크리스트의 기본값은 10%와 5분 부스트입니다. 절감률을 계약 수치로 쓰지 않습니다.
+
+## 실무 체크리스트
+
+1. 프로파일을 Grafana Cloud로 보내는지, 셀프 매니지드만 있는지 나눕니다. 후자면 이 일반 공급을 적용하지 않습니다.
+2. Adaptive Telemetry의 Adaptive Profiles에서 기능을 켤지 승인합니다. 켜면 모든 서비스가 기본 10%입니다.
+3. 샘플되지 않은 프로파일은 합계가 남고 스택 트레이스가 빠진다는 점을 조사 절차에 적습니다.
+4. 자동 부스트 5분을 허용할지, BuildId 또는 service_git_ref가 배포를 나타내는지 확인합니다.
+5. 수동 부스트 기간과 서비스당 하나 한도를 적습니다. 부스트 중 비용이 오를 수 있다고 부스트 문서가 적습니다.
+6. 기능을 끄는 경로와, 끄면 전 서비스 100%로 돌아간다는 점을 비용 가드에 넣습니다.
+7. What's New의 85-90%를 내부 절감 목표로 인용하지 않습니다.
+
+## 제외 범위
+
+- 셀프 매니지드 Grafana에 Adaptive Profiles 일반 공급이 있다는 해석
+- 85-90% 용량 감소를 운영 보장으로 보는 해석
+- 기능을 꺼도 10%가 유지된다는 단정
+- 관측 제품의 우열, 가격, 성능 비교
+- 비용, 탐지 품질, 프로파일 완전성의 사전 보장
+
+## 이 이슈를 BLRO가 다루는 방식
+
+- 진단 범위: Grafana Cloud 사용 여부, 현재 샘플 비율, 부스트 설정, 비활성화 시 100% 전환을 현황화합니다.
+- 의사결정 산출물: 활성화 여부, 5분 부스트 허용, 끄기 전 비용 가드를 담은 판단표를 만듭니다.
+- 운영 검증: 10% 기본, 부스트 후 복귀, 비활성화 후 100%를 시나리오로 확인합니다. 절감률과 과금을 사전 보장하지 않습니다.
+
+## 단일 CTA
+
+Grafana Cloud Adaptive Profiles 기본 샘플과 비활성화 과금 가드를 정리하려면 mailto:jm.park@blro.co.kr 로 컨설팅 문의를 보내 관측 진단 범위를 확인할 수 있습니다.
+
+## 출처와 확인 날짜
+
+- Grafana Labs, Adaptive Profiles is generally available in Grafana Cloud. 일반 공급일 2026-08-11, Grafana Cloud only, Self-managed release 없음, What's New는 85-90% 용량 감소와 동작 변화 시 100%를 주장. https://grafana.com/whats-new/2026-08-07-adaptive-profiles-is-generally-available-in-grafana-cloud/ (확인일: 2026-08-31)
+- Grafana Cloud Docs, Introduction to Adaptive Profiles. 켜면 모든 서비스 기본 10%, 미소플 프로파일은 합계 유지·스택 트레이스 제거, 끄면 100%, 새 버전 감지 시 5분 100% 부스트. https://grafana.com/docs/grafana-cloud/observe-and-act/adaptive-telemetry/adaptive-profiles/introduction/ (확인일: 2026-08-31)
+- Grafana Cloud Docs, Boost services. 부스트는 서비스 단위 100%, 자동 5분, 수동 기간 선택, 동시 하나, 비용 일시 증가 가능. https://grafana.com/docs/grafana-cloud/observe-and-act/adaptive-telemetry/adaptive-profiles/boost-services/ (확인일: 2026-08-31)
+
+위 출처는 Grafana 공개 문서와 What's New를 설명합니다. 고객별 절감률, 과금, 부스트 효과를 보증하지 않습니다.
