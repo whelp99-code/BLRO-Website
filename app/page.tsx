@@ -1,7 +1,9 @@
 import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
+import { HciStage } from "@/components/redesign/hci-stage"
 import { SituationChooser } from "@/components/redesign/situation-chooser"
+import { HCI_LAYERS } from "@/lib/hci-layers"
 
 export const HOME_HEADING = "기업 IT의 도입, 전환, 구축, 운영, 기술 지원을 역할에 맞게 연결합니다."
 
@@ -40,6 +42,17 @@ export default function Home() {
             </p>
           </div>
           <LifecycleFigure />
+        </div>
+      </section>
+
+      <section aria-labelledby="stage-heading" className="rd-chapter hci-stage-section">
+        <div className="rd-wrap">
+          <h2 id="stage-heading">HCI는 네 개 층으로 구성됩니다.</h2>
+          <p>층을 눌러 보세요. 각 층에서 확인할 내용을 보여 드립니다.</p>
+          <HciStage layers={HCI_LAYERS} />
+          <p className="rd-actions">
+            <Link className="rd-btn rd-btn-primary" href="/solutions/hci">HCI 상세 보기</Link>
+          </p>
         </div>
       </section>
 
