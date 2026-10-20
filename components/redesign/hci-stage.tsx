@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import type { HciLayer } from "@/lib/hci-layers"
 import { mountHciScene, type SceneHandle } from "./hci-scene3d"
@@ -7,8 +8,6 @@ import { mountHciScene, type SceneHandle } from "./hci-scene3d"
 type HciStageProps = {
   readonly layers: readonly HciLayer[]
 }
-
-const LAYER_Y = [62, 118, 174, 230] as const
 
 export function HciStage({ layers }: HciStageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -64,26 +63,23 @@ export function HciStage({ layers }: HciStageProps) {
   return (
     <div className="hci-stage" data-mode={mode}>
       <div className="hci-stage__view" aria-hidden="true">
-        <svg className="hci-stage__svg" viewBox="0 0 400 300" role="presentation">
-          <defs>
-            <linearGradient id="hs-top" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
-              <stop offset="1" stopColor="#ffffff" stopOpacity="0.05" />
-            </linearGradient>
-          </defs>
-          <path className="hci-stage__flow" d="M200 20 V285" />
-          {layers.map((layer, index) => {
-            const y = LAYER_Y[index] ?? 62
-            return (
-              <g className="hci-stage__slab" data-active={index === active} data-layer={layer.key} key={layer.key}>
-                <path className="hs-left" d={`M100 ${y} L200 ${y + 30} L200 ${y + 46} L100 ${y + 16} Z`} />
-                <path className="hs-right" d={`M200 ${y + 30} L300 ${y} L300 ${y + 16} L200 ${y + 46} Z`} />
-                <path className="hs-top" d={`M200 ${y - 30} L300 ${y} L200 ${y + 30} L100 ${y} Z`} />
-                <path d={`M200 ${y - 30} L300 ${y} L200 ${y + 30} L100 ${y} Z`} fill="url(#hs-top)" />
-              </g>
-            )
-          })}
-        </svg>
+        <div className="hci-stage__stack">
+          {layers.map((layer, index) => (
+            <Image
+              alt=""
+              className="hci-stage__layer"
+              data-active={index === active}
+              data-layer={layer.key}
+              height={400}
+              key={layer.key}
+              unoptimized
+              src={`/images/hci/layer-${layer.key}.webp`}
+              style={{ top: `${3.75 + index * 18.75}%`, zIndex: 10 - index }}
+              width={1000}
+            />
+          ))}
+          <span className="hci-stage__beam" />
+        </div>
         <canvas className="hci-stage__canvas" ref={canvasRef} />
       </div>
       <div className="hci-stage__panel">
