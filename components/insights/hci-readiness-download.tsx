@@ -3,6 +3,7 @@
 import Script from "next/script"
 import { useState } from "react"
 import { emitAnalyticsEvent } from "@/components/analytics/emit-analytics-event"
+import { useLazyTurnstile } from "@/components/contact/use-lazy-turnstile"
 import { requestHciReadinessChecklist } from "@/lib/lead-api"
 import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
 import { resolveLeadApiUrl, resolveTurnstileSiteKey } from "@/lib/public-runtime"
@@ -18,9 +19,11 @@ function value(formData: FormData, name: string): string {
 export function HciReadinessDownload() {
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [hasStarted, setHasStarted] = useState(false)
+  const { formRef, shouldLoad, trigger } = useLazyTurnstile()
   const ready = endpoint !== undefined && siteKey !== undefined
 
   function trackStart() {
+    trigger()
     if (hasStarted) return
     setHasStarted(true)
     emitAnalyticsEvent("form_started", { ctaId: "insight-hci-readiness-download", placement: "insight-detail", topic: "vmware-hci" })
@@ -66,8 +69,8 @@ export function HciReadinessDownload() {
         <h2 id="hci-download-heading">HCI·가상화 전환 사전진단 체크리스트</h2>
         <p>용량, 장애도메인, 데이터 보호, 운영 역할, 전환·롤백 기준을 한 장의 점검표로 받아보세요.</p>
       </div>
-      <form onFocusCapture={trackStart} onSubmit={onSubmit}>
-        {siteKey ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" /> : null}
+      <form onFocusCapture={trackStart} onSubmit={onSubmit} ref={formRef}>
+        {siteKey && shouldLoad ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" /> : null}
         <label>회사명<input autoComplete="organization" name="company" required /></label>
         <label>담당자명<input autoComplete="name" name="name" required /></label>
         <label>업무용 이메일<input autoComplete="email" name="workEmail" required type="email" /></label>

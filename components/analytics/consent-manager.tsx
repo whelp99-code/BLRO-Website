@@ -43,7 +43,7 @@ export function ConsentManager() {
   return (
     <aside aria-labelledby="analytics-consent-heading" className="blro-consent" data-testid="analytics-consent">
       <p id="analytics-consent-heading">
-        사이트 개선을 위한 비식별 이용 측정입니다. 이름·이메일·문의 내용은 측정하지 않습니다. <Link href="/privacy#usage-measurement">자세히 보기</Link>
+        사이트 개선을 위한 비식별 이용 측정입니다. 이름·이메일·문의 내용은 측정하지 않습니다. <Link href="/privacy#usage-measurement">이용 측정 안내 자세히 보기</Link>
       </p>
       <div>
         <button className="blro-button blro-button--secondary blro-button--compact" onClick={() => decide("rejected")} type="button">
