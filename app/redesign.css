@@ -707,6 +707,7 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 
 .hci-stage__view {
   position: relative;
+  container-type: inline-size;
 }
 
 .hci-diagram {
@@ -737,13 +738,7 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 .hs-group {
   cursor: pointer;
   opacity: 0.34;
-  outline: none;
   transition: opacity 320ms ease, filter 320ms ease;
-}
-
-.hs-group:focus-visible {
-  outline: 2px solid #93c5fd;
-  outline-offset: 2px;
 }
 
 .hs-group[data-active="true"] {
@@ -805,6 +800,80 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   fill: #fff;
   font-size: 15px;
   font-weight: 700;
+}
+
+.hci-stage__callout {
+  display: none;
+}
+
+/* The diagram's viewBox is 640 wide, so SVG font sizes are user units.
+   Below that width they would paint at a few CSS pixels. Scale the short
+   labels back up and show the sentence under the figure. */
+@container (max-width: 640px) {
+  .hs-small,
+  .hs-small-strong {
+    font-size: calc(12 * 640px / 100cqw * 1px);
+  }
+
+  .hs-title {
+    font-size: calc(13 * 640px / 100cqw * 1px);
+    translate: 0 max(0px, calc(8px * (360px - 100cqw) / 110px));
+  }
+
+  .hs-tiny {
+    display: none;
+  }
+
+  .hs-server,
+  .hs-vm {
+    translate: 0 max(0px, calc(12px * (450px - 100cqw) / 200px));
+  }
+
+  .hs-vm-label {
+    translate: 0 8px;
+  }
+
+  .hs-bar {
+    translate: 0 max(0px, calc(12px * (520px - 100cqw) / 270px));
+  }
+
+  .hs-data {
+    transform: translateY(max(0px, calc(26px * (640px - 100cqw) / 390px)));
+  }
+
+  .hs-net-work {
+    transform: translateY(max(0px, calc(8950px / 100cqw * 1px - 18px)));
+  }
+
+  .hs-net-admin {
+    transform: translate(
+      max(0px, calc(23050px / 100cqw * 1px - 48px)),
+      max(0px, calc(8950px / 100cqw * 1px - 18px))
+    );
+  }
+
+  .hci-diagram .hs-callout {
+    display: none;
+  }
+
+  .hci-diagram {
+    clip-path: inset(0 0 10% 0);
+    margin-bottom: calc(-10% * 500 / 640);
+  }
+
+  .hci-stage__callout {
+    display: block;
+    margin: 0.35rem 0 0;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid rgba(148, 180, 255, 0.4);
+    border-radius: 14px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.45;
+    text-align: center;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
