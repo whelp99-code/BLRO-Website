@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { ExplainSteps } from "@/components/redesign/explain-steps"
 import { canonicalMetadata } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -7,6 +8,14 @@ export const metadata: Metadata = {
   description: "서버, 저장, 업무 화면과 경계에서 출발하는 도입·운영 상담입니다.",
   ...canonicalMetadata("/customer"),
 }
+
+const JOURNEY = [
+  { name: "상황", summary: "서버, 저장, 업무 화면, 경계, 접근", points: ["지금 필요한 일이 서버 교체인지, 저장 증설인지, 업무 화면이나 경계 보안인지 적어 주세요.", "제품이 정해지지 않아도 됩니다."] },
+  { name: "검토 대상", summary: "관련 제품 또는 제품 미정", points: ["서버 상황에서는 Sangfor HCI, aSV, GIGABYTE 서버, KAYTUS 서버를 함께 검토합니다.", "제품보다 상황부터 시작하면 미정으로 상담합니다."] },
+  { name: "전환 제약", summary: "데이터 보호, 중단 가능 시간", points: ["현재 환경, 옮길 수 있는 데이터, 중단할 수 있는 시간, 되돌릴 조건, 누가 승인하는지를 상담 전에 적어 주세요.", "단순 제품 공급이라면 전환 단계 없이 공급 범위만 정리할 수 있습니다."] },
+  { name: "구축과 인수", summary: "합의한 범위만", points: ["구축은 합의한 범위의 설치와 확인입니다.", "성능과 절감 효과는 확인된 범위에서만 안내합니다."] },
+  { name: "운영 지원", summary: "담당, 연락, 기술 지원 경로", points: ["인수 후 담당, 기록할 항목, 기술 지원 연락 경로를 정합니다.", "지원 시간과 대응 범위는 상담에서 확인합니다."] },
+] as const
 
 const SITUATIONS = [
   ["01", "서버를 새로 구성하거나 교체합니다", "업무 시스템이 어디에 있고, 지금 가상화와 랙·전력 제약이 무엇인지가 먼저입니다. 검토 대상은 Sangfor HCI, aSV, GIGABYTE 서버, KAYTUS 서버입니다. HCI를 검토하더라도 서버 제품군은 함께 비교해 볼 수 있습니다."],
@@ -27,13 +36,7 @@ export default function CustomerPage() {
           </div>
           <figure className="rd-panel" data-reveal>
             <figcaption className="rd-kicker">설명 그림 · 고객 여정</figcaption>
-            <ol className="rd-layers">
-              <li data-step><strong>1 상황</strong><span>서버, 저장, 업무화면, 경계, 접근</span></li>
-              <li data-step><strong>2 검토 대상</strong><span>관련 제품 또는 제품 미정</span></li>
-              <li data-step><strong>3 전환 제약</strong><span>데이터 보호, 중단 가능 시간</span></li>
-              <li data-step><strong>4 구축과 인수</strong><span>합의한 범위만</span></li>
-              <li data-step><strong>5 운영 지원</strong><span>담당, 연락, 기술 지원 경로</span></li>
-            </ol>
+            <ExplainSteps group="customer-journey" steps={JOURNEY} />
             <p className="rd-caption">한 제품이 여러 상황에 걸칠 수 있어, 상담에서 상황에 맞게 범위를 나눕니다.</p>
           </figure>
         </div>
