@@ -875,3 +875,17 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   background-position: 100% 0%;
   box-shadow: 0 10px 24px -10px rgba(29, 78, 216, 0.7);
 }
+
+.rd-art-band {
+  max-width: 1120px;
+  margin: 2rem auto;
+  padding-inline: 1rem;
+}
+
+.rd-art-band img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px -28px rgba(11, 20, 64, 0.75), 0 0 0 1px rgba(120, 160, 255, 0.2);
+}

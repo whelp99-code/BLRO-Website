@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
@@ -44,6 +45,10 @@ export default function Home() {
           <LifecycleFigure />
         </div>
       </section>
+
+      <div aria-hidden="true" className="rd-art-band">
+        <Image alt="" height={800} src="/images/home-ecosystem.webp" unoptimized width={1600} />
+      </div>
 
       <section aria-labelledby="stage-heading" className="rd-chapter hci-stage-section">
         <div className="rd-wrap">
