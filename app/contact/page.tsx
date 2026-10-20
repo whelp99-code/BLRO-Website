@@ -47,6 +47,15 @@ export default function ContactPage() {
         </Container>
       </Section>
 
+      <Section aria-labelledby="contact-status-heading" id="inquiry-form" spacing="default" tone="alternate">
+        <Container className="contact-page__status">
+          <Eyebrow>상담 접수</Eyebrow>
+          <Heading id="contact-status-heading" level={2}>전환 진단 범위를 확인하세요.</Heading>
+          <Text>입력한 정보는 상담 요청 처리와 회신을 위해서만 사용하며, 제출 전 동의가 필요합니다.</Text>
+          <Suspense fallback={null}><InquiryForm /></Suspense>
+        </Container>
+      </Section>
+
       <Section aria-labelledby="contact-preparation-heading" spacing="default" tone="surface">
         <Container className="contact-page__preparation">
           <div>
@@ -67,15 +76,6 @@ export default function ContactPage() {
       <Section aria-label="전환 진단 산출물 예시" spacing="generous">
         <Container>
           <DiagnosticSummarySample />
-        </Container>
-      </Section>
-
-      <Section aria-labelledby="contact-status-heading" id="inquiry-form" spacing="default" tone="alternate">
-        <Container className="contact-page__status">
-          <Eyebrow>상담 접수</Eyebrow>
-          <Heading id="contact-status-heading" level={2}>전환 진단 범위를 확인하세요.</Heading>
-          <Text>입력한 정보는 상담 요청 처리와 회신을 위해서만 사용하며, 제출 전 동의가 필요합니다.</Text>
-          <Suspense fallback={null}><InquiryForm /></Suspense>
         </Container>
       </Section>
     </article>

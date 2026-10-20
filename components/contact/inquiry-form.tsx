@@ -92,7 +92,7 @@ export function InquiryForm() {
         <label>업무용 이메일<input autoComplete="email" name="workEmail" required type="email" /></label>
         <label>연락처 <span>(선택)</span><input autoComplete="tel" name="phone" type="tel" /></label>
       </div>
-      <label>현재 상황과 검토 목적<textarea name="message" rows={5} /></label>
+      <label>현재 상황과 검토 목적 <span>(선택)</span><textarea name="message" rows={5} /></label>
       {siteKey ? <div className="cf-turnstile" data-action="turnstile-spin-v2" data-sitekey={siteKey} /> : null}
       <label className="inquiry-form__consent">
         <input name="privacyConsent" required type="checkbox" />

@@ -34,7 +34,7 @@ export const primaryNavigation = [
   { href: "/partner", label: "국내 파트너", children: [] },
   { href: "/engineer", label: "기술 엔지니어", children: [] },
   { href: "/solutions", label: "솔루션", children: solutionChildren },
-  { href: "/projects", label: "프로젝트", children: [] },
+  { href: "/projects", label: "판단 과정", children: [] },
   { href: "/contact", label: "상담", children: [] },
 ] as const satisfies readonly NavigationItem[]
 
@@ -85,7 +85,7 @@ const routeLabels = new Map<string, string>([
   ["/engineer", "기술 엔지니어"],
   ["/ai-automation", "AI & Automation"],
   ["/partner-business", "Partner Business"],
-  ["/projects", "Projects"],
+  ["/projects", "판단 과정"],
   ["/insights", "Insights"],
   ["/contact", "Contact"],
   ["/privacy", "개인정보 처리방침"],

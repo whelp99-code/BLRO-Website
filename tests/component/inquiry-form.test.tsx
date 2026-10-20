@@ -46,7 +46,7 @@ describe("InquiryForm", () => {
       fireEvent.change(screen.getByRole("textbox", { name: "회사명" }), { target: { value: "BLRO launch canary" } })
       fireEvent.change(screen.getByRole("textbox", { name: "담당자명" }), { target: { value: "운영 테스트" } })
       fireEvent.change(screen.getByRole("textbox", { name: "업무용 이메일" }), { target: { value: "jm.park@blro.co.kr" } })
-      fireEvent.change(screen.getByRole("textbox", { name: "현재 상황과 검토 목적" }), { target: { value: "운영 문의 흐름 검증용 테스트입니다." } })
+      fireEvent.change(screen.getByRole("textbox", { name: "현재 상황과 검토 목적 (선택)" }), { target: { value: "운영 문의 흐름 검증용 테스트입니다." } })
       await user.click(screen.getByRole("checkbox", { name: /개인정보 처리 안내/u }))
 
       await user.click(screen.getByRole("button", { name: "상담 요청 보내기" }))
@@ -57,7 +57,7 @@ describe("InquiryForm", () => {
       expect(screen.getByRole("textbox", { name: "회사명" })).toHaveValue("")
       expect(screen.getByRole("textbox", { name: "담당자명" })).toHaveValue("")
       expect(screen.getByRole("textbox", { name: "업무용 이메일" })).toHaveValue("")
-      expect(screen.getByRole("textbox", { name: "현재 상황과 검토 목적" })).toHaveValue("")
+      expect(screen.getByRole("textbox", { name: "현재 상황과 검토 목적 (선택)" })).toHaveValue("")
       expect(screen.getByRole("link", { name: "jm.park@blro.co.kr" })).toHaveAttribute("href", "mailto:jm.park@blro.co.kr")
     } finally {
       vi.unstubAllEnvs()
