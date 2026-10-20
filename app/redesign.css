@@ -593,3 +593,92 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
     transform: none;
   }
 }
+
+.rd-chooser {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rd-chooser li {
+  max-width: none;
+}
+
+.rd-chooser a {
+  display: block;
+  min-height: 44px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--card);
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.rd-chooser a:hover {
+  border-color: var(--action);
+  transform: translateY(-1px);
+}
+
+.rd-chooser a:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+}
+
+.rd-chooser strong,
+.rd-chooser span {
+  display: block;
+}
+
+.rd-chooser span {
+  margin-top: 0.25rem;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+@media (min-width: 720px) {
+  .rd-chooser {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.rd-explain {
+  position: relative;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rd-explain::before {
+      content: "";
+      position: absolute;
+      top: 0.6rem;
+      bottom: 0.6rem;
+      left: -14px;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--signal);
+      transform-origin: top;
+      animation: rd-path-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 70%;
+    }
+  }
+}
+
+@keyframes rd-path-fill {
+  from {
+    transform: scaleY(0);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+[id^="situation-"] {
+  scroll-margin-top: 96px;
+}
