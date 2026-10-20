@@ -13,6 +13,7 @@ const LAYER_Y = [62, 118, 174, 230] as const
 export function HciStage({ layers }: HciStageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sceneRef = useRef<SceneHandle | null>(null)
+  const activeRef = useRef(0)
   const [active, setActive] = useState(0)
   const [mode, setMode] = useState<"2d" | "3d">("2d")
 
@@ -37,6 +38,7 @@ export function HciStage({ layers }: HciStageProps) {
               return
             }
             sceneRef.current = handle
+            handle.setActive(activeRef.current)
             setMode("3d")
           })
         }
@@ -55,6 +57,7 @@ export function HciStage({ layers }: HciStageProps) {
   }, [layers])
 
   function select(index: number) {
+    activeRef.current = index
     setActive(index)
     sceneRef.current?.setActive(index)
   }
