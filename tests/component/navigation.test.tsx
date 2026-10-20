@@ -13,7 +13,7 @@ describe("desktop navigation", () => {
     const user = userEvent.setup()
     render(<DesktopNav pathname="/solutions/network-security" />)
     const solutions = screen.getByRole("button", { name: "솔루션 메뉴" })
-    const projects = screen.getByRole("link", { name: "프로젝트" })
+    const projects = screen.getByRole("link", { name: "판단 과정" })
     expect(solutions).not.toHaveAttribute("tabindex", "-1")
     solutions.focus()
 

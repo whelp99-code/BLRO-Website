@@ -4,14 +4,6 @@ import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
 
 export const HOME_HEADING = "기업 IT의 도입, 전환, 구축, 운영, 기술 지원을 역할에 맞게 연결합니다."
 
-const LIFE_STEPS = [
-  ["도입", "상황과 범위를 적습니다. 제품이 정해지지 않아도 됩니다."],
-  ["전환", "운영 제약과 데이터 보호, 전환 일정을 함께 확인합니다."],
-  ["구축", "합의한 공급과 설치만 수행합니다."],
-  ["운영", "담당과 인수 범위를 문서에 남깁니다."],
-  ["기술지원", "기술 자료와 문의 경로를 연결합니다."],
-] as const
-
 export default function Home() {
   return (
     <div className="home-page rd">
@@ -43,24 +35,10 @@ export default function Home() {
               </Link>
             </div>
             <p>
-              기업 고객은 현재 환경과 도입 과제부터, 국내 파트너는 공동 수행의 역할부터, 기술 엔지니어는 설치·장애·호환 자료부터 필요한 정보를 확인할 수 있습니다.
+              서버 교체, 저장 증설, 업무 데스크톱, 경계 보안처럼 지금 필요한 일에서 시작하세요. 제품이 정해지지 않아도 도입부터 운영 인수, 기술 지원까지 필요한 범위를 함께 정리합니다.
             </p>
-            <p>도입 검토부터 전환, 구축, 운영 인수와 기술 지원까지 단계별로 필요한 범위를 함께 정리합니다.</p>
           </div>
           <LifecycleFigure />
-        </div>
-        <div className="rd-wrap">
-          <ol aria-label="수행하는 단계" className="rd-steps home-steps">
-            {LIFE_STEPS.map(([name, detail], index) => (
-              <li className="rd-step" data-reveal data-stagger={String(Math.min(index, 3))} key={name}>
-                <span className="rd-idx">{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <p className="rd-step-name">{name}</p>
-                  <p>{detail}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 

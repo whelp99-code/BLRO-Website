@@ -200,7 +200,7 @@
         "https://learn.microsoft.com/en-us/azure/azure-local/update/update-best-practices?view=azloc-2606"
       ],
       "contentSha256": "732ec896cdc9d4dc9ab6d9c1b7818e1e47263fee4d50de9a4266fc6577c741c0",
-      "reviewAt": "2026-10-18",
+      "reviewAt": "2027-01-20",
       "expiresAt": "2027-07-18"
     },
     {
@@ -219,7 +219,7 @@
         "https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites"
       ],
       "contentSha256": "6b1f5520c92f6712737dc84958498a37912ccdec53d718be90aa90c6c1590c33",
-      "reviewAt": "2026-10-18",
+      "reviewAt": "2027-01-20",
       "expiresAt": "2027-07-18"
     },
     {

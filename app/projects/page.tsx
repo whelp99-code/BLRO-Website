@@ -34,7 +34,7 @@ export default function ProjectsPage() {
     <article className="rd">
       <section className="rd-hero">
         <div className="rd-wrap">
-          <p className="rd-kicker">프로젝트</p>
+          <p className="rd-kicker">판단 과정</p>
           <h1 className="blro-heading blro-heading--h1">고객명이 아닌 판단 과정으로 보여 줍니다.</h1>
           <p className="rd-lead">공개 승인되지 않은 고객명, 성과 수치, 계약 내용은 사용하지 않습니다. 아래는 특정 고객의 결과가 아니라, 검토가 어떤 순서로 시작되는지에 대한 공개용 과정입니다.</p>
         </div>
