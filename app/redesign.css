@@ -649,6 +649,11 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   position: relative;
 }
 
+.rd-panel:has(.rd-explain) {
+  view-timeline-name: --rd-path;
+  view-timeline-axis: block;
+}
+
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .rd-explain::before {
@@ -662,7 +667,7 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
       background: var(--signal);
       transform-origin: top;
       animation: rd-path-fill linear both;
-      animation-timeline: view();
+      animation-timeline: --rd-path;
       animation-range: entry 10% cover 70%;
     }
   }
