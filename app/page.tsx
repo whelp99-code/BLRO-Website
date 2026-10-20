@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
+import { SituationChooser } from "@/components/redesign/situation-chooser"
 
 export const HOME_HEADING = "기업 IT의 도입, 전환, 구축, 운영, 기술 지원을 역할에 맞게 연결합니다."
 
@@ -41,6 +42,8 @@ export default function Home() {
           <LifecycleFigure />
         </div>
       </section>
+
+      <SituationChooser />
 
       <section aria-labelledby="roles-heading" className="rd-band">
         <div className="rd-wrap">

@@ -17,6 +17,8 @@ const JOURNEY = [
   { name: "운영 지원", summary: "담당, 연락, 기술 지원 경로", points: ["인수 후 담당, 기록할 항목, 기술 지원 연락 경로를 정합니다.", "지원 시간과 대응 범위는 상담에서 확인합니다."] },
 ] as const
 
+const SITUATION_IDS = ["situation-server", "situation-storage", "situation-workspace"] as const
+
 const SITUATIONS = [
   ["01", "서버를 새로 구성하거나 교체합니다", "업무 시스템이 어디에 있고, 지금 가상화와 랙·전력 제약이 무엇인지가 먼저입니다. 검토 대상은 Sangfor HCI, aSV, GIGABYTE 서버, KAYTUS 서버입니다. HCI를 검토하더라도 서버 제품군은 함께 비교해 볼 수 있습니다."],
   ["02", "저장과 증설을 검토합니다", "응답, 용량, 기존 연결, 보호 요구를 적습니다. aStor All-Flash와 Hybrid Flash는 서로 다른 질문입니다. HCI에 스토리지가 포함되는 구성이어도 별도 스토리지 검토가 필요한지 함께 확인합니다."],
@@ -48,7 +50,7 @@ export default function CustomerPage() {
           <p>제품을 정해 두지 않아도 상황에 맞는 검토 범위를 함께 잡습니다.</p>
           <div className="rd-steps">
             {SITUATIONS.map(([index, title, body]) => (
-              <article className="rd-step" data-reveal data-stagger={String(Math.min(Number(index) - 1, 3))} key={index}>
+              <article className="rd-step" data-reveal data-stagger={String(Math.min(Number(index) - 1, 3))} id={SITUATION_IDS[Number(index) - 1]} key={index}>
                 <div className="rd-idx">{index}</div>
                 <div>
                   <h3>{title}</h3>
