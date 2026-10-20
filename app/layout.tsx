@@ -6,6 +6,7 @@ import { SiteFooterShell } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
 import { MotionBoot } from "@/components/redesign/motion-boot"
 import { organizationStructuredData, siteDescription, siteName, siteUrl, websiteStructuredData } from "@/lib/site"
+import "./pretendard.css"
 import "./globals.css"
 import "./home.css"
 import "./insights.css"
@@ -34,12 +35,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ko">
-      <head>
-        <link
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-          rel="stylesheet"
-        />
-      </head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationStructuredData, websiteStructuredData]).replaceAll("<", "\\u003c") }} />
         <a className="blro-skip-link" href="#main-content">

@@ -4,6 +4,7 @@ import Script from "next/script"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { emitAnalyticsEvent } from "@/components/analytics/emit-analytics-event"
+import { useLazyTurnstile } from "@/components/contact/use-lazy-turnstile"
 import { submitInquiry, type InquiryTopic } from "@/lib/lead-api"
 import { PRIVACY_NOTICE_VERSION } from "@/lib/privacy-notice"
 import { resolveLeadApiUrl, resolveTurnstileSiteKey } from "@/lib/public-runtime"
@@ -32,12 +33,14 @@ export function InquiryForm() {
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
   const [hasStarted, setHasStarted] = useState(false)
+  const { formRef, shouldLoad, trigger } = useLazyTurnstile()
   const topic = topicFromType(searchParams?.get("type") ?? null)
   const product = searchParams?.get("product") === "hci" ? "hci" : undefined
   const analyticsCtaId = contactCtaId(searchParams?.get("type") ?? null)
   const ready = endpoint !== undefined && siteKey !== undefined
 
   function trackStart() {
+    trigger()
     if (hasStarted) return
     setHasStarted(true)
     emitAnalyticsEvent("form_started", { ctaId: analyticsCtaId, placement: "contact-form", topic })
@@ -84,8 +87,8 @@ export function InquiryForm() {
   }
 
   return (
-    <form className="inquiry-form" onFocusCapture={trackStart} onSubmit={onSubmit}>
-      {siteKey ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" /> : null}
+    <form className="inquiry-form" onFocusCapture={trackStart} onSubmit={onSubmit} ref={formRef}>
+      {siteKey && shouldLoad ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" /> : null}
       <div className="inquiry-form__grid">
         <label>회사명<input autoComplete="organization" name="company" required /></label>
         <label>담당자명<input autoComplete="name" name="name" required /></label>
