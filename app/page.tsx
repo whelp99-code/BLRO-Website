@@ -2,6 +2,7 @@ import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
 import { HciStage } from "@/components/redesign/hci-stage"
+import { SecurityFlow } from "@/components/redesign/security-flow"
 import { SecurityStage } from "@/components/redesign/security-stage"
 import { DatacenterTour } from "@/components/tour/datacenter-tour"
 import { SECURITY_LAYERS } from "@/lib/security-layers"
@@ -65,6 +66,10 @@ export default function Home() {
         <div className="rd-wrap">
           <h2 id="security-heading">보안은 접근 흐름으로 봅니다.</h2>
           <p>사용자와 장치가 애플리케이션에 닿기까지 어디서 정하고, 보고, 막고, 확인하는지를 층별로 보여 드립니다.</p>
+          <h3 className="sf-heading" id="flow-heading">방화벽, IDS, IPS는 무엇이 다를까요?</h3>
+          <p>같은 통신을 세 장치에 보내 보면 허용, 경보, 차단이 어디서 갈리는지 볼 수 있습니다.</p>
+          <SecurityFlow />
+          <h3 className="sf-heading">접근 흐름의 층</h3>
           <SecurityStage layers={SECURITY_LAYERS} />
           <p className="rd-actions">
             <Link className="rd-btn rd-btn-primary" href="/solutions/network-security">네트워크와 보안 상세</Link>
