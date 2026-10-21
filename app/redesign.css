@@ -1185,11 +1185,7 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 }
 
 .tour[data-mode="3d"] .tour__list {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
+  display: none;
 }
 
 @media (max-width: 899px) {

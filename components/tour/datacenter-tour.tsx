@@ -1,9 +1,36 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { ExplainSteps } from "@/components/redesign/explain-steps"
 import { ZONES } from "@/lib/zones"
 import { mountTour, type TourHandle } from "./tour-scene"
+
+const DESKTOP_QUERY = "(min-width: 900px)"
+const REDUCE_MOTION_QUERY = "(prefers-reduced-motion: reduce)"
+
+type ScrollHold = {
+  readonly top: number
+  readonly bottom: number
+  readonly trackTop: number
+  readonly next: "2d" | "3d"
+}
+
+function headerOffset() {
+  const header = document.querySelector(".blro-site-header")
+  return header instanceof HTMLElement ? header.getBoundingClientRect().height : 0
+}
+
+// 헤더 아래로 투어가 화면의 절반보다 적게 남았으면, 독자는 이미 다음 챕터를 보고 있는 것입니다.
+function readingPastTour(top: number, bottom: number, offset: number) {
+  const visibleHeight = Math.max(window.innerHeight - offset, 1)
+  const shown = Math.max(0, Math.min(bottom, window.innerHeight) - Math.max(top, offset))
+  return top < offset && shown < visibleHeight * 0.5
+}
+
+function scrollByDrift(drift: number) {
+  if (Math.abs(drift) < 1) return
+  window.scrollTo({ top: window.scrollY + drift, left: 0, behavior: "instant" })
+}
 
 const STEPS = ZONES.map((zone) => ({
   name: zone.name,
@@ -17,6 +44,8 @@ export function DatacenterTour() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const hotspotRefs = useRef<(HTMLButtonElement | null)[]>([])
   const handleRef = useRef<TourHandle | null>(null)
+  const modeRef = useRef<"2d" | "3d">("2d")
+  const scrollHoldRef = useRef<ScrollHold | null>(null)
   const [mode, setMode] = useState<"2d" | "3d">("2d")
   const [zone, setZone] = useState(0)
   const [setting, setSetting] = useState(0)
@@ -27,40 +56,124 @@ export function DatacenterTour() {
     handleRef.current?.setFocus(0)
   }, [])
 
+  useLayoutEffect(() => {
+    const saved = scrollHoldRef.current
+    scrollHoldRef.current = null
+    if (saved === null || saved.next !== mode) return
+    const section = sectionRef.current
+    if (section === null) return
+    const offset = headerOffset()
+    const box = section.getBoundingClientRect()
+    if (readingPastTour(saved.top, saved.bottom, offset)) {
+      scrollByDrift(box.bottom - saved.bottom)
+    } else if (mode === "2d" && saved.trackTop < offset) {
+      // 긴 트랙 안에서 아코디언으로 돌아오면 그 높이만큼 아래 챕터로 떨어지지 않게 되돌립니다.
+      const top = box.top + window.scrollY - offset
+      window.scrollTo({ top: Math.max(0, top), left: 0, behavior: "instant" })
+    }
+    if (mode !== "3d") return
+    const track = trackRef.current
+    if (track === null) return
+    const total = track.offsetHeight - window.innerHeight
+    if (total <= 0) return
+    handleRef.current?.setProgress(-track.getBoundingClientRect().top / total)
+  }, [mode])
+
   useEffect(() => {
     const canvas = canvasRef.current
     const section = sectionRef.current
     if (canvas === null || section === null) return
     if (typeof window.matchMedia !== "function" || typeof IntersectionObserver === "undefined") return
-    if (!window.matchMedia("(min-width: 900px)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    let cancelled = false
+
+    const wide = window.matchMedia(DESKTOP_QUERY)
+    const reduce = window.matchMedia(REDUCE_MOTION_QUERY)
+    let generation = 0
+    let arming = false
     let timeoutId = 0
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return
-        observer.disconnect()
-        timeoutId = window.setTimeout(() => {
-          const hotspotEls = hotspotRefs.current.filter((el): el is HTMLButtonElement => el !== null)
-          void mountTour({ canvas, hotspotEls, labelHost: canvas.parentElement ?? document.body, onZone }).then((handle) => {
-            if (handle === null) return
-            if (cancelled) {
-              handle.dispose()
+    let observer: IntersectionObserver | null = null
+
+    const eligible = () => wide.matches && !reduce.matches
+
+    const queueMode = (next: "2d" | "3d") => {
+      const host = sectionRef.current
+      if (host === null || modeRef.current === next) return
+      const box = host.getBoundingClientRect()
+      scrollHoldRef.current = {
+        top: box.top,
+        bottom: box.bottom,
+        trackTop: trackRef.current?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY,
+        next,
+      }
+      modeRef.current = next
+      setMode(next)
+    }
+
+    const releaseTour = (restore: boolean) => {
+      generation += 1
+      arming = false
+      observer?.disconnect()
+      observer = null
+      window.clearTimeout(timeoutId)
+      timeoutId = 0
+      const handle = handleRef.current
+      handleRef.current = null
+      handle?.dispose()
+      if (restore && handle !== null) queueMode("2d")
+    }
+
+    const arm = () => {
+      if (!eligible() || arming || handleRef.current !== null) return
+      arming = true
+      const token = generation
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (token !== generation || !entries.some((entry) => entry.isIntersecting)) return
+          observer?.disconnect()
+          observer = null
+          timeoutId = window.setTimeout(() => {
+            timeoutId = 0
+            if (token !== generation || !eligible()) {
+              if (token === generation) arming = false
               return
             }
-            handleRef.current = handle
-            setMode("3d")
-          })
-        }, 250)
-      },
-      { rootMargin: "300px" },
-    )
-    observer.observe(section)
+            const hotspotEls = hotspotRefs.current.filter((el): el is HTMLButtonElement => el !== null)
+            void mountTour({ canvas, hotspotEls, labelHost: canvas.parentElement ?? document.body, onZone }).then(
+              (handle) => {
+                if (token !== generation) {
+                  handle?.dispose()
+                  return
+                }
+                arming = false
+                if (handle === null || !eligible()) {
+                  handle?.dispose()
+                  return
+                }
+                handleRef.current = handle
+                queueMode("3d")
+              },
+              () => {
+                if (token === generation) arming = false
+              },
+            )
+          }, 250)
+        },
+        { rootMargin: "300px" },
+      )
+      observer.observe(section)
+    }
+
+    const syncTour = () => {
+      if (!eligible()) releaseTour(true)
+      else arm()
+    }
+
+    syncTour()
+    wide.addEventListener("change", syncTour)
+    reduce.addEventListener("change", syncTour)
     return () => {
-      cancelled = true
-      observer.disconnect()
-      window.clearTimeout(timeoutId)
-      handleRef.current?.dispose()
-      handleRef.current = null
+      wide.removeEventListener("change", syncTour)
+      reduce.removeEventListener("change", syncTour)
+      releaseTour(false)
     }
   }, [onZone])
 
@@ -151,7 +264,7 @@ export function DatacenterTour() {
           ) : null}
         </div>
       </div>
-      <div className="rd-wrap tour__list">
+      <div className="rd-wrap tour__list" inert={mode === "3d" ? true : undefined}>
         <ExplainSteps group="tour-zones" steps={STEPS} />
       </div>
     </section>
