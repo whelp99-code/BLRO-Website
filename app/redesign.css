@@ -751,6 +751,10 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 .hs-group[data-layer="storage"] { --hs: #1f7a4d; }
 .hs-group[data-layer="network"] { --hs: #8a5a32; }
 .hs-group[data-layer="management"] { --hs: #102033; }
+.hs-group[data-layer="access"] { --hs: #1d4ed8; }
+.hs-group[data-layer="detect"] { --hs: #1f7a4d; }
+.hs-group[data-layer="respond"] { --hs: #8a5a32; }
+.hs-group[data-layer="verify"] { --hs: #102033; }
 
 .hs-fill {
   fill: color-mix(in srgb, var(--hs) 10%, #fffcf7);
@@ -1007,4 +1011,207 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 .hr-role {
   fill: var(--ink-soft);
   font-size: 11px;
+}
+
+/* ---- 데이터센터 투어 ---- */
+.tour__intro {
+  padding-block: 2rem 1.25rem;
+}
+
+.tour__track {
+  display: none;
+}
+
+.tour[data-mode="3d"] .tour__track {
+  display: block;
+}
+
+.tour__sticky {
+  position: sticky;
+  top: 72px;
+  height: calc(100vh - 72px);
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.tour__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tour__hotspot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  visibility: hidden;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--card);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tour__hotspot[data-active="true"] {
+  color: #fff;
+  background: var(--action);
+  border-color: var(--action);
+}
+
+.tour__hotspot:focus-visible,
+.tour__chips button:focus-visible,
+.tour__settings button:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+}
+
+.tour__chips {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  max-width: calc(100% - 2rem);
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  transform: translateX(-50%);
+}
+
+.tour__chips button {
+  min-height: 40px;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--card);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tour__chips button[aria-pressed="true"] {
+  border-color: var(--ink);
+  color: #fff;
+  background: var(--ink);
+}
+
+.tour__panel {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 3;
+  width: min(400px, calc(100% - 2.5rem));
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.tour__panel h3 {
+  margin: 0.1rem 0 0.35rem;
+  font-size: 1.3rem;
+}
+
+.tour__panel p {
+  max-width: none;
+  margin: 0.25rem 0;
+}
+
+.tour__kicker {
+  color: var(--signal);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tour__settings {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.7rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tour__settings li {
+  max-width: none;
+}
+
+.tour__settings button {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--paper);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tour__settings button span {
+  color: var(--signal);
+  font-weight: 700;
+}
+
+.tour__settings button[aria-pressed="true"] {
+  border-color: var(--ink);
+  color: #fff;
+  background: var(--ink);
+}
+
+.tour__settings button[aria-pressed="true"] span {
+  color: #9be3b8;
+}
+
+.tour__detail {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.tour__list {
+  padding-block: 1.25rem 2rem;
+}
+
+.tour[data-mode="3d"] .tour__list {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 899px) {
+  .tour__hotspot,
+  .tour__chips {
+    display: none;
+  }
+}
+
+.tour__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
 }
