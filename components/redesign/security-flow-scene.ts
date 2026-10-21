@@ -99,7 +99,7 @@ export async function mountFlowScene(options: SceneOptions): Promise<SceneHandle
   }
 
   // 고정 요소: 바닥, 출발지, 서버, 주 경로
-  box(scene, fixed, 22, 0.3, 11, COLORS.card, 0, -0.15, 1.2)
+  box(scene, fixed, 22, 0.3, 12, COLORS.card, 0, -0.15, -0.5)
   const grid = new THREE.GridHelper(22, 22, COLORS.line, COLORS.line)
   grid.position.y = 0.02
   const gridMaterial = grid.material
@@ -154,7 +154,7 @@ export async function mountFlowScene(options: SceneOptions): Promise<SceneHandle
     chain.forEach((element, index) => {
       const x = -HALF + 2 * HALF * slotPosition(index + 1, chain.length)
       const tap = element.mode === "tap"
-      const z = tap ? 3.4 : -1.6
+      const z = tap ? -3.7 : -1.6
       box(group, deviceDisposables, 2.2, 2.4, 1.5, tap ? COLORS.steel : COLORS.ink, x, 1.2, z)
       // 경로 위의 관문: 인라인 장치는 통신이 반드시 지나가는 자리에 선다
       if (!tap) box(group, deviceDisposables, 0.25, 1.5, 1.3, element.device === "firewall" ? COLORS.copper : COLORS.green, x, 0.75, 0)
@@ -165,7 +165,7 @@ export async function mountFlowScene(options: SceneOptions): Promise<SceneHandle
       group.add(bulb)
       if (tap) {
         // 경로에서 장치로 가는 사본 선
-        box(group, deviceDisposables, 0.08, 0.08, 2.1, COLORS.line, x, 0.5, 1.5)
+        box(group, deviceDisposables, 0.08, 0.08, 2.4, COLORS.line, x, 0.5, -1.3)
       }
       devicePositions.push(new THREE.Vector3(x, 2.9, z))
       deviceEls.push({ name: span("sf__label sf__label--device", tap ? `${deviceName(element.device)} (사본 감시)` : deviceName(element.device)), tag: span("sf__tag", "") })
@@ -284,8 +284,8 @@ export async function mountFlowScene(options: SceneOptions): Promise<SceneHandle
       copyMesh.visible = next.branch
       if (next.branch) {
         const element = next.chain[next.slot - 1]
-        const z = element?.mode === "tap" ? 3.4 : 0
-        copyTarget.set(worldX(next.slot, length), 1.2, z - 1.1)
+        const z = element?.mode === "tap" ? -3.7 : 0
+        copyTarget.set(worldX(next.slot, length), 1.2, z + 1.1)
         if (!copyMesh.visible || copyMesh.position.z === 0) copyMesh.position.set(worldX(next.slot, length), 0.9, 0)
       }
       next.tags.forEach((tag, index) => {
