@@ -275,8 +275,9 @@ export async function mountFlowScene(options: SceneOptions): Promise<SceneHandle
       if (state !== null && next.action === "start") snap = true
       state = next
       const length = next.chain.length
-      // 차단된 패킷은 관문 앞에서 멈춘다
-      target.set(worldX(next.slot, length) - (next.action === "block" ? 0.9 : 0), 0.9, 0)
+      // 차단된 패킷은 관문 앞에서, 도착한 패킷은 서버 앞에서 멈춘다
+      const stopShort = next.action === "block" ? 0.9 : next.action === "delivered" ? 1.7 : 0
+      target.set(worldX(next.slot, length) - stopShort, 0.9, 0)
       packetMaterial.color.setHex(actionColor(next.action))
       packetMaterial.emissive.setHex(actionColor(next.action))
       targetScale = next.action === "block" ? 0.55 : 1
