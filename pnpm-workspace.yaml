@@ -26,3 +26,4 @@ overrides:
   source-map-js: 1.2.2
   tmp: 0.2.7
   undici: 7.29.1
+  vite: 8.1.6
