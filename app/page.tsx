@@ -2,6 +2,9 @@ import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
 import { HciStage } from "@/components/redesign/hci-stage"
+import { SecurityStage } from "@/components/redesign/security-stage"
+import { DatacenterTour } from "@/components/tour/datacenter-tour"
+import { SECURITY_LAYERS } from "@/lib/security-layers"
 import { SituationChooser } from "@/components/redesign/situation-chooser"
 import { HCI_LAYERS } from "@/lib/hci-layers"
 
@@ -45,6 +48,8 @@ export default function Home() {
         </div>
       </section>
 
+      <DatacenterTour />
+
       <section aria-labelledby="stage-heading" className="rd-chapter hci-stage-section">
         <div className="rd-wrap">
           <h2 id="stage-heading">HCI는 네 개 층으로 구성됩니다.</h2>
@@ -52,6 +57,17 @@ export default function Home() {
           <HciStage layers={HCI_LAYERS} />
           <p className="rd-actions">
             <Link className="rd-btn rd-btn-primary" href="/solutions/hci">HCI 상세 보기</Link>
+          </p>
+        </div>
+      </section>
+
+      <section aria-labelledby="security-heading" className="rd-chapter hci-stage-section">
+        <div className="rd-wrap">
+          <h2 id="security-heading">보안은 접근 흐름으로 봅니다.</h2>
+          <p>사용자와 장치가 애플리케이션에 닿기까지 어디서 정하고, 보고, 막고, 확인하는지를 층별로 보여 드립니다.</p>
+          <SecurityStage layers={SECURITY_LAYERS} />
+          <p className="rd-actions">
+            <Link className="rd-btn rd-btn-primary" href="/solutions/network-security">네트워크와 보안 상세</Link>
           </p>
         </div>
       </section>
