@@ -52,15 +52,6 @@ export function HciStage({ layers }: HciStageProps) {
     <div className="hci-stage" data-active={activeKey}>
       <div className="hci-stage__view">
         <svg aria-label="HCI 구성 예시: 서버 세 대 안에 컴퓨트와 스토리지가 함께 있고, 네트워크로 연결되며, 하나의 관리 화면으로 운영합니다." className="hci-diagram" role="group" viewBox="0 0 640 500">
-          <defs>
-            <filter id="hs-glow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur result="b" stdDeviation="5" />
-              <feMerge>
-                <feMergeNode in="b" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
 
           {NODE_X.map((x, i) => (
             <g key={x}>

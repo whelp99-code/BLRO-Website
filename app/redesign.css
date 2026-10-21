@@ -683,25 +683,22 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   scroll-margin-top: 96px;
 }
 
-/* ---- HCI 구성 스테이지 (2D 폴백 + 3D) ---- */
+/* ---- HCI 구성 도식 (절제된 편집 스타일) ---- */
 .hci-stage {
   display: grid;
-  gap: 1rem;
-  padding: 1.2rem;
-  border-radius: 18px;
-  color: #e8eefc;
-  background:
-    radial-gradient(34rem 20rem at 50% 38%, rgba(56, 120, 255, 0.28), transparent 62%),
-    radial-gradient(26rem 16rem at 90% 0%, rgba(99, 102, 241, 0.4), transparent 62%),
-    linear-gradient(165deg, #060a1c 0%, #0b1440 100%);
-  box-shadow: 0 30px 70px -26px rgba(11, 20, 64, 0.8), inset 0 0 0 1px rgba(120, 160, 255, 0.18);
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--card);
 }
 
 @media (min-width: 900px) {
   .hci-stage {
     grid-template-columns: 1.25fr 0.75fr;
     align-items: center;
-    padding: 1.6rem;
+    padding: 1.75rem;
   }
 }
 
@@ -716,61 +713,59 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 }
 
 .hs-node {
-  fill: rgba(255, 255, 255, 0.04);
-  stroke: rgba(148, 180, 255, 0.35);
-  stroke-width: 1.5;
+  fill: var(--paper-2);
+  stroke: #b9b0a0;
+  stroke-width: 1.2;
 }
 
 .hs-small,
 .hs-tiny,
 .hs-title,
 .hs-small-strong {
-  fill: #cbd5ec;
+  fill: var(--ink-soft);
   font-family: inherit;
 }
 
 .hs-small { font-size: 12px; }
-.hs-tiny { font-size: 9.5px; fill: #e8eefc; }
-.hs-small-strong { font-size: 12px; font-weight: 700; fill: #fff; }
-.hs-title { font-size: 14px; font-weight: 700; fill: #fff; }
+.hs-tiny { font-size: 9.5px; fill: var(--ink); }
+.hs-small-strong { font-size: 12px; font-weight: 700; fill: var(--ink); }
+.hs-title { font-size: 14px; font-weight: 700; fill: var(--ink); }
 
 .hs-group {
   cursor: pointer;
-  opacity: 0.34;
+  opacity: 0.5;
   outline: none;
-  transition: opacity 320ms ease, filter 320ms ease;
+  transition: opacity 240ms ease;
 }
 
 .hs-group:focus-visible {
-  outline: 2px solid #93c5fd;
+  outline: 2px solid var(--action);
   outline-offset: 2px;
 }
 
 .hs-group[data-active="true"] {
   opacity: 1;
-  filter: url(#hs-glow);
 }
 
-.hs-group[data-layer="compute"] { --hs: #3b82f6; }
-.hs-group[data-layer="storage"] { --hs: #22c55e; }
-.hs-group[data-layer="network"] { --hs: #f59e0b; }
-.hs-group[data-layer="management"] { --hs: #818cf8; }
+.hs-group[data-layer="compute"] { --hs: #1d4ed8; }
+.hs-group[data-layer="storage"] { --hs: #1f7a4d; }
+.hs-group[data-layer="network"] { --hs: #8a5a32; }
+.hs-group[data-layer="management"] { --hs: #102033; }
 
 .hs-fill {
-  fill: color-mix(in srgb, var(--hs) 28%, #0b1440);
-  stroke: var(--hs);
-  stroke-width: 1.6;
-}
-
-.hs-disk {
-  fill: color-mix(in srgb, var(--hs) 35%, #0b1440);
+  fill: color-mix(in srgb, var(--hs) 10%, #fffcf7);
   stroke: var(--hs);
   stroke-width: 1.5;
 }
 
+.hs-disk {
+  fill: color-mix(in srgb, var(--hs) 16%, #fffcf7);
+  stroke: var(--hs);
+  stroke-width: 1.4;
+}
+
 .hs-bar {
   fill: var(--hs);
-  opacity: 0.9;
   transform-box: fill-box;
   transform-origin: bottom;
 }
@@ -778,7 +773,7 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 .hs-line {
   fill: none;
   stroke: var(--hs);
-  stroke-width: 2;
+  stroke-width: 1.8;
 }
 
 .hs-flow {
@@ -786,44 +781,34 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
 }
 
 .hs-bus {
-  fill: color-mix(in srgb, var(--hs) 30%, #0b1440);
+  fill: color-mix(in srgb, var(--hs) 14%, #fffcf7);
   stroke: var(--hs);
-  stroke-width: 1.4;
+  stroke-width: 1.3;
 }
 
 .hs-bus-admin {
-  fill: color-mix(in srgb, #818cf8 30%, #0b1440);
-  stroke: #818cf8;
+  fill: color-mix(in srgb, #102033 12%, #fffcf7);
+  stroke: #102033;
 }
 
 .hs-callout rect {
-  fill: rgba(255, 255, 255, 0.08);
-  stroke: rgba(148, 180, 255, 0.4);
+  fill: #fff;
+  stroke: var(--line);
 }
 
 .hs-callout text {
-  fill: #fff;
+  fill: var(--ink);
   font-size: 15px;
   font-weight: 700;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .hs-group[data-active="true"] .hs-flow {
-    animation: hs-dash 1.1s linear infinite;
+    animation: hs-dash 1.2s linear infinite;
   }
 
   .hs-group[data-active="true"] .hs-flow-slow {
-    animation-duration: 2s;
-  }
-
-  .hs-group[data-active="true"] .hs-vm {
-    animation: hs-pulse 1.8s ease-in-out infinite;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  .hs-group[data-active="true"] .hs-bar {
-    animation: hs-grow 1.6s ease-in-out infinite alternate;
+    animation-duration: 2.2s;
   }
 }
 
@@ -833,24 +818,9 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   }
 }
 
-@keyframes hs-pulse {
-  50% {
-    transform: scale(1.06);
-  }
-}
-
-@keyframes hs-grow {
-  from {
-    transform: scaleY(0.55);
-  }
-  to {
-    transform: scaleY(1);
-  }
-}
-
 .hci-stage__note {
   margin-top: 0.9rem;
-  color: #9fb0d4;
+  color: var(--ink-soft);
   font-size: 12px;
 }
 
@@ -867,44 +837,42 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
-  color: #e8eefc;
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--paper);
   font: inherit;
   cursor: pointer;
-  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
 
 .hci-stage__tabs button span {
-  color: #86efac;
+  color: var(--signal);
   font-variant-numeric: tabular-nums;
   font-size: 12px;
 }
 
 .hci-stage__tabs button[aria-pressed="true"] {
-  border-color: #60a5fa;
-  background: rgba(96, 165, 250, 0.22);
-  box-shadow: 0 0 18px rgba(96, 165, 250, 0.35);
+  border-color: var(--ink);
+  color: #fff;
+  background: var(--ink);
 }
 
-.hci-stage__tabs button:hover {
-  transform: translateY(-1px);
+.hci-stage__tabs button[aria-pressed="true"] span {
+  color: #9be3b8;
 }
 
 .hci-stage__tabs button:focus-visible {
-  outline: 2px solid #93c5fd;
+  outline: 2px solid var(--action);
   outline-offset: 3px;
 }
 
 .hci-stage__detail strong {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
 }
 
 .hci-stage__detail p,
 .hci-stage__detail li {
   max-width: none;
-  color: #cbd5ec;
 }
 
 .hci-stage__detail ul {
@@ -916,65 +884,127 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   margin-top: 1.25rem;
 }
 
-/* ---- 홈 2D 화려한 배경, 카드 ---- */
-.home-hero {
-  background:
-    radial-gradient(52rem 26rem at 88% -8%, rgba(37, 99, 235, 0.16), transparent 62%),
-    radial-gradient(40rem 22rem at -4% 24%, rgba(31, 122, 77, 0.14), transparent 62%),
-    radial-gradient(30rem 16rem at 50% 110%, rgba(194, 122, 62, 0.12), transparent 60%);
-}
-
-.home-hero .blro-heading {
-  background: linear-gradient(100deg, #0b1830 20%, #1d4ed8 70%, #1f7a4d 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.rd-role,
-.rd-chooser a {
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease, border-color 180ms ease;
-}
-
-.rd-role:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 18px 40px -18px rgba(29, 78, 216, 0.45);
-}
-
-.rd-chooser a:hover {
-  box-shadow: 0 14px 30px -16px rgba(29, 78, 216, 0.5);
-}
-
-.rd-btn-primary {
-  background-image: linear-gradient(110deg, #1d4ed8 0%, #2563eb 55%, #1f7a4d 140%);
-  background-size: 160% 100%;
-  background-position: 0% 0%;
-  transition: background-position 420ms ease, transform 180ms ease, box-shadow 220ms ease;
-}
-
-.rd-btn-primary:hover {
-  background-position: 100% 0%;
-  box-shadow: 0 10px 24px -10px rgba(29, 78, 216, 0.7);
-}
-
-.rd-art-band {
-  max-width: 1120px;
-  margin: 2rem auto;
-  padding-inline: 1rem;
-}
-
-.rd-art-band img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 18px;
-  box-shadow: 0 30px 70px -28px rgba(11, 20, 64, 0.75), 0 0 0 1px rgba(120, 160, 255, 0.2);
-}
-
 @media (max-width: 719px) {
   .hs-small { font-size: 19px; }
   .hs-tiny { display: none; }
   .hs-small-strong { font-size: 19px; }
   .hs-title { font-size: 21px; }
   .hs-callout text { font-size: 22px; }
+}
+
+/* 상황 카드 호버는 절제 */
+.rd-chooser a:hover {
+  box-shadow: none;
+  transform: none;
+  border-color: var(--ink);
+}
+
+/* ---- 홈 마무리: 도입 검토 순서 ---- */
+.home-close {
+  display: grid;
+  gap: 1.75rem;
+}
+
+@media (min-width: 900px) {
+  .home-close {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.home-flow {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-flow li {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 0.9rem;
+  max-width: none;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.home-flow .rd-idx {
+  color: var(--signal);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-flow strong,
+.home-flow span {
+  display: block;
+}
+
+.home-flow span {
+  margin-top: 0.2rem;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.home-close__aside {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper-2);
+}
+
+.home-close__aside h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.home-close__aside ul {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+}
+
+.home-close__aside li {
+  max-width: none;
+  margin: 0.25rem 0;
+}
+
+.home-relations {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0.5rem 0 1rem;
+}
+
+.hr-lines path {
+  fill: none;
+  stroke: #b9b0a0;
+  stroke-width: 1.5;
+}
+
+.hr-core {
+  fill: var(--ink);
+}
+
+.hr-core-text {
+  fill: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hr-box {
+  fill: var(--card);
+  stroke: var(--line);
+}
+
+.hr-name {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hr-role {
+  fill: var(--ink-soft);
+  font-size: 11px;
 }
