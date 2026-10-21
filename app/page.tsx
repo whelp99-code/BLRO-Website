@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { TrackableLink } from "@/components/analytics/trackable-link"
 import { LifecycleFigure } from "@/components/redesign/lifecycle-figure"
@@ -46,10 +45,6 @@ export default function Home() {
         </div>
       </section>
 
-      <div aria-hidden="true" className="rd-art-band">
-        <Image alt="" height={800} src="/images/home-ecosystem.webp" unoptimized width={1600} />
-      </div>
-
       <section aria-labelledby="stage-heading" className="rd-chapter hci-stage-section">
         <div className="rd-wrap">
           <h2 id="stage-heading">HCI는 네 개 층으로 구성됩니다.</h2>
@@ -90,34 +85,64 @@ export default function Home() {
       </section>
 
       <section aria-labelledby="hci-door-heading" className="rd-chapter">
-        <div className="rd-wrap rd-split">
-          <figure className="rd-panel" data-reveal>
-            <figcaption className="rd-kicker">설명 그림 · 통로 스케치</figcaption>
-            <svg aria-hidden="true" className="rd-art" viewBox="0 0 480 220">
-              <rect fill="#ebe6dc" height="220" width="480" />
-              <g fill="#102033" opacity="0.85">
-                <rect height="148" width="36" x="40" y="36" />
-                <rect height="148" width="36" x="86" y="36" />
-                <rect height="148" width="36" x="132" y="36" />
-              </g>
-              <g fill="#1f7a4d">
-                <rect height="6" width="20" x="48" y="52" />
-                <rect height="6" width="20" x="48" y="66" />
-                <rect height="6" width="20" x="94" y="52" />
-                <rect height="6" width="20" x="140" y="80" />
-              </g>
-              <rect fill="#fffcf7" height="90" stroke="#102033" width="200" x="220" y="70" />
-              <text fill="#3d4d63" fontSize="12" textAnchor="middle" x="320" y="122">
-                통로 스케치
-              </text>
-            </svg>
-          </figure>
+        <div className="rd-wrap home-close">
           <div data-reveal>
-            <h2 id="hci-door-heading">HCI 도입과 운영을 살펴보세요.</h2>
-            <p>HCI 구성과 도입 전 확인할 항목을 현재 업무 환경에 맞춰 검토합니다.</p>
-            <p>우선 살펴볼 제품 상세는 업무 시스템을 실행하는 통합 인프라인 HCI입니다. aSV, SCP, VDI, aStor와의 경계는 그 페이지에 적습니다.</p>
-            <Link className="rd-btn rd-btn-primary" href="/solutions/hci">HCI 상세</Link>
+            <h2 id="hci-door-heading">HCI 도입은 현재 환경을 적는 일부터 시작합니다.</h2>
+            <p>제품을 고르기 전에 지금 환경과 전환 조건을 정리하면 상담이 짧아집니다. 아래 순서로 함께 검토합니다.</p>
+            <ol className="home-flow">
+              <li>
+                <span className="rd-idx">01</span>
+                <div>
+                  <strong>현재 환경 확인</strong>
+                  <span>올릴 업무 시스템과 지금 가상화의 종류, 랙·전력·냉각·기존 네트워크 구분</span>
+                </div>
+              </li>
+              <li>
+                <span className="rd-idx">02</span>
+                <div>
+                  <strong>전환 조건 정리</strong>
+                  <span>멈출 수 있는 시간과 되돌릴 조건, 백업 주기·보관 위치·복구 담당</span>
+                </div>
+              </li>
+              <li>
+                <span className="rd-idx">03</span>
+                <div>
+                  <strong>도입 범위 합의</strong>
+                  <span>국내 공급 조건과 BLRO 수행 범위를 상담에서 정리</span>
+                </div>
+              </li>
+            </ol>
           </div>
+          <aside className="home-close__aside" data-reveal>
+            <h3>함께 확인하는 제품</h3>
+            <svg aria-label="HCI와 함께 확인하는 제품: aSV 가상화 계층, Sangfor SCP 자원 관리와 운영 담당, aDesk VDI 사용자와 단말의 업무 화면, aStor 별도 스토리지 구성" className="home-relations" role="img" viewBox="0 0 360 260">
+              <g className="hr-lines">
+                <path d="M150 100 L88 68" />
+                <path d="M210 100 L272 68" />
+                <path d="M150 156 L88 188" />
+                <path d="M210 156 L272 188" />
+              </g>
+              <rect className="hr-core" height="56" rx="8" width="100" x="130" y="100" />
+              <text className="hr-core-text" textAnchor="middle" x="180" y="134">HCI</text>
+              {[
+                ["aSV", "가상화 계층", 4, 12],
+                ["Sangfor SCP", "자원 관리와 운영 담당", 188, 12],
+                ["aDesk VDI", "사용자·단말의 업무 화면", 4, 188],
+                ["aStor", "별도 스토리지 구성", 188, 188],
+              ].map(([name, role, x, y]) => (
+                <g key={String(name)}>
+                  <rect className="hr-box" height="56" rx="8" width="168" x={x} y={y} />
+                  <text className="hr-name" x={Number(x) + 12} y={Number(y) + 23}>{name}</text>
+                  <text className="hr-role" x={Number(x) + 12} y={Number(y) + 42}>{role}</text>
+                </g>
+              ))}
+            </svg>
+            <p>각 제품과의 경계와 적용 한계는 HCI 상세에 적어 두었습니다.</p>
+            <p className="rd-actions">
+              <Link className="rd-btn rd-btn-primary" href="/solutions/hci">HCI 상세</Link>
+              <Link className="rd-btn rd-btn-ghost" href="/contact?type=customer-project&role=customer&product=hci">HCI 상담 요청</Link>
+            </p>
+          </aside>
         </div>
       </section>
     </div>

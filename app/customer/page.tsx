@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Image from "next/image"
 import Link from "next/link"
 import { ExplainSteps } from "@/components/redesign/explain-steps"
 import { canonicalMetadata } from "@/lib/site"
@@ -44,10 +43,6 @@ export default function CustomerPage() {
           </figure>
         </div>
       </section>
-
-      <div aria-hidden="true" className="rd-art-band">
-        <Image alt="" height={620} src="/images/customer-journey.webp" unoptimized width={1500} />
-      </div>
 
       <section className="rd-chapter" id="situations">
         <div className="rd-wrap">
