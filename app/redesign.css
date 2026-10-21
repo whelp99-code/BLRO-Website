@@ -970,3 +970,11 @@ html.js-io:not(.js-timeline) .life-progress.is-drawn {
   border-radius: 18px;
   box-shadow: 0 30px 70px -28px rgba(11, 20, 64, 0.75), 0 0 0 1px rgba(120, 160, 255, 0.2);
 }
+
+@media (max-width: 719px) {
+  .hs-small { font-size: 19px; }
+  .hs-tiny { display: none; }
+  .hs-small-strong { font-size: 19px; }
+  .hs-title { font-size: 21px; }
+  .hs-callout text { font-size: 22px; }
+}
